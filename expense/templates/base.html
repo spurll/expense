@@ -1,0 +1,153 @@
+<html>
+    <head>
+		<!-- Support for iOS device sizes. -->
+		<meta name="viewport" content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no'>
+
+		{% if title %}
+		<title>{{title}}</title>
+		{% endif %}
+
+		<style type="text/css">
+			body {
+				font-family: serif;
+				color: #ffffff;
+				background-color: #222222;
+				overflow-y: auto;
+				margin: 0px;
+			}
+
+			p { margin: 5px; text-align: center }
+			table { width: 100%; margin-top: 5px; margin-bottom: 10px; }
+			th { text-align: left; font-variant: small-caps; }
+
+			#content {
+				width: 100%;
+				max-width: 500px;
+				margin: auto;
+				padding-top: 10px;
+			}
+
+			#title-buffer {
+				width: 100%;
+				height: 52px;
+				top: 0px;
+				position: static;
+			}
+
+			#title-bar {
+				width: 100%;
+				top: 0px;
+				position: fixed;
+				background-color: #111111;
+				border-bottom: solid #444444;
+			}
+
+			#title {
+				width: 60%;
+				margin: auto;
+				font-variant: small-caps;
+				font-size: 200%;
+				text-align: center;
+				padding-top: 10px;
+				padding-bottom: 10px;
+			}
+
+			#links {
+				width: calc(20% - 20px);
+				float: left;
+				text-align: left;
+				padding: 10px;
+			}
+
+			#user {
+				width: calc(20% - 20px);
+				float: right;
+				text-align: right;
+				padding: 10px;
+			}
+
+			.heading {
+				font-variant: small-caps;
+				text-align: center;
+				padding-top: 5px;
+				padding-bottom: 10px;
+			}
+
+			.messages { font-style: italic; text-align: center; }
+			.wide { width: 60%; top: 0px; }
+			.narrow { width: 40%; top: 0px; }
+			.right { float: right; text-align: right; }
+			.section { padding-top: 5px; padding-bottom: 10px; }
+
+			a:link { text-decoration: none; color: #888888; }
+			a:visited { text-decoration: none; color: #888888; }
+			a:hover { text-decoration: none; color: #ffffff; }
+			a:active { text-decoration: none; color: #888888; }
+
+			input[type="text"] { width: 100%; }
+			input[type="password"] { width: 100%; }
+			input { color: #000000; }
+		</style>
+
+		<link rel="shortcut icon" href="{{url_for('static', filename='icon.png')}}"/>
+		<script type="text/javascript" src="{{url_for('static', filename='jquery-3.1.0.min.js')}}"></script>
+   
+		<script>
+			$(document).ready(function() {
+				resizeContent();
+				resizeBuffer();
+			});
+
+			$(window).resize(function() {
+				resizeBuffer();
+			});
+
+			function resizeBuffer() {
+				// Resizes the title buffer which pushes content down below the floating title bar.
+				$('#title-buffer').height($('#title-bar').outerHeight());
+			}
+
+			function resizeContent() {
+				if ($(window).width() < 500) {
+					// Moves and resizes the links and login information information on a smaller screen.
+					$('#links').css({'width': 'auto', 'margin': 'auto', 'float': 'none', 'text-align': 'center'});
+					$('#user').css({'width': 'auto', 'margin': 'auto', 'float': 'none', 'text-align': 'center'});
+				}
+			}
+		</script>
+	 </head>
+
+	<body>
+		<div id="title-buffer"></div>
+		<div id="title-bar">
+			<div id="links">
+				{% if link %}
+				<a href="{{link['url']}}">{{link['text']}}</a>
+				{% endif %}
+			</div>
+
+			<div id="user">
+				{% if user %}
+				Logged in as {{user.name}}. <a href="{{ url_for('logout') }}">Log out.</a>
+				{% endif %}
+			</div>
+
+			<div id="title">{{title}}</div>
+		</div>
+
+		{% with messages = get_flashed_messages() %}
+		<div class="messages">
+			{% if messages %}
+			{% for message in messages %}
+			<p>{{ message }}</p>
+			{% endfor %}
+			{% endif %}
+		</div>
+		{% endwith %}
+
+		<div id="content">
+			{% block content %}
+			{% endblock %}
+		</div>
+	</body>
+</html>
