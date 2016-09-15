@@ -1,15 +1,81 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="text">
-	<form action="" method="POST" name="login">
-		{{form.hidden_tag()}}
+<div class="heading">Current</div>
 
-		<div class="wide right" style="height: 30px;">{{form.username(autofocus=True)}}</div>
-		<div class="narrow left" style="height: 30px;">{{form.username.label}}</div>
-		<div class="wide right" style="height: 30px;">{{form.password}}</div>
-		<div class="narrow left" style="height: 30px;">{{form.password.label}}</div>
-		<div class="wide right"><input type="submit" value="Log In"></div>
-		<div class="narrow left">{{form.remember}} {{form.remember.label}}</div>
-	</form>
-</div>
+<table id="current">
+	<thead>
+		<tr>
+			<th>Item</th>
+			<th>Amount</th>
+			<th>Created</th>
+			<th>Notes</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for c in current %}
+		<tr>
+			<td></td>
+			<td class="name">{{c[0]}}</td>
+			<td class="value" title="{{c[2]}}">{{c[1]}}</td>
+			<td class="date">{{c[3]}}</td>
+			<td class="note">{{c[4]}}</td>
+			<td></td>
+		</tr>
+		{% endfor %}
+	</tbody>
+	<tfoot>
+		<tr>
+			<!-- TODO: CREATE ICON (LIKE FAVICON, BUT WHITE WITH CHECKMARK) -->
+			<!-- TODO: INSERT LINK TO ADVANCE THING -->
+			<td><img src="{{url_for('static', filename='advance.png')}}" /></td>
+			<td>Total</th>
+			<td></td>
+			<td>{{total}}</td>
+			<!-- TODO: CREATE ICON (LIKE FAVICON, BUT WHITE WITH ...?) -->
+			<!-- TODO: INSERT LINK TO EDIT THING -->
+			<td><img src="{{url_for('static', filename='edit.png')}}" /></td>
+		</tr>
+	</tfoot>
+</table>
+
+<div class="heading">Future</div>
+
+<table id="future">
+	<thead>
+		<tr>
+			<td></td>
+			<th>Item</th>
+			<th>Amount</th>
+			<th>Due</th>
+			<th>Recur</th>
+			<th>Notes</th>
+			<td></td>
+		</tr>
+	</thead>
+	<tbody>
+		{% for c in current %}
+		<tr>
+			<!-- TODO: CREATE ICON (LIKE FAVICON, BUT WHITE WITH CHECKMARK) -->
+			<!-- TODO: INSERT LINK TO ADVANCE THING -->
+			<td><img src="{{url_for('static', filename='advance.png')}}" /></td>
+			<td class="name">{{c[0]}}</td>
+			<td class="value" title="{{c[2]}}">{{c[1]}}</td>
+			<td class="date">{{c[3]}}</td>
+			<td class="recur">{{c[4]}}</td>
+			<td class="note">{{c[5]}}</td>
+			<!-- TODO: CREATE ICON (LIKE FAVICON, BUT WHITE WITH ...?) -->
+			<!-- TODO: INSERT LINK TO EDIT THING -->
+			<td><img src="{{url_for('static', filename='edit.png')}}" /></td>
+		</tr>
+		{% endfor %}
+	</tbody>
+	<tfoot>
+		<tr>
+			<td>Total</th>
+			<td></td>
+			<td>{{total}}</td>
+			<td></td>
+		</tr>
+	</tfoot>
+</table>
 {% endblock %}

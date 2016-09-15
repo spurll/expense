@@ -4,14 +4,23 @@ import requests
 
 
 RATE_REQUEST = 'http://api.fixer.io/{date:%Y-%m-%d}?base={src}&symbols={dst}'
+SYMBOLS_REQUEST = 'http://api.fixer.io/latest'
+DATE_FORMAT = '{:%Y-%m-%d}'
 
 rate_cache = {}
+symbols_cache = []
 
 
 def current_table(user):
     # TODO: Might want an asterisk or something to indicate approximate values?
     return [
-        [c.name, c.formatted_local, c.formatted_value, c.created, c.note]
+        [
+            c.name,
+            c.formatted_local,
+            c.formatted_value,
+            DATE_FORMAT.format(c.created),
+            c.note
+        ]
         for c in user.current
     ]
 
@@ -22,7 +31,7 @@ def future_table(user):
             f.name,
             f.formatted_local,
             f.formatted_value,
-            f.due_date,
+            DATE_FORMAT.format(f.due_date),
             f.recur_summary,
             f.note
         ]
@@ -36,15 +45,41 @@ def historical_table(user):
             h.name,
             h.formatted_local,
             h.formatted_value,
-            h.created,
-            h.settled,
+            DATE_FORMAT.format(h.created),
+            DATE_FORMAT.format(h.settled),
             h.note
         ]
         for h in user.history
     ]
 
 
+def list_currencies():
+    """
+    Lists all valid currencies (those supported by fixer.io).
+    """
+    if not symbols_cache:
+        r = requests.get(SYMBOLS_REQUEST)
+
+        if r.status_code == 200:
+            symbols_cache.extend(r.json().get('rates', {}).keys())
+            symbols_cache.sort()
+
+            if not symbols_cache:
+                print('No currency symbols found. Request returned: {}'.format(
+                    r.text
+                ))
+        else:
+            print('No currency symbols found. Request returned a {}.'.format(
+                r.status_code
+            ))
+
+    return symbols_cache
+
+
 def convert_currency(value, src, dst, date):
+    """
+    Converts value between two currencies using the conversion rate for date.
+    """
     return value * (conversion_rate(date, src, dst) if src != dst else 1)
 
 

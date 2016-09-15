@@ -6,7 +6,7 @@ from expense import app, db, lm
 from expense.forms import LoginForm, CurrentForm
 from expense.models import User
 from expense.authenticate import authenticate
-from expense.controller import current_table, future_table, historical_table
+from expense.controller import current_table, future_table, historical_table, list_currencies
 
 
 @app.route('/')
@@ -14,24 +14,25 @@ from expense.controller import current_table, future_table, historical_table
 @login_required
 def main():
     """
-    Views objects.
+    View/edit current/future expenses.
     """
     user = g.user
-    objects = user.objects
 
-    form = CurrentForm()
+#    form = CurrentForm()
 
-    if not objects:
-        flash("You don't have any objects.")
+#    if not objects:
+#        flash("You don't have any objects.")
 
-    # TODO: Include a total
     total = user.current_total
     current = current_table(user)
     future = future_table(user)
 
+    # List of currencies:
+    # list_currencies()
+
     return render_template(
-        "view.html", title="View", user=user, links=None, form=form,
-        objects=objects
+        'main.html', title='Expense', user=user, total=total, current=current,
+        future=future, link={'url': url_for('history'), 'text': 'History'
     )
 
 #    return redirect(url_for("main"))
@@ -41,7 +42,7 @@ def main():
 @login_required
 def history():
     """
-    Views history.
+    View expense history.
     """
     user = g.user
 

@@ -43,15 +43,8 @@ that, when clicked, makes the line editable and adds a submit button next to it 
 the change. Only one line can be editable at a time, so I guess that'll have to remove the
 "add" line as well.)
 
-Recurring things that can be activated below current things
-
-Recurring items can recur on a schedule (in which the due date is incremented) or just
-"recur" (due date isn't changed at all, and is probably blank)
-
 Typical spends (like bus/Tims/etc.) are just recurring things without due dates (top of
 list)
-
-Load from save to CSV (reuse code from cards)
 
 Instructions to add recurring expenses
 (Drop-down)
