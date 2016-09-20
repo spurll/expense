@@ -46,18 +46,13 @@ the change. Only one line can be editable at a time, so I guess that'll have to 
 Typical spends (like bus/Tims/etc.) are just recurring things without due dates (top of
 list)
 
-Instructions to add recurring expenses
+Instructions to add future/recurring expenses
 (Drop-down)
 
 Must also support other currencies
-Allow specifying the currency from this list: {"AUD":1.3106,"BGN":1.7527,"BRL":3.266,"CAD":1.2909,"CHF":0.97885,"CNY":6.6785,"CZK":24.215,"DKK":6.6686,"GBP":0.74859,"HKD":7.7554,"HRK":6.7158,"HUF":277.62,"IDR":13117.0,"ILS":3.7642,"INR":66.491,"JPY":103.41,"KRW":1105.6,"MXN":18.523,"MYR":4.0815,"NOK":8.2546,"NZD":1.3626,"PHP":46.588,"PLN":3.8882,"RON":3.989,"RUB":64.827,"SEK":8.5456,"SGD":1.3559,"THB":34.66,"TRY":2.9412,"ZAR":14.205,"EUR":0.89614}
-On-the-fly converstion using fixer.io: http://api.fixer.io/latest?base=USD&symbol=CAD
-Use the exchange rate for the appropriate date: http://api.fixer.io/2016-01-03?base=USD&symbol=CAD
-Mark with asterisk when approximate
+Mark values with asterisk when approximate (different currency)
 Easy to lock in the CAD value when it comes through
-Table has CAD, mouse-over text indicating the raw value in whatever other currency
 
-Make the symbol a dollar sign
 
 Layout
 ------
@@ -76,7 +71,7 @@ Bugs and Feature Requests
 Feature Requests
 ----------------
 
-None
+* Automated rolling snapshots every day
 
 Known Bugs
 ----------

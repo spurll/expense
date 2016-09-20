@@ -17,3 +17,7 @@ LDAP_URI = 'ldap://YOUR.LDAP.URI'
 LDAP_SEARCH_BASE = 'ou=????,dc=????,dc=????'
 
 ADMIN_USERS = ['LDAP.USER.ID.HERE']
+
+# Expense Settings
+LOCAL_CURRENCY = 'CAD'
+LOCAL_SYMBOL = '$'
