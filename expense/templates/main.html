@@ -5,35 +5,39 @@
 <table id="current">
 	<thead>
 		<tr>
+			<th></th>
 			<th>Item</th>
 			<th>Amount</th>
 			<th>Created</th>
 			<th>Notes</th>
+			<th></th>
+			<th></th>
 		</tr>
 	</thead>
 	<tbody>
 		{% for c in current %}
 		<tr>
-			<td></td>
-			<td class="name">{{c[0]}}</td>
-			<td class="value" title="{{c[2]}}">{{c[1]}}</td>
-			<td class="date">{{c[3]}}</td>
-			<td class="note">{{c[4]}}</td>
-			<td></td>
+			<!-- TODO: INSERT LINK TO ADVANCE THING -->
+			<td><img src="{{url_for('static', filename='check.png')}}" /></td>
+			<td class="name">{{c[1]}}</td>
+			<td class="value" title="{{c[3]}}">{{c[2]}}</td>
+			<td class="date">{{c[4]}}</td>
+			<td class="note">{{c[5]}}</td>
+			<!-- TODO: INSERT LINK TO EDIT THING -->
+			<td><img src="{{url_for('static', filename='edit.png')}}" /></td>
+			<!-- TODO: INSERT LINK TO DELETE THING -->
+			<td><img src="{{url_for('static', filename='x.png')}}" /></td>
 		</tr>
 		{% endfor %}
 	</tbody>
 	<tfoot>
 		<tr>
-			<!-- TODO: CREATE ICON (LIKE FAVICON, BUT WHITE WITH CHECKMARK) -->
-			<!-- TODO: INSERT LINK TO ADVANCE THING -->
-			<td><img src="{{url_for('static', filename='advance.png')}}" /></td>
+			<td></td>
 			<td>Total</th>
 			<td></td>
 			<td>{{total}}</td>
-			<!-- TODO: CREATE ICON (LIKE FAVICON, BUT WHITE WITH ...?) -->
-			<!-- TODO: INSERT LINK TO EDIT THING -->
-			<td><img src="{{url_for('static', filename='edit.png')}}" /></td>
+			<td></td>
+			<td></td>
 		</tr>
 	</tfoot>
 </table>
@@ -43,39 +47,32 @@
 <table id="future">
 	<thead>
 		<tr>
-			<td></td>
+			<th></th>
 			<th>Item</th>
 			<th>Amount</th>
 			<th>Due</th>
 			<th>Recur</th>
 			<th>Notes</th>
-			<td></td>
+			<th></th>
+			<th></th>
 		</tr>
 	</thead>
 	<tbody>
 		{% for c in current %}
 		<tr>
-			<!-- TODO: CREATE ICON (LIKE FAVICON, BUT WHITE WITH CHECKMARK) -->
 			<!-- TODO: INSERT LINK TO ADVANCE THING -->
-			<td><img src="{{url_for('static', filename='advance.png')}}" /></td>
-			<td class="name">{{c[0]}}</td>
-			<td class="value" title="{{c[2]}}">{{c[1]}}</td>
-			<td class="date">{{c[3]}}</td>
-			<td class="recur">{{c[4]}}</td>
-			<td class="note">{{c[5]}}</td>
-			<!-- TODO: CREATE ICON (LIKE FAVICON, BUT WHITE WITH ...?) -->
+			<td><img src="{{url_for('static', filename='check.png')}}" /></td>
+			<td class="name">{{c[1]}}</td>
+			<td class="value" title="{{c[3]}}">{{c[2]}}</td>
+			<td class="date">{{c[4]}}</td>
+			<td class="recur">{{c[5]}}</td>
+			<td class="note">{{c[6]}}</td>
 			<!-- TODO: INSERT LINK TO EDIT THING -->
 			<td><img src="{{url_for('static', filename='edit.png')}}" /></td>
+			<!-- TODO: INSERT LINK TO DELETE THING -->
+			<td><img src="{{url_for('static', filename='x.png')}}" /></td>
 		</tr>
 		{% endfor %}
 	</tbody>
-	<tfoot>
-		<tr>
-			<td>Total</th>
-			<td></td>
-			<td>{{total}}</td>
-			<td></td>
-		</tr>
-	</tfoot>
 </table>
 {% endblock %}

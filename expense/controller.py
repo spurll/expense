@@ -1,20 +1,18 @@
-from datetime import date
-from calendar import monthrange
-import requests
+from dateparser import parse
+
+from expense import db
+from expense.models import Current, Future, History
+from expense.utils import to_fractional
 
 
-RATE_REQUEST = 'http://api.fixer.io/{date:%Y-%m-%d}?base={src}&symbols={dst}'
-SYMBOLS_REQUEST = 'http://api.fixer.io/latest'
 DATE_FORMAT = '{:%Y-%m-%d}'
-
-rate_cache = {}
-symbols_cache = []
 
 
 def current_table(user):
     # TODO: Might want an asterisk or something to indicate approximate values?
     return [
         [
+            c.id,
             c.name,
             c.formatted_local,
             c.formatted_value,
@@ -28,6 +26,7 @@ def current_table(user):
 def future_table(user):
     return [
         [
+            f.id,
             f.name,
             f.formatted_local,
             f.formatted_value,
@@ -42,6 +41,7 @@ def future_table(user):
 def historical_table(user):
     return [
         [
+            h.id,
             h.name,
             h.formatted_local,
             h.formatted_value,
@@ -53,104 +53,78 @@ def historical_table(user):
     ]
 
 
-def list_currencies():
-    """
-    Lists all valid currencies (those supported by fixer.io).
-    """
-    if not symbols_cache:
-        r = requests.get(SYMBOLS_REQUEST)
-
-        if r.status_code == 200:
-            symbols_cache.extend(r.json().get('rates', {}).keys())
-            symbols_cache.sort()
-
-            if not symbols_cache:
-                print('No currency symbols found. Request returned: {}'.format(
-                    r.text
-                ))
-        else:
-            print('No currency symbols found. Request returned a {}.'.format(
-                r.status_code
-            ))
-
-    return symbols_cache
+def add_current(user, fields):
+    convert_fields(fields)
+    expense = Current(**fields)
+    user.current.append(expense)
+    db.session.commit()
 
 
-def convert_currency(value, src, dst, date):
-    """
-    Converts value between two currencies using the conversion rate for date.
-    """
-    return value * (conversion_rate(date, src, dst) if src != dst else 1)
+def add_future(user, fields):
+    convert_fields(fields)
+    expense = Future(**fields)
+    user.future.append(expense)
+    db.session.commit()
 
 
-def conversion_rate(src, dst, date):
-    """
-    Returns the historical conversion rate between two currencies.
-    """
-    request = RATE_REQUEST.format(date=date, src=src, dst=dst)
-
-    if request not in rate_cache:
-        r = requests.get(request)
-
-        if r.status_code == 200:
-            rate = r.json().get('rates', {}).get(dst)
-
-            if rate is not None:
-                rate_cache[request] = rate
-            else:
-                print('No rate for {} found. Request returned: {}'.format(
-                    dst, r.text
-                ))
-        else:
-            print('No rate for {} found. Request returned a {}.'.format(
-                dst, r.status_code
-            ))
-
-    return rate_cache.get(request)
+def add_history(user, fields):
+    convert_fields(fields)
+    expense = History(**fields)
+    user.history.append(expense)
+    db.session.commit()
 
 
-def recur(x, operation, condition):
-    """
-    Performs operation on x until x satisfies condition.
-    """
-    while not condition(x):
-        x = operation(x)
-    return x
+def edit_current(current_id, fields):
+    expense = Current.query.get(current_id)
+    convert_fields(fields)
+    for field, value in fields.items():
+        setattr(expense, field, value)
+    db.session.commit()
 
 
-def complex_recur(x, operation, condition):
-    """
-    Performs operation on x until x satisfies condition; operation must accept
-    both x and an increment. When recurring over increment_month, for example,
-    this allows us to go from 2016-01-31 to 2016-02-29 back to 2016-03-31,
-    while the more simple recur would be stuck at 2016-03-29.
-    """
-    new_x = x
-    i = 0
-
-    while not condition(new_x):
-        i += 1
-        new_x = operation(x, i)
-
-    return new_x
+def edit_future(future_id, fields):
+    expense = Future.query.get(future_id)
+    convert_fields(fields)
+    for field, value in fields.items():
+        setattr(expense, field, value)
+    db.session.commit()
 
 
-def safe_date(y, m, d):
-    """
-    Returns date(y, m, d), returning the last day of the month if the value of
-    d exceeds the number of days in the month.
-    """
-    days_in_month = monthrange(y, m)[1]
-    return date(y, m, d if d <= days_in_month else days_in_month)
+def edit_history(history_id, fields):
+    expense = History.query.get(history_id)
+    convert_fields(fields)
+    for field, value in fields.items():
+        setattr(expense, field, value)
+    db.session.commit()
 
 
-def increment_month(dt, m=1):
-    """
-    Advances dt by m months.
-    """
-    return safe_date(
-        dt.year + (dt.month + m - 1) // 12, (dt.month + m - 1) % 12 + 1, dt.day
-    )
+def delete_current(current_id):
+    expense = Current.query.get(current_id)
+    db.session.delete(expense)
+    db.session.commit()
+
+
+def delete_future(future_id):
+    expense = Future.query.get(future_id)
+    db.session.delete(expense)
+    db.session.commit()
+
+
+def delete_history(history_id):
+    expense = History.query.get(history_id)
+    db.session.delete(expense)
+    db.session.commit()
+
+
+def convert_fields(fields):
+    if 'value' in fields:
+        fields['value'] = to_fractional(fields['value'])
+
+    if 'due_date' in fields:
+        fields['due_date'] = parse(fields['due_date']).date()
+
+    if 'created' in fields:
+        fields['created'] = parse(fields['current']).date()
 
 
 def load_from_csv(filename, historical=False):

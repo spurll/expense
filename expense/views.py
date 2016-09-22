@@ -1,12 +1,13 @@
-from flask import render_template,flash,redirect,session,url_for,request,g
-from flask.ext.login import login_user,logout_user,current_user,login_required
+from flask import render_template, flash, redirect, session, url_for, request
+from flask.ext.login import login_user, logout_user, current_user, login_required
 import ldap3
 
 from expense import app, db, lm
 from expense.forms import LoginForm, CurrentForm
 from expense.models import User
 from expense.authenticate import authenticate
-from expense.controller import current_table, future_table, historical_table, list_currencies
+from expense.controller import current_table, future_table, historical_table
+from expense.utils import list_currencies
 
 
 @app.route('/')
@@ -16,23 +17,29 @@ def main():
     """
     View/edit current/future expenses.
     """
-    user = g.user
-
 #    form = CurrentForm()
 
 #    if not objects:
 #        flash("You don't have any objects.")
 
-    total = user.current_total
-    current = current_table(user)
-    future = future_table(user)
+    total = current_user.current_total
+    current = current_table(current_user)
+    future = future_table(current_user)
 
     # List of currencies:
     # list_currencies()
 
+
+
+#   TODO: Throw away basically all of this stuff and do everything in AJAX
+
+
+
+
     return render_template(
-        'main.html', title='Expense', user=user, total=total, current=current,
-        future=future, link={'url': url_for('history'), 'text': 'History'
+        'main.html', title='Expense', user=current_user, total=total,
+        current=current, future=future,
+        link={'url': url_for('history'), 'text': 'History'}
     )
 
 #    return redirect(url_for("main"))
@@ -44,7 +51,7 @@ def history():
     """
     View expense history.
     """
-    user = g.user
+    pass
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -52,7 +59,7 @@ def login():
     """
     Logs the user in using LDAP authentication.
     """
-    if g.user is not None and g.user.is_authenticated:
+    if current_user is not None and current_user.is_authenticated:
         return redirect(url_for('index'))
 
     form = LoginForm()

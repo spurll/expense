@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 from expense import app, db
-from expense.controller import complex_recur, increment_month, safe_date, convert_currency
+from expense.utils import complex_recur, increment_month, safe_date, convert_currency, to_major
 
 
 class User(db.Model):
@@ -9,16 +9,16 @@ class User(db.Model):
     name = db.Column(db.String, index=True, unique=True)
     email = db.Column(db.String, index=True)
     current = db.relationship(
-        'Current', backref='user', order_by='Current.created', lazy='dynamic',
-        cascade='all, delete-orphan'
+        'Current', backref='user', order_by='Current.created.desc()',
+        lazy='dynamic', cascade='all, delete-orphan'
     )
     future = db.relationship(
-        'Future', backref='user', order_by='Future.due_date', lazy='dynamic',
-        cascade='all, delete-orphan'
+        'Future', backref='user', order_by='Future.due_date.desc()',
+        lazy='dynamic', cascade='all, delete-orphan'
     )
     history = db.relationship(
-        'History', backref='user', order_by='History.created', lazy='dynamic',
-        cascade='all, delete-orphan'
+        'History', backref='user', order_by='History.created.desc()',
+        lazy='dynamic', cascade='all, delete-orphan'
     )
 
     @property
@@ -53,8 +53,8 @@ class Current(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, index=True)
     value = db.Column(db.Integer)
-    currency = db.Column(db.String(3), default='CAD')
-    note = db.Column(db.String)
+    currency = db.Column(db.String(3), default=app.config['LOCAL_CURRENCY'])
+    note = db.Column(db.String, default='')
     created = db.Column(db.Date, default=date.today)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
@@ -71,7 +71,7 @@ class Current(db.Model):
         """
         Returns the value of the expense, formatted for display.
         """
-        return '{:.2f} {}'.format(self.local_value / 100.0, self.currency)
+        return '{:.2f} {}'.format(to_major(self.value), self.currency)
 
     @property
     def formatted_local(self):
@@ -79,7 +79,7 @@ class Current(db.Model):
         Returns the local value of the expense, formatted for display.
         """
         return '{}{:.2f}'.format(
-            app.config['LOCAL_SYMBOL'], self.local_value / 100.0
+            app.config['LOCAL_SYMBOL'], to_major(self.local_value)
         )
 
     def advance(self):
@@ -99,7 +99,7 @@ class Future(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, index=True)
     value = db.Column(db.Integer)
-    currency = db.Column(db.String(3), default='CAD')
+    currency = db.Column(db.String(3))
     note = db.Column(db.String)
     due_date = db.Column(db.Date)
     recur_base = db.Column(db.Date)
@@ -123,7 +123,7 @@ class Future(db.Model):
         """
         Returns the value of the expense, formatted for display.
         """
-        return '{:.2f} {}'.format(self.local_value / 100.0, self.currency)
+        return '{:.2f} {}'.format(to_major(self.local_value), self.currency)
 
     @property
     def formatted_local(self):
@@ -131,7 +131,7 @@ class Future(db.Model):
         Returns the local value of the expense, formatted for display.
         """
         return '{}{:.2f}'.format(
-            app.config['LOCAL_SYMBOL'], self.local_value / 100.0
+            app.config['LOCAL_SYMBOL'], to_major(self.local_value)
         )
 
     @property
@@ -197,7 +197,7 @@ class History(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, index=True)
     value = db.Column(db.Integer)
-    currency = db.Column(db.String(3), default='CAD')
+    currency = db.Column(db.String(3))
     note = db.Column(db.String)
     created = db.Column(db.Date)
     settled = db.Column(db.Date)
@@ -216,7 +216,7 @@ class History(db.Model):
         """
         Returns the value of the expense, formatted for display.
         """
-        return '{:.2f} {}'.format(self.local_value / 100.0, self.currency)
+        return '{:.2f} {}'.format(to_major(self.local_value), self.currency)
 
     @property
     def formatted_local(self):
@@ -224,7 +224,7 @@ class History(db.Model):
         Returns the local value of the expense, formatted for display.
         """
         return '{}{:.2f}'.format(
-            app.config['LOCAL_SYMBOL'], self.local_value / 100.0
+            app.config['LOCAL_SYMBOL'], to_major(self.local_value)
         )
 
     def __repr__(self):

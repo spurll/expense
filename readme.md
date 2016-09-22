@@ -20,8 +20,7 @@ Requirements
 * flask-sqlalchemy
 * sqlalchemy
 * ldap3
-
-TODO
+* dateparser
 
 Configuration
 -------------
@@ -49,9 +48,24 @@ list)
 Instructions to add future/recurring expenses
 (Drop-down)
 
+Use an HTML date-picker
+
 Must also support other currencies
 Mark values with asterisk when approximate (different currency)
 Easy to lock in the CAD value when it comes through
+
+
+Pass the forms for current and future into the main view
+Same form used for add/edit (there's a hidden field indicating ID)
+Add form is at the top row of each table with fields empty (including hidden field)
+Clicking edit replaces a row with a copy of the form (prefilled with details, including hidden field)
+Clicking checkmark or hitting enter saves the change (via ajax) then replaces the editable fields
+Clicking X or hitting escape cancels
+The AJAX returns JSON with success/failure flags, error messages, etc.
+Upon saving, the data is requeried to make sure it's correct. (Have to requery the whole thing and pass it back? Can we do that?)
+(Requery total, too? Maybe the whole damn thing should just be loaded with AJAX from the beginning? Probably...)
+
+http://flask.pocoo.org/docs/0.11/patterns/jquery/
 
 
 Layout
