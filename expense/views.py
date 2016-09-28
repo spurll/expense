@@ -22,7 +22,7 @@ def main():
 #    if not objects:
 #        flash("You don't have any objects.")
 
-    total = current_user.current_total
+    total = current_user.formatted_total
     current = current_table(current_user)
     future = future_table(current_user)
 

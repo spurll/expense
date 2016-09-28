@@ -7,7 +7,7 @@
 		<tr>
 			<th></th>
 			<th>Item</th>
-			<th>Amount</th>
+			<th>Value</th>
 			<th>Created</th>
 			<th>Notes</th>
 			<th></th>
@@ -33,15 +33,17 @@
 	<tfoot>
 		<tr>
 			<td></td>
-			<td>Total</th>
+			<td class="name">Total</th>
+			<td class="value">{{total}}</td>
 			<td></td>
-			<td>{{total}}</td>
+			<td></td>
 			<td></td>
 			<td></td>
 		</tr>
 	</tfoot>
 </table>
 
+{% if future %}
 <div class="heading">Future</div>
 
 <table id="future">
@@ -49,7 +51,7 @@
 		<tr>
 			<th></th>
 			<th>Item</th>
-			<th>Amount</th>
+			<th>Value</th>
 			<th>Due</th>
 			<th>Recur</th>
 			<th>Notes</th>
@@ -58,15 +60,15 @@
 		</tr>
 	</thead>
 	<tbody>
-		{% for c in current %}
+		{% for f in future %}
 		<tr>
 			<!-- TODO: INSERT LINK TO ADVANCE THING -->
 			<td><img src="{{url_for('static', filename='check.png')}}" /></td>
-			<td class="name">{{c[1]}}</td>
-			<td class="value" title="{{c[3]}}">{{c[2]}}</td>
-			<td class="date">{{c[4]}}</td>
-			<td class="recur">{{c[5]}}</td>
-			<td class="note">{{c[6]}}</td>
+			<td class="name">{{f[1]}}</td>
+			<td class="value" title="{{f[3]}}">{{f[2]}}</td>
+			<td class="date">{{f[4]}}</td>
+			<td class="recur">{{f[5]}}</td>
+			<td class="note">{{f[6]}}</td>
 			<!-- TODO: INSERT LINK TO EDIT THING -->
 			<td><img src="{{url_for('static', filename='edit.png')}}" /></td>
 			<!-- TODO: INSERT LINK TO DELETE THING -->
@@ -75,4 +77,5 @@
 		{% endfor %}
 	</tbody>
 </table>
+{% endif %}
 {% endblock %}

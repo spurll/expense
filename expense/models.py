@@ -39,8 +39,15 @@ class User(db.Model):
     def get_id(self):
         return self.id
 
+    @property
     def current_total(self):
-        return 
+        return sum(c.local_value for c in self.current)
+
+    @property
+    def formatted_total(self):
+        return '{}{:.2f}'.format(
+            app.config['LOCAL_SYMBOL'], to_major(self.current_total)
+        )
 
     def __repr__(self):
         return '<User {}>'.format(self.id)

@@ -17,13 +17,23 @@
 			}
 
 			p { margin: 5px; text-align: center }
-			table { width: 100%; margin-top: 5px; margin-bottom: 10px; border: 0px; }
+
+			table {
+				width: 100%;
+				margin-top: 5px;
+				margin-bottom: 10px;
+				border: 0px;
+				border-spacing: 0px;
+			}
+
 			th { text-align: left; font-variant: small-caps; }
-			img { width: 32px; height: 32px; }
+			td { font-size: 85%; padding: 3px; }
+			tfoot { font-weight: bold; font-variant: small-caps; }
+			img { width: 24px; height: 24px; }
 
 			#content {
 				width: 100%;
-				max-width: 500px;
+				max-width: 700px;
 				margin: auto;
 				padding-top: 10px;
 			}
@@ -70,6 +80,7 @@
 			.heading {
 				font-variant: small-caps;
 				text-align: center;
+				font-size: 150%;
 				padding-top: 5px;
 				padding-bottom: 10px;
 			}
@@ -80,7 +91,7 @@
 			.right { float: right; text-align: right; }
 			.section { padding-top: 5px; padding-bottom: 10px; }
 
-			tr:nth-child(even) { background-color: #444444; }
+			tr:nth-child(even) { background-color: #444444; border-color: #444444; }
 			td.name {}
 			td.value { text-align: right; }
 			td.date { text-align: center; }
@@ -116,7 +127,7 @@
 			}
 
 			function resizeContent() {
-				if ($(window).width() < 500) {
+				if ($(window).width() < 700) {
 					// Moves and resizes the links and login information information on a smaller screen.
 					$('#links').css({'width': 'auto', 'margin': 'auto', 'float': 'none', 'text-align': 'center'});
 					$('#user').css({'width': 'auto', 'margin': 'auto', 'float': 'none', 'text-align': 'center'});

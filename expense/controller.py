@@ -1,11 +1,13 @@
+import csv, re
 from dateparser import parse
 
 from expense import db
 from expense.models import Current, Future, History
-from expense.utils import to_fractional
+from expense.utils import to_fractional, list_currencies
 
 
 DATE_FORMAT = '{:%Y-%m-%d}'
+CSV_COLUMNS = ['blank', 'name', 'value', 'created', 'settled', 'note']
 
 
 def current_table(user):
@@ -118,21 +120,55 @@ def delete_history(history_id):
 
 def convert_fields(fields):
     if 'value' in fields:
+        if isinstance(fields['value'], str):
+            # Parse out the string value (and potential currency).
+            m = re.search(r'\$?([\d\.]+) ?(\w*)', fields['value'])
+            value = float(m.group(1))
+            currency = m.group(2) if m.group(2) != 'US' else 'USD'
+
+            if currency:
+                if 'currency' in fields and fields['currency'] != currency:
+                    print(
+                        'Replacing currency {} with {} parsed from {}.'.format(
+                            fields['currency'], currency, fields['value']
+                        )
+                    )
+                elif currency not in list_currencies():
+                    print(
+                        'Unable to validate currency {}. Assuming local '
+                        'currency.'.format(currency)
+                    )
+                else:
+                    fields['currency'] = currency
+
+            fields['value'] = value
+
         fields['value'] = to_fractional(fields['value'])
 
-    if 'due_date' in fields:
-        fields['due_date'] = parse(fields['due_date']).date()
-
-    if 'created' in fields:
-        fields['created'] = parse(fields['current']).date()
+    for field in ['due_date', 'created', 'settled']:
+        if field in fields:
+            fields[field] = parse(fields[field]).date()
 
 
-def load_from_csv(filename, historical=False):
-    # TODO: Grab this from the cards thing.
-    # Does it replace the whole thing? Or just insert?
-    pass
+def load_csv(user, filename, add_function=add_current):
+    """
+    Takes a file name and imports all rows into the table of expenses using
+    the add_function supplied (defaults to add_current).
+    """
+    with open(filename, 'r') as csv_file:
+        reader = csv.reader(csv_file)
+
+        # Skip the header.
+        next(reader, None)
+
+        for r in reader:
+            add_function(
+                user,
+                {c: r[i] for i, c in enumerate(CSV_COLUMNS) if r[i]}
+                # Will skip values of 0, but that's fine, right?
+            )
 
 
-def save_to_csv(filename, historical=False):
-    # TODO: Grab this from the cards thing.
+def save_current_csv(filename):
+    # TODO
     pass
