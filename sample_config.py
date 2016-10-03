@@ -21,3 +21,5 @@ ADMIN_USERS = ['LDAP.USER.ID.HERE']
 # Expense Settings
 LOCAL_CURRENCY = 'CAD'
 LOCAL_SYMBOL = '$'
+FRACTIONS_PER_UNIT = 100    # Number of cents in a dollar (or local equivalent)
+LOADING_GIF = False

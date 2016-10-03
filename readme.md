@@ -42,18 +42,7 @@ that, when clicked, makes the line editable and adds a submit button next to it 
 the change. Only one line can be editable at a time, so I guess that'll have to remove the
 "add" line as well.)
 
-Typical spends (like bus/Tims/etc.) are just recurring things without due dates (top of
-list)
-
-Instructions to add future/recurring expenses
-(Drop-down)
-
 Use an HTML date-picker
-
-Must also support other currencies
-Mark values with asterisk when approximate (different currency)
-Easy to lock in the CAD value when it comes through
-
 
 Pass the forms for current and future into the main view
 Same form used for add/edit (there's a hidden field indicating ID)
@@ -67,6 +56,7 @@ Upon saving, the data is requeried to make sure it's correct. (Have to requery t
 
 http://flask.pocoo.org/docs/0.11/patterns/jquery/
 
+Rename "future" to "upcoming"
 
 Layout
 ------
@@ -105,4 +95,3 @@ Written by Gem Newman. [Website](http://spurll.com) | [GitHub](https://github.co
 This work is licensed under Creative Commons [BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/).
 
 Remember: [GitHub is not my CV](https://blog.jcoglan.com/2013/11/15/why-github-is-not-your-cv/).
-

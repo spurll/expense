@@ -1,5 +1,168 @@
 {% extends "base.html" %}
 {% block content %}
+<script type=text/javascript>
+$SCRIPT_ROOT = {{request.script_root|tojson|safe}};
+$IMG_CHECK = "{{url_for('static', filename='check.png')}}";
+$IMG_EDIT = "{{url_for('static', filename='edit.png')}}";
+$IMG_DELETE = "{{url_for('static', filename='x.png')}}";
+$IMG_ADVANCE = "{{url_for('static', filename='up.png')}}";
+
+function settle(id) {
+	$('#current > tbody > tr').remove();
+
+	{% if use_loading_gif %}
+	// Replace table content with loading GIF.
+	$('#loading_current').show('fast');
+	{% endif %}
+
+	$.getJSON($SCRIPT_ROOT + "{{url_for('settle')}}", {id: id}, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		loadCurrent();
+	});
+	return false;
+}
+
+function advance(id) {
+	$('#current > tbody > tr').remove();
+	$('#future > tbody > tr').remove();
+
+	{% if use_loading_gif %}
+	// Replace table content with loading GIF.
+	$('#loading_current').show('fast');
+	$('#loading_future').show('fast');
+	{% endif %}
+
+	$.getJSON($SCRIPT_ROOT + "{{url_for('advance')}}", {id: id}, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		loadCurrent();
+		loadFuture();
+	});
+	return false;
+}
+
+function remove_current(id) {
+	$('#current > tbody > tr').remove();
+
+	{% if use_loading_gif %}
+	// Replace table content with loading GIF.
+	$('#loading_current').show('fast');
+	{% endif %}
+
+	$.getJSON($SCRIPT_ROOT + "{{url_for('delete')}}", {table: 'current', id: id}, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		loadCurrent();
+	});
+	return false;
+}
+
+function remove_future(id) {
+	$('#future > tbody > tr').remove();
+
+	{% if use_loading_gif %}
+	// Replace table content with loading GIF.
+	$('#loading_future').show('fast');
+	{% endif %}
+
+	$.getJSON($SCRIPT_ROOT + "{{url_for('delete')}}", {table: 'future', id: id}, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		loadFuture();
+	});
+	return false;
+}
+
+function loadCurrent() {
+	$.getJSON($SCRIPT_ROOT + "{{url_for('load_table')}}", {table: 'current'}, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		else {
+			// Remove existing content.
+			$('#current > tbody > tr').remove();
+
+			// Load data into current table.
+			for (var i = 0; i < result.data.current.length; i++) {
+				// Add a row to the table.
+				var e = result.data.current[i];
+				$('#current > tbody').append(
+					'<tr>' +
+					'<td class="icon"><a href="#" onclick="settle(' + e[0] + ');"><img class="icon" src="' + $IMG_CHECK + '" title="Settle" /></a></td>' +
+					'<td class="name">' + e[1] + '</td>' +
+					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
+					'<td class="date">' + e[4] + '</td>' +
+					'<td class="note">' + e[5] + '</td>' +
+					'<td class="icon"><a href="#" onclick="edit_current(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="remove_current(' + e[0] + ');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+					'</tr>'
+				);
+			}
+
+			$('#total_value').text(result.data.total);
+
+			{% if use_loading_gif %}
+			// Hide loading GIF.
+			$('#loading_current').hide('fast');
+			{% endif %}
+		}
+	});
+	return false;
+}
+
+function loadFuture() {
+	$.getJSON($SCRIPT_ROOT + "{{url_for('load_table')}}", {table: 'future'}, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		else {
+			// Remove existing content.
+			$('#future > tbody > tr').remove();
+
+			// Load data into future table.
+			for (var i = 0; i < result.data.future.length; i++) {
+				// Add a row to the table.
+				var e = result.data.future[i];
+				$('#future > tbody').append(
+					'<tr>' +
+					'<td class="icon"><a href="#" onclick="advance(' + e[0] + ');"><img class="icon" src="' + $IMG_ADVANCE + '" title="Send to Current" /></a></td>' +
+					'<td class="name">' + e[1] + '</td>' +
+					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
+					'<td class="date">' + e[4] + '</td>' +
+					'<td class="recur">' + e[5] + '</td>' +
+					'<td class="note">' + e[6] + '</td>' +
+					'<td class="icon"><a href="#" onclick="edit_future(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="remove_future(' + e[0] + ');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+					'</tr>'
+				);
+			}
+
+			{% if use_loading_gif %}
+			// Hide loading GIF.
+			$('#loading_future').hide('fast');
+			{% endif %}
+		}
+	});
+	return false;
+}
+
+$(document).ready(function() {
+	{% if use_loading_gif %}
+	// Replace table content with loading GIF.
+	$('#loading_current').show('fast');
+	$('#loading_future').show('fast');
+	{% endif %}
+
+	loadCurrent();
+	loadFuture();
+});
+</script>
+
 <div class="heading">Current</div>
 
 <table id="current">
@@ -14,27 +177,12 @@
 			<th></th>
 		</tr>
 	</thead>
-	<tbody>
-		{% for c in current %}
-		<tr>
-			<!-- TODO: INSERT LINK TO ADVANCE THING -->
-			<td><img src="{{url_for('static', filename='check.png')}}" /></td>
-			<td class="name">{{c[1]}}</td>
-			<td class="value" title="{{c[3]}}">{{c[2]}}</td>
-			<td class="date">{{c[4]}}</td>
-			<td class="note">{{c[5]}}</td>
-			<!-- TODO: INSERT LINK TO EDIT THING -->
-			<td><img src="{{url_for('static', filename='edit.png')}}" /></td>
-			<!-- TODO: INSERT LINK TO DELETE THING -->
-			<td><img src="{{url_for('static', filename='x.png')}}" /></td>
-		</tr>
-		{% endfor %}
-	</tbody>
+	<tbody></tbody>
 	<tfoot>
 		<tr>
 			<td></td>
 			<td class="name">Total</th>
-			<td class="value">{{total}}</td>
+			<td id="total_value" class="value"></td>
 			<td></td>
 			<td></td>
 			<td></td>
@@ -43,7 +191,10 @@
 	</tfoot>
 </table>
 
-{% if future %}
+{% if use_loading_gif %}
+<div class="loading" id="loading_current"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>
+{% endif %}
+
 <div class="heading">Future</div>
 
 <table id="future">
@@ -59,23 +210,10 @@
 			<th></th>
 		</tr>
 	</thead>
-	<tbody>
-		{% for f in future %}
-		<tr>
-			<!-- TODO: INSERT LINK TO ADVANCE THING -->
-			<td><img src="{{url_for('static', filename='check.png')}}" /></td>
-			<td class="name">{{f[1]}}</td>
-			<td class="value" title="{{f[3]}}">{{f[2]}}</td>
-			<td class="date">{{f[4]}}</td>
-			<td class="recur">{{f[5]}}</td>
-			<td class="note">{{f[6]}}</td>
-			<!-- TODO: INSERT LINK TO EDIT THING -->
-			<td><img src="{{url_for('static', filename='edit.png')}}" /></td>
-			<!-- TODO: INSERT LINK TO DELETE THING -->
-			<td><img src="{{url_for('static', filename='x.png')}}" /></td>
-		</tr>
-		{% endfor %}
-	</tbody>
+	<tbody></tbody>
 </table>
+
+{% if use_loading_gif %}
+<div class="loading" id="loading_future"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>
 {% endif %}
 {% endblock %}

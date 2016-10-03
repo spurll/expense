@@ -1,15 +1,111 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="text">
-	<form action="" method="POST" name="login">
-		{{form.hidden_tag()}}
+<script type=text/javascript>
+$SCRIPT_ROOT = {{request.script_root|tojson|safe}};
+$IMG_BACK = "{{url_for('static', filename='back.png')}}";
+$IMG_EDIT = "{{url_for('static', filename='edit.png')}}";
+$IMG_DELETE = "{{url_for('static', filename='x.png')}}";
 
-		<div class="wide right" style="height: 30px;">{{form.username(autofocus=True)}}</div>
-		<div class="narrow left" style="height: 30px;">{{form.username.label}}</div>
-		<div class="wide right" style="height: 30px;">{{form.password}}</div>
-		<div class="narrow left" style="height: 30px;">{{form.password.label}}</div>
-		<div class="wide right"><input type="submit" value="Log In"></div>
-		<div class="narrow left">{{form.remember}} {{form.remember.label}}</div>
-	</form>
-</div>
+function send_back(id) {
+	$('#history > tbody > tr').remove();
+
+	{% if use_loading_gif %}
+	// Replace table content with loading GIF.
+	$('#loading').show('fast');
+	{% endif %}
+
+	$.getJSON($SCRIPT_ROOT + "{{url_for('send_back')}}", {id: id}, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		loadHistory();
+	});
+	return false;
+}
+
+function remove_history(id) {
+	$('#history > tbody > tr').remove();
+
+	{% if use_loading_gif %}
+	// Replace table content with loading GIF.
+	$('#loading').show('fast');
+	{% endif %}
+
+	$.getJSON($SCRIPT_ROOT + "{{url_for('delete')}}", {table: 'history', id: id}, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		loadHistory();
+	});
+	return false;
+}
+
+function loadHistory() {
+	$.getJSON($SCRIPT_ROOT + "{{url_for('load_table')}}", {table: 'history'}, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		else {
+			// Remove existing content.
+			$('#history > tbody > tr').remove();
+
+			// Load data into current table.
+			for (var i = 0; i < result.data.history.length; i++) {
+				// Add a row to the table.
+				var e = result.data.history[i];
+				$('#history > tbody').append(
+					'<tr>' +
+					'<td class="icon"><a href="#" onclick="send_back(' + e[0] + ');"><img class="icon" src="' + $IMG_BACK + '" title="Send to Current" /></a></td>' +
+					'<td class="name">' + e[1] + '</td>' +
+					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
+					'<td class="date">' + e[4] + '</td>' +
+					'<td class="date">' + e[5] + '</td>' +
+					'<td class="note">' + e[6] + '</td>' +
+					'<td class="icon"><a href="#" onclick="edit_history(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="remove_history(' + e[0] + ');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+					'</tr>'
+				);
+			}
+
+			{% if use_loading_gif %}
+			// Hide loading GIF.
+			$('#loading').hide('fast');
+			{% endif %}
+		}
+	});
+	return false;
+}
+
+$(document).ready(function() {
+	{% if use_loading_gif %}
+	// Replace table content with loading GIF.
+	$('#loading').show('fast');
+	{% endif %}
+
+	loadHistory();
+});
+</script>
+
+<div class="heading">History</div>
+
+<table id="history">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Item</th>
+			<th>Value</th>
+			<th>Created</th>
+			<th>Settled</th>
+			<th>Notes</th>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+</table>
+
+{% if use_loading_gif %}
+<div class="loading" id="loading"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>
+{% endif %}
+
 {% endblock %}

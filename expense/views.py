@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, session, url_for, request
+from flask import render_template, jsonify, redirect, session, url_for, request
 from flask.ext.login import login_user, logout_user, current_user, login_required
 import ldap3
 
@@ -6,43 +6,29 @@ from expense import app, db, lm
 from expense.forms import LoginForm, CurrentForm
 from expense.models import User
 from expense.authenticate import authenticate
-from expense.controller import current_table, future_table, historical_table
+from expense.controller import *
 from expense.utils import list_currencies
 
 
 @app.route('/')
-@app.route('/index')
 @login_required
 def main():
     """
     View/edit current/future expenses.
     """
-#    form = CurrentForm()
+    # form = CurrentForm()
 
-#    if not objects:
-#        flash("You don't have any objects.")
-
-    total = current_user.formatted_total
-    current = current_table(current_user)
-    future = future_table(current_user)
+    # if not objects:
+    #     flash("You don't have any objects.")
 
     # List of currencies:
     # list_currencies()
 
-
-
-#   TODO: Throw away basically all of this stuff and do everything in AJAX
-
-
-
-
     return render_template(
-        'main.html', title='Expense', user=current_user, total=total,
-        current=current, future=future,
+        'main.html', title='Expenses', user=current_user,
+        use_loading_gif = app.config.get('LOADING_GIF'),
         link={'url': url_for('history'), 'text': 'History'}
     )
-
-#    return redirect(url_for("main"))
 
 
 @app.route('/history')
@@ -51,7 +37,12 @@ def history():
     """
     View expense history.
     """
-    pass
+    # TODO: Don't pass the data; it'll be fetched via AJAX.
+    return render_template(
+        'history.html', title='Expense History', user=current_user,
+        use_loading_gif = app.config.get('LOADING_GIF'),
+        link={'url': url_for('main'), 'text': 'Back'}
+    )
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -60,7 +51,7 @@ def login():
     Logs the user in using LDAP authentication.
     """
     if current_user is not None and current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main'))
 
     form = LoginForm()
 
@@ -82,7 +73,7 @@ def login():
 
             login_user(user, remember=form.remember.data)
 
-            return redirect(request.args.get('next') or url_for('index'))
+            return redirect(request.args.get('next') or url_for('main'))
 
     return render_template('login.html', title="Log In", form=form)
 
@@ -90,9 +81,139 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('main'))
 
 
 @lm.user_loader
 def load_user(id):
     return User.query.get(id)
+
+
+# AJAX BACK-END
+
+
+@app.route('/_load_table')
+@login_required
+def load_table():
+    """
+    Return all current expenses.
+    """
+    data = {}
+    error = None
+    fn = None
+
+    table = request.args.get('table', None)
+
+    if table == 'current':
+        fn = current_table
+    elif table == 'future':
+        fn = future_table
+    elif table == 'history':
+        fn = historical_table
+
+    if fn:
+        try:
+            data[table] = fn(current_user)
+            data['total'] = table == 'current' and current_user.formatted_total
+        except Exception as e:
+            print(e)
+            error = str(e)
+    else:
+        error = 'Attempted to load invalid table {}.'.format(table)
+
+    return jsonify(data=data, error=error)
+
+
+@app.route('/_total')
+@login_required
+def total():
+    """
+    Return the total value (in local currency) of all current expenses.
+    """
+    data = None
+    error = None
+
+    try:
+        data = current_user.formatted_total
+    except Exception as e:
+        print(e)
+        error = str(e)
+
+    return jsonify(data=data, error=error)
+
+
+@app.route('/_settle')
+@login_required
+def settle():
+    """
+    Move an expense from Current to History.
+    """
+    error = None
+
+    try:
+        advance_current(current_user, request.args.get('id', None, type=int))
+    except Exception as e:
+        print(e)
+        error = str(e)
+
+    return jsonify(error=error)
+
+
+@app.route('/_advance')
+@login_required
+def advance():
+    """
+    Move an expense from Future to Current.
+    """
+    error = None
+
+    try:
+        advance_future(current_user, request.args.get('id', None, type=int))
+    except Exception as e:
+        print(e)
+        error = str(e)
+
+    return jsonify(error=error)
+
+
+@app.route('/_send_back')
+@login_required
+def send_back():
+    """
+    Move an expense from History back to Current.
+    """
+    error = None
+
+    try:
+        history_to_current(current_user,request.args.get('id', None, type=int))
+    except Exception as e:
+        print(e)
+        error = str(e)
+
+    return jsonify(error=error)
+
+
+@app.route('/_delete')
+@login_required
+def delete():
+    """
+    Delete an expense.
+    """
+    error = None
+
+    table = request.args.get('table', None)
+
+    if table == 'current':
+        fn = delete_current
+    elif table == 'future':
+        fn = delete_future
+    elif table == 'history':
+        fn = delete_history
+
+    try:
+        fn(current_user, request.args.get('id', None, type=int))
+    except Exception as e:
+        print(e)
+        error = str(e)
+
+    return jsonify(error=error)

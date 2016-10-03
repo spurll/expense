@@ -14,45 +14,69 @@ def current_table(user):
     # TODO: Might want an asterisk or something to indicate approximate values?
     return [
         [
-            c.id,
-            c.name,
-            c.formatted_local,
-            c.formatted_value,
-            DATE_FORMAT.format(c.created),
-            c.note
+            e.id,
+            e.name,
+            e.formatted_local,
+            e.formatted_value,
+            DATE_FORMAT.format(e.created),
+            e.note
         ]
-        for c in user.current
+        for e in user.current
     ]
 
 
 def future_table(user):
     return [
         [
-            f.id,
-            f.name,
-            f.formatted_local,
-            f.formatted_value,
-            DATE_FORMAT.format(f.due_date),
-            f.recur_summary,
-            f.note
+            e.id,
+            e.name,
+            e.formatted_local,
+            e.formatted_value,
+            DATE_FORMAT.format(e.due_date) if e.due_date else '',
+            e.recur_summary,
+            e.note
         ]
-        for f in user.future
+        for e in user.future
     ]
 
 
 def historical_table(user):
     return [
         [
-            h.id,
-            h.name,
-            h.formatted_local,
-            h.formatted_value,
-            DATE_FORMAT.format(h.created),
-            DATE_FORMAT.format(h.settled),
-            h.note
+            e.id,
+            e.name,
+            e.formatted_local,
+            e.formatted_value,
+            DATE_FORMAT.format(e.created),
+            DATE_FORMAT.format(e.settled),
+            e.note
         ]
-        for h in user.history
+        for e in user.history
     ]
+
+
+def advance_current(user, current_id):
+    expense = Current.query.get(current_id)
+    if expense in user.current:
+        expense.advance()
+    else:
+        raise Exception('User is not authorized to perform this action.')
+
+
+def advance_future(user, future_id):
+    expense = Future.query.get(future_id)
+    if expense in user.future:
+        expense.advance()
+    else:
+        raise Exception('User is not authorized to perform this action.')
+
+
+def history_to_current(user, history_id):
+    expense = History.query.get(history_id)
+    if expense in user.history:
+        expense.back()
+    else:
+        raise Exception('User is not authorized to perform this action.')
 
 
 def add_current(user, fields):
@@ -76,46 +100,64 @@ def add_history(user, fields):
     db.session.commit()
 
 
-def edit_current(current_id, fields):
+def edit_current(user, current_id, fields):
     expense = Current.query.get(current_id)
-    convert_fields(fields)
-    for field, value in fields.items():
-        setattr(expense, field, value)
-    db.session.commit()
+    if expense in user.future:
+        convert_fields(fields)
+        for field, value in fields.items():
+            setattr(expense, field, value)
+        db.session.commit()
+    else:
+        raise Exception('User is not authorized to perform this action.')
 
 
-def edit_future(future_id, fields):
+def edit_future(user, future_id, fields):
     expense = Future.query.get(future_id)
-    convert_fields(fields)
-    for field, value in fields.items():
-        setattr(expense, field, value)
-    db.session.commit()
+    if expense in user.future:
+        convert_fields(fields)
+        for field, value in fields.items():
+            setattr(expense, field, value)
+        db.session.commit()
+    else:
+        raise Exception('User is not authorized to perform this action.')
 
 
-def edit_history(history_id, fields):
+def edit_history(user, history_id, fields):
     expense = History.query.get(history_id)
-    convert_fields(fields)
-    for field, value in fields.items():
-        setattr(expense, field, value)
-    db.session.commit()
+    if expense in user.history:
+        convert_fields(fields)
+        for field, value in fields.items():
+            setattr(expense, field, value)
+        db.session.commit()
+    else:
+        raise Exception('User is not authorized to perform this action.')
 
 
-def delete_current(current_id):
+def delete_current(user, current_id):
     expense = Current.query.get(current_id)
-    db.session.delete(expense)
-    db.session.commit()
+    if expense in user.current:
+        db.session.delete(expense)
+        db.session.commit()
+    else:
+        raise Exception('User is not authorized to perform this action.')
 
 
-def delete_future(future_id):
+def delete_future(user, future_id):
     expense = Future.query.get(future_id)
-    db.session.delete(expense)
-    db.session.commit()
+    if expense in user.future:
+        db.session.delete(expense)
+        db.session.commit()
+    else:
+        raise Exception('User is not authorized to perform this action.')
 
 
-def delete_history(history_id):
+def delete_history(user, history_id):
     expense = History.query.get(history_id)
-    db.session.delete(expense)
-    db.session.commit()
+    if expense in user.history:
+        db.session.delete(expense)
+        db.session.commit()
+    else:
+        raise Exception('User is not authorized to perform this action.')
 
 
 def convert_fields(fields):

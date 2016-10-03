@@ -13,7 +13,7 @@ class User(db.Model):
         lazy='dynamic', cascade='all, delete-orphan'
     )
     future = db.relationship(
-        'Future', backref='user', order_by='Future.due_date.desc()',
+        'Future', backref='user', order_by='Future.due_date.asc()',
         lazy='dynamic', cascade='all, delete-orphan'
     )
     history = db.relationship(
@@ -45,7 +45,7 @@ class User(db.Model):
 
     @property
     def formatted_total(self):
-        return '{}{:.2f}'.format(
+        return '{}{:,.2f}'.format(
             app.config['LOCAL_SYMBOL'], to_major(self.current_total)
         )
 
@@ -78,22 +78,31 @@ class Current(db.Model):
         """
         Returns the value of the expense, formatted for display.
         """
-        return '{:.2f} {}'.format(to_major(self.value), self.currency)
+        return '{:,.2f} {}'.format(to_major(self.value), self.currency)
 
     @property
     def formatted_local(self):
         """
         Returns the local value of the expense, formatted for display.
         """
-        return '{}{:.2f}'.format(
+        return '{}{:,.2f}'.format(
             app.config['LOCAL_SYMBOL'], to_major(self.local_value)
         )
 
     def advance(self):
         """
-        Copy row to History, then delete.
+        Copy row to History, then delete. Commit changes to DB session.
         """
-        pass    # TODO
+        expense = History(
+            name=self.name,
+            value=self.value,
+            currency=self.currency,
+            note=self.note,
+            created=self.created
+        )
+        self.user.history.append(expense)
+        db.session.delete(self)
+        db.session.commit()
 
     def __repr__(self):
         return '<Current {}>'.format(self.id)
@@ -107,7 +116,7 @@ class Future(db.Model):
     name = db.Column(db.String, index=True)
     value = db.Column(db.Integer)
     currency = db.Column(db.String(3))
-    note = db.Column(db.String)
+    note = db.Column(db.String, default='')
     due_date = db.Column(db.Date)
     recur_base = db.Column(db.Date)
     recur_type = db.Column(db.String(1))    # Y, M, W, D, R
@@ -130,14 +139,14 @@ class Future(db.Model):
         """
         Returns the value of the expense, formatted for display.
         """
-        return '{:.2f} {}'.format(to_major(self.local_value), self.currency)
+        return '{:,.2f} {}'.format(to_major(self.value), self.currency)
 
     @property
     def formatted_local(self):
         """
         Returns the local value of the expense, formatted for display.
         """
-        return '{}{:.2f}'.format(
+        return '{}{:,.2f}'.format(
             app.config['LOCAL_SYMBOL'], to_major(self.local_value)
         )
 
@@ -152,13 +161,28 @@ class Future(db.Model):
         elif not self.recur_freq:
             return self.recur_type
         else:
-            return '{}{}'.format(self.recur_freq, self.recur_base)
+            return '{}{}'.format(self.recur_freq, self.recur_type)
 
     def advance(self):
         """
         Copy row to Current. If recur, set due_date to next, otherwise delete.
+        Then commit changes to DB session.
         """
-        pass    # TODO
+        expense = Current(
+            name=self.name,
+            value=self.value,
+            currency=self.currency,
+            note=self.note,
+            created=date.today()
+        )
+        self.user.current.append(expense)
+
+        if self.recur:
+            self.update_due_date()
+        else:
+            db.session.delete(self)
+
+        db.session.commit()
 
     def update_due_date(self):
         """
@@ -166,24 +190,29 @@ class Future(db.Model):
         important when incrementing by months or years, where we don't want to
         screw up day information (e.g., recur every month on the 30th).
         """
+        # In case recur_freq, due_date, or base_date weren't set...
+        recur_freq = self.recur_freq or 1
+        due_date = self.due_date or date.today()
+        recur_base = self.recur_base or date.today()
+
         if self.recur_type == 'D':
-            self.due_date += timedelta(days=self.recur_freq)
+            self.due_date = due_date + timedelta(days=recur_freq)
 
         elif self.recur_type == 'W':
-            self.due_date += timedelta(weeks=self.recur_freq)
+            self.due_date = due_date + timedelta(weeks=recur_freq)
 
         elif self.recur_type == 'M':
-            op = lambda d, i: increment_month(d, self.recur_freq * i)
+            op = lambda d, i: increment_month(d, recur_freq * i)
             self.due_date = complex_recur(
-                self.recur_base, op, lambda dt: dt > self.due_date
+                recur_base, op, lambda dt: dt > due_date
             )
 
         elif self.recur_type == 'Y':
             op = lambda d, i: safe_date(
-                d.year + self.recur_freq * i, d.month, d.day
+                d.year + recur_freq * i, d.month, d.day
             )
             self.due_date = complex_recur(
-                self.recur_base, op, lambda dt: dt > self.due_date
+                recur_base, op, lambda dt: dt > due_date
             )
 
     def __repr__(self):
@@ -196,18 +225,14 @@ class Future(db.Model):
         )
 
 
-    # TODO: Should commits happen here? (advance, update_due_date, etc.) or in
-    # the controller?
-
-
 class History(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, index=True)
     value = db.Column(db.Integer)
     currency = db.Column(db.String(3))
-    note = db.Column(db.String)
-    created = db.Column(db.Date)
-    settled = db.Column(db.Date)
+    note = db.Column(db.String, default='')
+    created = db.Column(db.Date, default=date.today)
+    settled = db.Column(db.Date, default=date.today)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     @property
@@ -223,16 +248,31 @@ class History(db.Model):
         """
         Returns the value of the expense, formatted for display.
         """
-        return '{:.2f} {}'.format(to_major(self.local_value), self.currency)
+        return '{:,.2f} {}'.format(to_major(self.value), self.currency)
 
     @property
     def formatted_local(self):
         """
         Returns the local value of the expense, formatted for display.
         """
-        return '{}{:.2f}'.format(
+        return '{}{:,.2f}'.format(
             app.config['LOCAL_SYMBOL'], to_major(self.local_value)
         )
+
+    def back(self):
+        """
+        Copy row to Current, then delete. Commit changes to DB session.
+        """
+        expense = Current(
+            name=self.name,
+            value=self.value,
+            currency=self.currency,
+            note=self.note,
+            created=self.created
+        )
+        self.user.current.append(expense)
+        db.session.delete(self)
+        db.session.commit()
 
     def __repr__(self):
         return '<Historical {}>'.format(self.id)
