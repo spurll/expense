@@ -84,13 +84,18 @@ tfoot { font-weight: bold; font-variant: small-caps; }
 .section { padding-top: 5px; padding-bottom: 10px; }
 .login { max-width: 320px; margin: auto; }
 
-tr:nth-child(even) { background-color: #444444; border-color: #444444; }
+.ui-datepicker { background-color: #111111; }
+.ui-state-highlight { background-color: #dddddd !important; border-color: #000000 !important; color: #000000 !important; }
+.ui-state-active { background-color: #888888 !important; border-color: #000000 !important; color: #ffffff !important; }
+table.ui-datepicker-calendar th { color: #000000; }
+
+table:not(.ui-datepicker-calendar) tr:nth-child(even) { background-color: #444444; border-color: #444444; }
 td.icon { width: 24px; }
 td.name {}
-td.value { text-align: right; width: 70px; }
+td.value { text-align: right; width: 60px; }
 td.date { text-align: center; width: 80px; }
 td.note {}
-td.recur { text-align: center; width: 50px; }
+td.recur { text-align: center; width: 80px; }
 
 img.icon { width: 24px; height: 24px; }
 img.loading { width: 128px; height: 128px; display: block; margin: auto; }
@@ -100,6 +105,12 @@ a:visited { text-decoration: none; color: #888888; }
 a:hover { text-decoration: none; color: #ffffff; }
 a:active { text-decoration: none; color: #888888; }
 
+input { color: #ffffff; background-color: transparent; }
+select { color: #ffffff; background-color: transparent; }
 input[type="text"] { width: 100%; }
 input[type="password"] { width: 100%; }
-input { color: #000000; }
+input[name="value"] { text-align: right; }
+input[name="created"] { width: 80px; text-align: center; }
+input[name="due_date"] { width: 80px; text-align: center; }
+input[name="recur_freq"] { width: 30px; text-align: right; }
+input[name="recur_type"] { width: 60px; }

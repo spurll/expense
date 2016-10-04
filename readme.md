@@ -42,8 +42,6 @@ that, when clicked, makes the line editable and adds a submit button next to it 
 the change. Only one line can be editable at a time, so I guess that'll have to remove the
 "add" line as well.)
 
-Use an HTML date-picker
-
 Pass the forms for current and future into the main view
 Same form used for add/edit (there's a hidden field indicating ID)
 Add form is at the top row of each table with fields empty (including hidden field)

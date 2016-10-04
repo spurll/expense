@@ -8,7 +8,7 @@ $IMG_DELETE = "{{url_for('static', filename='x.png')}}";
 $IMG_ADVANCE = "{{url_for('static', filename='up.png')}}";
 
 function settle(id) {
-	$('#current > tbody > tr').remove();
+	$('#current > tbody > tr').not('#add_current').remove();
 
 	{% if use_loading_gif %}
 	// Replace table content with loading GIF.
@@ -25,8 +25,8 @@ function settle(id) {
 }
 
 function advance(id) {
-	$('#current > tbody > tr').remove();
-	$('#future > tbody > tr').remove();
+	$('#current > tbody > tr').not('#add_current').remove();
+	$('#future > tbody > tr').not('#add_future').remove();
 
 	{% if use_loading_gif %}
 	// Replace table content with loading GIF.
@@ -45,7 +45,7 @@ function advance(id) {
 }
 
 function remove_current(id) {
-	$('#current > tbody > tr').remove();
+	$('#current > tbody > tr').not('#add_current').remove();
 
 	{% if use_loading_gif %}
 	// Replace table content with loading GIF.
@@ -62,7 +62,7 @@ function remove_current(id) {
 }
 
 function remove_future(id) {
-	$('#future > tbody > tr').remove();
+	$('#future > tbody > tr').not('#add_future').remove();
 
 	{% if use_loading_gif %}
 	// Replace table content with loading GIF.
@@ -78,6 +78,18 @@ function remove_future(id) {
 	return false;
 }
 
+// TODO: When editing (or adding) enter/checkmark should save and escape/x should cancel (or clear, if it's the add field)
+
+function edit_current(id) {
+	// TODO
+	return false;
+}
+
+function edit_future(id) {
+	// TODO
+	return false;
+}
+
 function loadCurrent() {
 	$.getJSON($SCRIPT_ROOT + "{{url_for('load_table')}}", {table: 'current'}, function(result) {
 		if (result.error) {
@@ -85,7 +97,7 @@ function loadCurrent() {
 		}
 		else {
 			// Remove existing content.
-			$('#current > tbody > tr').remove();
+			$('#current > tbody > tr').not('#add_current').remove();
 
 			// Load data into current table.
 			for (var i = 0; i < result.data.current.length; i++) {
@@ -122,7 +134,7 @@ function loadFuture() {
 		}
 		else {
 			// Remove existing content.
-			$('#future > tbody > tr').remove();
+			$('#future > tbody > tr').not('#add_future').remove();
 
 			// Load data into future table.
 			for (var i = 0; i < result.data.future.length; i++) {
@@ -151,12 +163,18 @@ function loadFuture() {
 	return false;
 }
 
+// TODO: Catch form submit process!
+
 $(document).ready(function() {
 	{% if use_loading_gif %}
 	// Replace table content with loading GIF.
 	$('#loading_current').show('fast');
 	$('#loading_future').show('fast');
 	{% endif %}
+
+	//$.datepicker.setDefaults({format: "ISO_8601"});
+	//$("td.date > input").datepicker($.datepicker.formatDate("yy-mm-dd"));
+	$("td.date > input").datepicker({dateFormat: "yy-mm-dd"});
 
 	loadCurrent();
 	loadFuture();
@@ -177,7 +195,19 @@ $(document).ready(function() {
 			<th></th>
 		</tr>
 	</thead>
-	<tbody></tbody>
+	<tbody>
+		<tr id="add_current">
+			<form>
+				<td class="icon"></td>
+				<td class="name">{{current_form.name(autofocus=true)}}</td>
+				<td class="value">{{current_form.value}}</td>
+				<td class="date">{{current_form.created}}</td>
+				<td class="note">{{current_form.note}}</td>
+				<td class="icon"><img class="icon" src="{{url_for('static', filename='check.png')}}" title="Accept" /></td>
+				<td class="icon"><img class="icon" src="{{url_for('static', filename='x.png')}}" title="Cancel" /></td>
+			</form>
+		</tr>
+	</tbody>
 	<tfoot>
 		<tr>
 			<td></td>
@@ -210,7 +240,20 @@ $(document).ready(function() {
 			<th></th>
 		</tr>
 	</thead>
-	<tbody></tbody>
+	<tbody>
+		<tr id="add_future">
+			<form>
+				<td class="icon"></td>
+				<td class="name">{{future_form.name}}</td>
+				<td class="value">{{future_form.value}}</td>
+				<td class="date">{{future_form.due_date}}</td>
+				<td class="recur">{{future_form.recur_freq}}{{future_form.recur_type}}</td>
+				<td class="note">{{future_form.note}}</td>
+				<td class="icon"><img class="icon" src="{{url_for('static', filename='check.png')}}" title="Accept" /></td>
+				<td class="icon"><img class="icon" src="{{url_for('static', filename='x.png')}}" title="Cancel" /></td>
+			</form>
+		</tr>
+	</tbody>
 </table>
 
 {% if use_loading_gif %}

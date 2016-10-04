@@ -40,6 +40,11 @@ function remove_history(id) {
 	return false;
 }
 
+function edit_history(id) {
+	// TODO (Or not? If not, remove the icon, etc.)
+	return false;
+}
+
 function loadHistory() {
 	$.getJSON($SCRIPT_ROOT + "{{url_for('load_table')}}", {table: 'history'}, function(result) {
 		if (result.error) {

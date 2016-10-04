@@ -3,7 +3,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 import ldap3
 
 from expense import app, db, lm
-from expense.forms import LoginForm, CurrentForm
+from expense.forms import LoginForm, CurrentForm, FutureForm
 from expense.models import User
 from expense.authenticate import authenticate
 from expense.controller import *
@@ -16,17 +16,10 @@ def main():
     """
     View/edit current/future expenses.
     """
-    # form = CurrentForm()
-
-    # if not objects:
-    #     flash("You don't have any objects.")
-
-    # List of currencies:
-    # list_currencies()
-
     return render_template(
         'main.html', title='Expenses', user=current_user,
-        use_loading_gif = app.config.get('LOADING_GIF'),
+        use_loading_gif=app.config.get('LOADING_GIF'),
+        current_form=CurrentForm(), future_form=FutureForm(),
         link={'url': url_for('history'), 'text': 'History'}
     )
 
@@ -37,10 +30,9 @@ def history():
     """
     View expense history.
     """
-    # TODO: Don't pass the data; it'll be fetched via AJAX.
     return render_template(
         'history.html', title='Expense History', user=current_user,
-        use_loading_gif = app.config.get('LOADING_GIF'),
+        use_loading_gif=app.config.get('LOADING_GIF'),
         link={'url': url_for('main'), 'text': 'Back'}
     )
 

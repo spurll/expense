@@ -1,5 +1,5 @@
 import csv, re
-from dateparser import parse
+from dateparser import parse    # TODO: May be unnecessary. Add to requirements?
 
 from expense import db
 from expense.models import Current, Future, History
@@ -166,7 +166,9 @@ def convert_fields(fields):
             # Parse out the string value (and potential currency).
             m = re.search(r'\$?([\d\.]+) ?(\w*)', fields['value'])
             value = float(m.group(1))
-            currency = m.group(2) if m.group(2) != 'US' else 'USD'
+            currency = m.group(2).upper()
+            if currency == 'US':
+                currency = 'USD'
 
             if currency:
                 if 'currency' in fields and fields['currency'] != currency:
@@ -190,6 +192,7 @@ def convert_fields(fields):
     for field in ['due_date', 'created', 'settled']:
         if field in fields:
             fields[field] = parse(fields[field]).date()
+            # TODO: May be unnecessary.
 
 
 def load_csv(user, filename, add_function=add_current):

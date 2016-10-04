@@ -8,6 +8,7 @@ from expense import app
 RATE_REQUEST = 'http://api.fixer.io/{date:%Y-%m-%d}?base={src}&symbols={dst}'
 SYMBOLS_REQUEST = 'http://api.fixer.io/latest'
 CENTS = app.config.get('FRACTIONS_PER_UNIT', 100)
+LOCAL = app.config.get('LOCAL_CURRENCY')
 
 rate_cache = {}
 symbols_cache = []
@@ -31,6 +32,12 @@ def list_currencies():
         if r.status_code == 200:
             symbols_cache.extend(r.json().get('rates', {}).keys())
             symbols_cache.sort()
+
+            # Move local currency to the top of the list.
+            if LOCAL in symbols_cache:
+                symbols_cache.insert(
+                    0, symbols_cache.pop(symbols_cache.index(LOCAL))
+                )
 
             if not symbols_cache:
                 print('No currency symbols found. Request returned: {}'.format(
