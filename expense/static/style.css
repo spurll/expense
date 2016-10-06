@@ -105,8 +105,8 @@ a:visited { text-decoration: none; color: #888888; }
 a:hover { text-decoration: none; color: #ffffff; }
 a:active { text-decoration: none; color: #888888; }
 
-input { color: #ffffff; background-color: transparent; }
-select { color: #ffffff; background-color: transparent; }
+input { color: #ffffff; background-color: transparent; border: solid 1px #444444; }
+select { color: #ffffff; background-color: transparent; border: solid 1px #444444; }
 input[type="text"] { width: 100%; }
 input[type="password"] { width: 100%; }
 input[name="value"] { text-align: right; }

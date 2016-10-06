@@ -56,17 +56,6 @@ http://flask.pocoo.org/docs/0.11/patterns/jquery/
 
 Rename "future" to "upcoming"
 
-Layout
-------
-
-```
-[Link to Expense History in Header]
-[Fields to add a Current Expense]
-[List of Current Expenses]
-[List of Scheduled/Recurring/Template Expenses]
-[Fields to add a Scheduled Expense]
-```
-
 Bugs and Feature Requests
 =========================
 
@@ -91,5 +80,7 @@ License Information
 Written by Gem Newman. [Website](http://spurll.com) | [GitHub](https://github.com/spurll/) | [Twitter](https://twitter.com/spurll)
 
 This work is licensed under Creative Commons [BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/).
+
+JQuery and JQuery UI elements included under the [MIT "Expat" License](https://opensource.org/licenses/MIT).
 
 Remember: [GitHub is not my CV](https://blog.jcoglan.com/2013/11/15/why-github-is-not-your-cv/).

@@ -44,7 +44,7 @@ function advance(id) {
 	return false;
 }
 
-function remove_current(id) {
+function removeCurrent(id) {
 	$('#current > tbody > tr').not('#add_current').remove();
 
 	{% if use_loading_gif %}
@@ -61,7 +61,7 @@ function remove_current(id) {
 	return false;
 }
 
-function remove_future(id) {
+function removeFuture(id) {
 	$('#future > tbody > tr').not('#add_future').remove();
 
 	{% if use_loading_gif %}
@@ -80,12 +80,68 @@ function remove_future(id) {
 
 // TODO: When editing (or adding) enter/checkmark should save and escape/x should cancel (or clear, if it's the add field)
 
-function edit_current(id) {
+// TODO: Blanks don't work! (Just fill in the date.)
+
+function addCurrent() {
+	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", {
+		table: 'current',
+		name: $('#current_form #name')[0].value,
+		value: $('#current_form #value')[0].value,
+		created: $('#current_form #created')[0].value,
+		note: $('#current_form #note')[0].value
+	}, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		else {
+			$('#current_form')[0].reset() 
+
+			{% if use_loading_gif %}
+			// Replace table content with loading GIF.
+			$('#loading_current').show('fast');
+			{% endif %}
+
+			$('#current > tbody > tr').not('#add_current').remove();
+			loadCurrent();
+		}
+	});
+	return false;
+}
+
+function addFuture() {
+	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", {
+		table: 'future',
+		name: $('#future_form #name')[0].value,
+		value: $('#future_form #value')[0].value,
+		due_date: $('#future_form #due_date')[0].value,
+		recur_freq: Number($('#future_form #recur_freq')[0].value),
+		recur_type: $('#future_form #recur_type')[0].value,
+		note: $('#future_form #note')[0].value
+	}, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		else {
+			$('#future_form')[0].reset() 
+
+			{% if use_loading_gif %}
+			// Replace table content with loading GIF.
+			$('#loading_future').show('fast');
+			{% endif %}
+
+			$('#future > tbody > tr').not('#add_future').remove();
+			loadFuture();
+		}
+	});
+	return false;
+}
+
+function editCurrent(id) {
 	// TODO
 	return false;
 }
 
-function edit_future(id) {
+function editFuture(id) {
 	// TODO
 	return false;
 }
@@ -110,8 +166,8 @@ function loadCurrent() {
 					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
 					'<td class="date">' + e[4] + '</td>' +
 					'<td class="note">' + e[5] + '</td>' +
-					'<td class="icon"><a href="#" onclick="edit_current(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-					'<td class="icon"><a href="#" onclick="remove_current(' + e[0] + ');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="editCurrent(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="removeCurrent(' + e[0] + ');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
 					'</tr>'
 				);
 			}
@@ -148,8 +204,8 @@ function loadFuture() {
 					'<td class="date">' + e[4] + '</td>' +
 					'<td class="recur">' + e[5] + '</td>' +
 					'<td class="note">' + e[6] + '</td>' +
-					'<td class="icon"><a href="#" onclick="edit_future(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-					'<td class="icon"><a href="#" onclick="remove_future(' + e[0] + ');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="editFuture(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="removeFuture(' + e[0] + ');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
 					'</tr>'
 				);
 			}
@@ -163,7 +219,11 @@ function loadFuture() {
 	return false;
 }
 
+// TODO: Just remove the appropriate rows from the table! (Don't reload them all!)
+
 // TODO: Catch form submit process!
+
+// TODO: Messages should be non-interrupting and auto-dismissing. If so, then we can have success messages, too.
 
 $(document).ready(function() {
 	{% if use_loading_gif %}
@@ -172,10 +232,16 @@ $(document).ready(function() {
 	$('#loading_future').show('fast');
 	{% endif %}
 
-	//$.datepicker.setDefaults({format: "ISO_8601"});
-	//$("td.date > input").datepicker($.datepicker.formatDate("yy-mm-dd"));
+	// Enable JQuery UI's date picker.
 	$("td.date > input").datepicker({dateFormat: "yy-mm-dd"});
 
+	// Attach functions to form buttons.
+	$('#submit_current').on('click', addCurrent);
+	$('#reset_current').on('click', function() { $('#current_form')[0].reset() });
+	$('#submit_future').on('click', addFuture);
+	$('#reset_future').on('click', function() { $('#future_form')[0].reset() });
+
+	// Load data.
 	loadCurrent();
 	loadFuture();
 });
@@ -183,43 +249,43 @@ $(document).ready(function() {
 
 <div class="heading">Current</div>
 
-<table id="current">
-	<thead>
-		<tr>
-			<th></th>
-			<th>Item</th>
-			<th>Value</th>
-			<th>Created</th>
-			<th>Notes</th>
-			<th></th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr id="add_current">
-			<form>
+<form id="current_form">
+	<table id="current" class="expense_table">
+		<thead>
+			<tr>
+				<th></th>
+				<th>Item</th>
+				<th>Value</th>
+				<th>Created</th>
+				<th>Notes</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr id="add_current">
 				<td class="icon"></td>
 				<td class="name">{{current_form.name(autofocus=true)}}</td>
 				<td class="value">{{current_form.value}}</td>
 				<td class="date">{{current_form.created}}</td>
 				<td class="note">{{current_form.note}}</td>
-				<td class="icon"><img class="icon" src="{{url_for('static', filename='check.png')}}" title="Accept" /></td>
-				<td class="icon"><img class="icon" src="{{url_for('static', filename='x.png')}}" title="Cancel" /></td>
-			</form>
-		</tr>
-	</tbody>
-	<tfoot>
-		<tr>
-			<td></td>
-			<td class="name">Total</th>
-			<td id="total_value" class="value"></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-		</tr>
-	</tfoot>
-</table>
+				<td class="icon"><a id="submit_current" href="#"><img class="icon" src="{{url_for('static', filename='check.png')}}" title="Accept" /></a></td>
+				<td class="icon"><a id="reset_current" href="#"><img class="icon" src="{{url_for('static', filename='x.png')}}" title="Cancel" /></a></td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td></td>
+				<td class="name">Total</th>
+				<td id="total_value" class="value"></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</tfoot>
+	</table>
+</form>
 
 {% if use_loading_gif %}
 <div class="loading" id="loading_current"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>
@@ -227,34 +293,34 @@ $(document).ready(function() {
 
 <div class="heading">Future</div>
 
-<table id="future">
-	<thead>
-		<tr>
-			<th></th>
-			<th>Item</th>
-			<th>Value</th>
-			<th>Due</th>
-			<th>Recur</th>
-			<th>Notes</th>
-			<th></th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr id="add_future">
-			<form>
+<form id="future_form">
+	<table id="future" class="expense_table">
+		<thead>
+			<tr>
+				<th></th>
+				<th>Item</th>
+				<th>Value</th>
+				<th>Due</th>
+				<th>Recur</th>
+				<th>Notes</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr id="add_future">
 				<td class="icon"></td>
 				<td class="name">{{future_form.name}}</td>
 				<td class="value">{{future_form.value}}</td>
 				<td class="date">{{future_form.due_date}}</td>
 				<td class="recur">{{future_form.recur_freq}}{{future_form.recur_type}}</td>
 				<td class="note">{{future_form.note}}</td>
-				<td class="icon"><img class="icon" src="{{url_for('static', filename='check.png')}}" title="Accept" /></td>
-				<td class="icon"><img class="icon" src="{{url_for('static', filename='x.png')}}" title="Cancel" /></td>
-			</form>
-		</tr>
-	</tbody>
-</table>
+				<td class="icon"><a id="submit_future" href="#"><img class="icon" src="{{url_for('static', filename='check.png')}}" title="Accept" /></a></td>
+				<td class="icon"><a id="reset_future" href="#"><img class="icon" src="{{url_for('static', filename='x.png')}}" title="Cancel" /></a></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
 
 {% if use_loading_gif %}
 <div class="loading" id="loading_future"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>

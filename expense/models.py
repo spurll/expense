@@ -59,7 +59,7 @@ class User(db.Model):
 class Current(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, index=True)
-    value = db.Column(db.Integer)
+    value = db.Column(db.Integer, nullable=False)
     currency = db.Column(db.String(3), default=app.config['LOCAL_CURRENCY'])
     note = db.Column(db.String, default='')
     created = db.Column(db.Date, default=date.today)
@@ -114,7 +114,7 @@ class Current(db.Model):
 class Future(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, index=True)
-    value = db.Column(db.Integer)
+    value = db.Column(db.Integer, nullable=False)
     currency = db.Column(db.String(3))
     note = db.Column(db.String, default='')
     due_date = db.Column(db.Date)
@@ -228,7 +228,7 @@ class Future(db.Model):
 class History(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, index=True)
-    value = db.Column(db.Integer)
+    value = db.Column(db.Integer, nullable=False)
     currency = db.Column(db.String(3))
     note = db.Column(db.String, default='')
     created = db.Column(db.Date, default=date.today)

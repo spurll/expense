@@ -116,6 +116,38 @@ def load_table():
     return jsonify(data=data, error=error)
 
 
+@app.route('/_add_expense')
+@login_required
+def add_expense():
+    """
+    Adds a current expense.
+    """
+    fn = None
+    error = None
+
+    # Make it mutable.
+    args = {k: v for (k, v) in request.args.items() if v is not None}
+    table = args.pop('table', None)
+
+    if table == 'current':
+        fn = add_current
+    elif table == 'future':
+        fn = add_future
+    elif table == 'history':
+        fn = add_history
+
+    if fn:
+        try:
+            fn(current_user, args)
+        except Exception as e:
+            print(e)
+            error = str(e)
+    else:
+        error = 'Attempted to edit an invalid table {}.'.format(table)
+
+    return jsonify(error=error)
+
+
 @app.route('/_total')
 @login_required
 def total():
