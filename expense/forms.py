@@ -27,7 +27,7 @@ class FutureForm(Form):
     recur_freq = IntegerField('Recur Frequency')
     recur_type = SelectField(
         'Recur Type', choices=[
-            (None, '–'),
+            ('', ''),
             ('R', 'R'),
             ('D', 'D'),
             ('W', 'W'),

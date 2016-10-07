@@ -1,12 +1,13 @@
 import csv, re
-from dateparser import parse    # TODO: May be unnecessary. Add to requirements?
+from datetime import datetime
 
-from expense import db
+from expense import app, db
 from expense.models import Current, Future, History
 from expense.utils import to_fractional, list_currencies
 
 
-DATE_FORMAT = '{:%Y-%m-%d}'
+STRPTIME_FORMAT = app.config.get('DATE_FORMAT', '%Y-%m-%d')
+DATE_FORMAT = '{:' + STRPTIME_FORMAT + '}'
 CSV_COLUMNS = ['blank', 'name', 'value', 'created', 'settled', 'note']
 
 
@@ -191,8 +192,9 @@ def convert_fields(fields):
 
     for field in ['due_date', 'created', 'settled']:
         if field in fields:
-            fields[field] = parse(fields[field]).date()
-            # TODO: May be unnecessary.
+            fields[field] = datetime.strptime(
+                fields[field], STRPTIME_FORMAT
+            ).date()
 
 
 def load_csv(user, filename, add_function=add_current):

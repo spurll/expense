@@ -6,7 +6,7 @@ $IMG_BACK = "{{url_for('static', filename='back.png')}}";
 $IMG_EDIT = "{{url_for('static', filename='edit.png')}}";
 $IMG_DELETE = "{{url_for('static', filename='x.png')}}";
 
-function send_back(id) {
+function sendBack(id) {
 	$('#history > tbody > tr').remove();
 
 	{% if use_loading_gif %}
@@ -23,7 +23,7 @@ function send_back(id) {
 	return false;
 }
 
-function remove_history(id) {
+function removeHistory(id) {
 	$('#history > tbody > tr').remove();
 
 	{% if use_loading_gif %}
@@ -40,7 +40,7 @@ function remove_history(id) {
 	return false;
 }
 
-function edit_history(id) {
+function editHistory(id) {
 	// TODO (Or not? If not, remove the icon, etc.)
 	return false;
 }
@@ -60,14 +60,14 @@ function loadHistory() {
 				var e = result.data.history[i];
 				$('#history > tbody').append(
 					'<tr>' +
-					'<td class="icon"><a href="#" onclick="send_back(' + e[0] + ');"><img class="icon" src="' + $IMG_BACK + '" title="Send to Current" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="sendBack(' + e[0] + ');"><img class="icon" src="' + $IMG_BACK + '" title="Send to Current" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
 					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
 					'<td class="date">' + e[4] + '</td>' +
 					'<td class="date">' + e[5] + '</td>' +
 					'<td class="note">' + e[6] + '</td>' +
-					'<td class="icon"><a href="#" onclick="edit_history(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-					'<td class="icon"><a href="#" onclick="remove_history(' + e[0] + ');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="editHistory(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="removeHistory(' + e[0] + ');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
 					'</tr>'
 				);
 			}

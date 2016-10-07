@@ -4,6 +4,9 @@ from expense import app, db
 from expense.utils import complex_recur, increment_month, safe_date, convert_currency, to_major
 
 
+LOCAL_CURRENCY = app.config.get('LOCAL_CURRENCY', 'USD')
+
+
 class User(db.Model):
     id = db.Column(db.String, primary_key=True)
     name = db.Column(db.String, index=True, unique=True)
@@ -41,7 +44,7 @@ class User(db.Model):
 
     @property
     def current_total(self):
-        return sum(c.local_value for c in self.current)
+        return sum(c.local_value for c in self.current if c.local_value)
 
     @property
     def formatted_total(self):
@@ -58,10 +61,10 @@ class User(db.Model):
 
 class Current(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, index=True)
-    value = db.Column(db.Integer, nullable=False)
-    currency = db.Column(db.String(3), default=app.config['LOCAL_CURRENCY'])
-    note = db.Column(db.String, default='')
+    name = db.Column(db.String, index=True, nullable=False)
+    value = db.Column(db.Integer)
+    currency = db.Column(db.String(3), default=LOCAL_CURRENCY, nullable=False)
+    note = db.Column(db.String, default='', nullable=False)
     created = db.Column(db.Date, default=date.today)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
@@ -70,15 +73,17 @@ class Current(db.Model):
         """
         Returns the value of the expense in the local currency.
         """
-        local = app.config['LOCAL_CURRENCY']
-        return convert_currency(self.value, self.currency, local, self.created)
+        return convert_currency(
+            self.value, self.currency, LOCAL_CURRENCY, self.created
+        ) if self.value is not None else None
 
     @property
     def formatted_value(self):
         """
         Returns the value of the expense, formatted for display.
         """
-        return '{:,.2f} {}'.format(to_major(self.value), self.currency)
+        return '{:,.2f} {}'.format(to_major(self.value), self.currency) \
+            if self.value is not None else '—'
 
     @property
     def formatted_local(self):
@@ -87,7 +92,7 @@ class Current(db.Model):
         """
         return '{}{:,.2f}'.format(
             app.config['LOCAL_SYMBOL'], to_major(self.local_value)
-        )
+        ) if self.local_value is not None else '—'
 
     def advance(self):
         """
@@ -113,10 +118,10 @@ class Current(db.Model):
 
 class Future(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, index=True)
-    value = db.Column(db.Integer, nullable=False)
-    currency = db.Column(db.String(3))
-    note = db.Column(db.String, default='')
+    name = db.Column(db.String, index=True, nullable=False)
+    value = db.Column(db.Integer)
+    currency = db.Column(db.String(3), default=LOCAL_CURRENCY, nullable=False)
+    note = db.Column(db.String, default='', nullable=False)
     due_date = db.Column(db.Date)
     recur_base = db.Column(db.Date)
     recur_type = db.Column(db.String(1))    # Y, M, W, D, R
@@ -131,15 +136,17 @@ class Future(db.Model):
         """
         Returns the value of the expense in the local currency.
         """
-        local = app.config['LOCAL_CURRENCY']
-        return convert_currency(self.value, self.currency, local, date.today())
+        return convert_currency(
+            self.value, self.currency, LOCAL_CURRENCY, date.today()
+        ) if self.value is not None else None
 
     @property
     def formatted_value(self):
         """
         Returns the value of the expense, formatted for display.
         """
-        return '{:,.2f} {}'.format(to_major(self.value), self.currency)
+        return '{:,.2f} {}'.format(to_major(self.value), self.currency) \
+            if self.value is not None else '—'
 
     @property
     def formatted_local(self):
@@ -148,7 +155,7 @@ class Future(db.Model):
         """
         return '{}{:,.2f}'.format(
             app.config['LOCAL_SYMBOL'], to_major(self.local_value)
-        )
+        ) if self.local_value is not None else '—'
 
     @property
     def recur(self):
@@ -158,7 +165,7 @@ class Future(db.Model):
     def recur_summary(self):
         if not self.recur:
             return ''
-        elif not self.recur_freq:
+        elif not self.recur_freq or self.recur_freq == 1:
             return self.recur_type
         else:
             return '{}{}'.format(self.recur_freq, self.recur_type)
@@ -193,7 +200,7 @@ class Future(db.Model):
         # In case recur_freq, due_date, or base_date weren't set...
         recur_freq = self.recur_freq or 1
         due_date = self.due_date or date.today()
-        recur_base = self.recur_base or date.today()
+        recur_base = self.recur_base or due_date
 
         if self.recur_type == 'D':
             self.due_date = due_date + timedelta(days=recur_freq)
@@ -227,10 +234,10 @@ class Future(db.Model):
 
 class History(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, index=True)
-    value = db.Column(db.Integer, nullable=False)
-    currency = db.Column(db.String(3))
-    note = db.Column(db.String, default='')
+    name = db.Column(db.String, index=True, nullable=False)
+    value = db.Column(db.Integer)
+    currency = db.Column(db.String(3), default=LOCAL_CURRENCY, nullable=False)
+    note = db.Column(db.String, default='', nullable=False)
     created = db.Column(db.Date, default=date.today)
     settled = db.Column(db.Date, default=date.today)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -240,15 +247,17 @@ class History(db.Model):
         """
         Returns the value of the expense in the local currency.
         """
-        local = app.config['LOCAL_CURRENCY']
-        return convert_currency(self.value, self.currency, local, self.created)
+        return convert_currency(
+            self.value, self.currency, LOCAL_CURRENCY, self.created
+        ) if self.value is not None else None
 
     @property
     def formatted_value(self):
         """
         Returns the value of the expense, formatted for display.
         """
-        return '{:,.2f} {}'.format(to_major(self.value), self.currency)
+        return '{:,.2f} {}'.format(to_major(self.value), self.currency) \
+            if self.value is not None else '—'
 
     @property
     def formatted_local(self):
@@ -257,7 +266,7 @@ class History(db.Model):
         """
         return '{}{:,.2f}'.format(
             app.config['LOCAL_SYMBOL'], to_major(self.local_value)
-        )
+        ) if self.local_value is not None else '—'
 
     def back(self):
         """

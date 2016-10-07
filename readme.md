@@ -20,7 +20,6 @@ Requirements
 * flask-sqlalchemy
 * sqlalchemy
 * ldap3
-* dateparser
 
 Configuration
 -------------
@@ -50,11 +49,13 @@ Clicking checkmark or hitting enter saves the change (via ajax) then replaces th
 Clicking X or hitting escape cancels
 The AJAX returns JSON with success/failure flags, error messages, etc.
 Upon saving, the data is requeried to make sure it's correct. (Have to requery the whole thing and pass it back? Can we do that?)
-(Requery total, too? Maybe the whole damn thing should just be loaded with AJAX from the beginning? Probably...)
 
 http://flask.pocoo.org/docs/0.11/patterns/jquery/
 
-Rename "future" to "upcoming"
+Rename "future" to "upcoming"?
+
+TODO: Just remove the appropriate rows from the table! (Don't reload them all!)
+
 
 Bugs and Feature Requests
 =========================
@@ -63,6 +64,8 @@ Feature Requests
 ----------------
 
 * Automated rolling snapshots every day
+* Invalid currencies should display warning to user as well as to console
+* Error messages should be non-interrupting and auto-dismissing (then we can have success messages, too)
 
 Known Bugs
 ----------

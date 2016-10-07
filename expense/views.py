@@ -126,7 +126,7 @@ def add_expense():
     error = None
 
     # Make it mutable.
-    args = {k: v for (k, v) in request.args.items() if v is not None}
+    args = {k: v for (k, v) in request.args.items() if v is not ''}
     table = args.pop('table', None)
 
     if table == 'current':
@@ -136,14 +136,18 @@ def add_expense():
     elif table == 'history':
         fn = add_history
 
-    if fn:
-        try:
-            fn(current_user, args)
-        except Exception as e:
-            print(e)
-            error = str(e)
+    if 'name' in args:
+        if fn:
+            try:
+                print('Adding {} expense: {}'.format(table, args))
+                fn(current_user, args)
+            except Exception as e:
+                print(e)
+                error = str(e)
+        else:
+            error = 'Attempted to edit an invalid table {}.'.format(table)
     else:
-        error = 'Attempted to edit an invalid table {}.'.format(table)
+        error = 'Name is required.'
 
     return jsonify(error=error)
 
@@ -175,6 +179,7 @@ def settle():
     error = None
 
     try:
+        print('Settling current expense: {}'.format(args))
         advance_current(current_user, request.args.get('id', None, type=int))
     except Exception as e:
         print(e)
@@ -192,6 +197,7 @@ def advance():
     error = None
 
     try:
+        print('Advancing future expense: {}'.format(args))
         advance_future(current_user, request.args.get('id', None, type=int))
     except Exception as e:
         print(e)
@@ -209,6 +215,7 @@ def send_back():
     error = None
 
     try:
+        print('Sending expense back to current: {}'.format(args))
         history_to_current(current_user,request.args.get('id', None, type=int))
     except Exception as e:
         print(e)
@@ -235,6 +242,7 @@ def delete():
         fn = delete_history
 
     try:
+        print('Deleting {} expense: {}'.format(table, args))
         fn(current_user, request.args.get('id', None, type=int))
     except Exception as e:
         print(e)
