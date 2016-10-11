@@ -70,7 +70,7 @@ Feature Requests
 Known Bugs
 ----------
 
-None
+* Because of the way information is sent via GET requests, it's impossible remove recurrence from an item (because it requires setting the value to "")
 
 Special Thanks
 ==============

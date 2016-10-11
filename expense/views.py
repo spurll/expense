@@ -3,7 +3,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 import ldap3
 
 from expense import app, db, lm
-from expense.forms import LoginForm, CurrentForm, FutureForm
+from expense.forms import *
 from expense.models import User
 from expense.authenticate import authenticate
 from expense.controller import *
@@ -20,6 +20,7 @@ def main():
         'main.html', title='Expenses', user=current_user,
         use_loading_gif=app.config.get('LOADING_GIF'),
         current_form=CurrentForm(), future_form=FutureForm(),
+        edit_current_form=EditCurrentForm(), edit_future_form=EditFutureForm(),
         link={'url': url_for('history'), 'text': 'History'}
     )
 
@@ -32,6 +33,7 @@ def history():
     """
     return render_template(
         'history.html', title='Expense History', user=current_user,
+        edit_history_form=EditHistoryForm(),
         use_loading_gif=app.config.get('LOADING_GIF'),
         link={'url': url_for('main'), 'text': 'Back'}
     )
@@ -120,7 +122,7 @@ def load_table():
 @login_required
 def add_expense():
     """
-    Adds a current expense.
+    Adds or edits an expense.
     """
     fn = None
     error = None
@@ -136,18 +138,16 @@ def add_expense():
     elif table == 'history':
         fn = add_history
 
-    if 'name' in args:
-        if fn:
-            try:
-                print('Adding {} expense: {}'.format(table, args))
-                fn(current_user, args)
-            except Exception as e:
-                print(e)
-                error = str(e)
-        else:
-            error = 'Attempted to edit an invalid table {}.'.format(table)
+    if fn:
+        try:
+            print('Adding {} expense: {}'.format(table, args))
+            fn(current_user, args)
+        except Exception as e:
+            print(e)
+            error = str(e)
     else:
-        error = 'Name is required.'
+        error = 'Attempted to edit an invalid table {}.'.format(table)
+        print(error)
 
     return jsonify(error=error)
 
@@ -179,7 +179,7 @@ def settle():
     error = None
 
     try:
-        print('Settling current expense: {}'.format(args))
+        print('Settling current expense: {}'.format(request.args.get('id')))
         advance_current(current_user, request.args.get('id', None, type=int))
     except Exception as e:
         print(e)
@@ -197,7 +197,7 @@ def advance():
     error = None
 
     try:
-        print('Advancing future expense: {}'.format(args))
+        print('Advancing future expense: {}'.format(request.args.get('id')))
         advance_future(current_user, request.args.get('id', None, type=int))
     except Exception as e:
         print(e)
@@ -215,7 +215,7 @@ def send_back():
     error = None
 
     try:
-        print('Sending expense back to current: {}'.format(args))
+        print('Sending expense back to current: {}'.format(request.args))
         history_to_current(current_user,request.args.get('id', None, type=int))
     except Exception as e:
         print(e)
@@ -242,7 +242,7 @@ def delete():
         fn = delete_history
 
     try:
-        print('Deleting {} expense: {}'.format(table, args))
+        print('Deleting {} expense: {}'.format(table, request.args.get('id')))
         fn(current_user, request.args.get('id', None, type=int))
     except Exception as e:
         print(e)

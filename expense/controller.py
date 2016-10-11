@@ -81,29 +81,38 @@ def history_to_current(user, history_id):
 
 
 def add_current(user, fields):
-    convert_fields(fields)
-    expense = Current(**fields)
-    user.current.append(expense)
-    db.session.commit()
+    if 'id' in fields:
+        edit_current(user, fields.pop('id'), fields)
+    else:
+        convert_fields(fields)
+        expense = Current(**fields)
+        user.current.append(expense)
+        db.session.commit()
 
 
 def add_future(user, fields):
-    convert_fields(fields)
-    expense = Future(**fields)
-    user.future.append(expense)
-    db.session.commit()
+    if 'id' in fields:
+        edit_future(user, fields.pop('id'), fields)
+    else:
+        convert_fields(fields)
+        expense = Future(**fields)
+        user.future.append(expense)
+        db.session.commit()
 
 
 def add_history(user, fields):
-    convert_fields(fields)
-    expense = History(**fields)
-    user.history.append(expense)
-    db.session.commit()
+    if 'id' in fields:
+        edit_history(user, fields.pop('id'), fields)
+    else:
+        convert_fields(fields)
+        expense = History(**fields)
+        user.history.append(expense)
+        db.session.commit()
 
 
 def edit_current(user, current_id, fields):
     expense = Current.query.get(current_id)
-    if expense in user.future:
+    if expense in user.current:
         convert_fields(fields)
         for field, value in fields.items():
             setattr(expense, field, value)

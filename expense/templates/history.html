@@ -2,6 +2,7 @@
 {% block content %}
 <script type=text/javascript>
 $SCRIPT_ROOT = {{request.script_root|tojson|safe}};
+$IMG_CHECK = "{{url_for('static', filename='check.png')}}";
 $IMG_BACK = "{{url_for('static', filename='back.png')}}";
 $IMG_EDIT = "{{url_for('static', filename='edit.png')}}";
 $IMG_DELETE = "{{url_for('static', filename='x.png')}}";
@@ -23,6 +24,86 @@ function sendBack(id) {
 	return false;
 }
 
+function submitEditHistory() {
+	var payload = $('#edit_history_form').serialize().replace(/edit_history_/g, "") + "&table=history";
+	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", payload, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		else {
+			cancelEditHistory();
+
+			{% if use_loading_gif %}
+			// Replace table content with loading GIF.
+			$('#loading').show('fast');
+			{% endif %}
+
+			$('#history > tbody > tr').remove();
+			loadHistory();
+		}
+	});
+	return false;
+}
+
+function editHistory(id) {
+	// Hide row and replace with form fields.
+	$('#history_' + id).after(
+		'<tr id="edit_history">' +
+		'<td class="icon"></td>' +
+		'<td class="name">{{edit_history_form.id(form="edit_history_form")}}{{edit_history_form.name(form="edit_history_form")}}</td>' +
+		'<td class="value">{{edit_history_form.value(form="edit_history_form")}}</td>' +
+		'<td class="date">{{edit_history_form.created(form="edit_history_form")}}</td>' +
+		'<td class="date">{{edit_history_form.settled(form="edit_history_form")}}</td>' +
+		'<td class="note">{{edit_history_form.note(form="edit_history_form")}}</td>' +
+		'<td class="icon"><a id="submit_history_edit" href="#" onclick="submitEditHistory()"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
+		'<td class="icon"><a id="reset_history_edit" href="#" onclick="cancelEditHistory()"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
+		'</tr>'
+	);
+	$('#history_' + id).after('<tr id="blank_history_row"></tr>')
+	$('#history_' + id).hide();
+	$('#blank_history_row').hide();
+
+	// Set form field values to values from hidden row.
+	$('#edit_history_id').val(id);
+	$('#edit_history_name').val($('#history_' + id + ' > td.name').text());
+	$('#edit_history_name').select();
+	var value = $('#history_' + id + ' > td.value').text();
+	$('#edit_history_value').val(value == "—" ? "" : value);
+	$('#edit_history_created').val($('#history_' + id + ' > td.date:eq(0)').text());
+	$('#edit_history_settled').val($('#history_' + id + ' > td.date:eq(1)').text());
+	$('#edit_history_note').val($('#history_' + id + ' > td.note').text());
+
+	// Enable JQuery UI's date picker.
+	$("#edit_history_created").datepicker({dateFormat: "yy-mm-dd"});
+	$("#edit_history_settled").datepicker({dateFormat: "yy-mm-dd"});
+
+	// Override form submission.
+	$("#edit_history_form").submit(function(e) {
+		submitEditHistory();
+		e.preventDefault();
+	});
+
+	// Submit on enter, cancel edit on escape.
+	$("#edit_history input").keydown(function(e) {
+		if (e.keyCode == 13) {
+			$('#edit_history_form').submit();
+		}
+		else if (e.keyCode == 27) {
+			cancelEditHistory();
+		}
+	});
+
+	return false;
+}
+
+function cancelEditHistory() {
+	$('#edit_history').remove();
+	$('#blank_history_row').remove();
+	$('#history > tbody > tr').show();
+	return false;
+}
+
+
 function removeHistory(id) {
 	$('#history > tbody > tr').remove();
 
@@ -40,11 +121,6 @@ function removeHistory(id) {
 	return false;
 }
 
-function editHistory(id) {
-	// TODO (Or not? If not, remove the icon, etc.)
-	return false;
-}
-
 function loadHistory() {
 	$.getJSON($SCRIPT_ROOT + "{{url_for('load_table')}}", {table: 'history'}, function(result) {
 		if (result.error) {
@@ -59,7 +135,7 @@ function loadHistory() {
 				// Add a row to the table.
 				var e = result.data.history[i];
 				$('#history > tbody').append(
-					'<tr>' +
+					'<tr id="history_' + e[0] + '">' +
 					'<td class="icon"><a href="#" onclick="sendBack(' + e[0] + ');"><img class="icon" src="' + $IMG_BACK + '" title="Send to Current" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
 					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
@@ -92,6 +168,8 @@ $(document).ready(function() {
 </script>
 
 <div class="heading">History</div>
+
+<form id="edit_history_form" action="#"></form>
 
 <table id="history">
 	<thead>

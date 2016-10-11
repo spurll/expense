@@ -79,7 +79,8 @@ function removeFuture(id) {
 }
 
 function addCurrent() {
-	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", $('#current_form').serialize() + "&table=current", function(result) {
+	var payload = $('#current_form').serialize().replace(/current_/g, "") + "&table=current";
+	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", payload, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -100,7 +101,8 @@ function addCurrent() {
 }
 
 function addFuture() {
-	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", $('#future_form').serialize() + "&table=future", function(result) {
+	var payload = $('#future_form').serialize().replace(/future_/g, "") + "&table=future";
+	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", payload, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -120,13 +122,175 @@ function addFuture() {
 	return false;
 }
 
+function submitEditCurrent() {
+	var payload = $('#edit_current_form').serialize().replace(/edit_current_/g, "") + "&table=current";
+	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", payload, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		else {
+			cancelEditCurrent();
+
+			{% if use_loading_gif %}
+			// Replace table content with loading GIF.
+			$('#loading_current').show('fast');
+			{% endif %}
+
+			$('#current > tbody > tr').not('#add_current').remove();
+			loadCurrent();
+		}
+	});
+	return false;
+}
+
+function submitEditFuture() {
+	var payload = $('#edit_future_form').serialize().replace(/edit_future_/g, "") + "&table=future";
+	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", payload, function(result) {
+		if (result.error) {
+			alert(result.error);
+		}
+		else {
+			cancelEditFuture();
+
+			{% if use_loading_gif %}
+			// Replace table content with loading GIF.
+			$('#loading_future').show('fast');
+			{% endif %}
+
+			$('#future > tbody > tr').not('#add_future').remove();
+			loadFuture();
+		}
+	});
+	return false;
+}
+
 function editCurrent(id) {
-	// TODO
+	// Hide row and replace with form fields.
+	$('#current_' + id).after(
+		'<tr id="edit_current">' +
+		'<td class="icon"></td>' +
+		'<td class="name">{{edit_current_form.id(form="edit_current_form")}}{{edit_current_form.name(form="edit_current_form")}}</td>' +
+		'<td class="value">{{edit_current_form.value(form="edit_current_form")}}</td>' +
+		'<td class="date">{{edit_current_form.created(form="edit_current_form")}}</td>' +
+		'<td class="note">{{edit_current_form.note(form="edit_current_form")}}</td>' +
+		'<td class="icon"><a id="submit_current_edit" href="#" onclick="submitEditCurrent()"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
+		'<td class="icon"><a id="reset_current_edit" href="#" onclick="cancelEditCurrent()"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
+		'</tr>'
+	);
+	$('#current_' + id).after('<tr id="blank_current_row"></tr>')
+	$('#current_' + id).hide();
+	$('#blank_current_row').hide();
+
+	// Set form field values to values from hidden row.
+	$('#edit_current_id').val(id);
+	$('#edit_current_name').val($('#current_' + id + ' > td.name').text());
+	$('#edit_current_name').select();
+	var value = $('#current_' + id + ' > td.value').text();
+	$('#edit_current_value').val(value == "—" ? "" : value);
+	$('#edit_current_created').val($('#current_' + id + ' > td.date').text());
+	$('#edit_current_note').val($('#current_' + id + ' > td.note').text());
+
+	// Enable JQuery UI's date picker.
+	$("#edit_current_created").datepicker({dateFormat: "yy-mm-dd"});
+
+	// Override form submission.
+	$("#edit_current_form").submit(function(e) {
+		submitEditCurrent();
+		e.preventDefault();
+	});
+
+	// Submit on enter, cancel edit on escape.
+	$("#edit_current input").keydown(function(e) {
+		if (e.keyCode == 13) {
+			$('#edit_current_form').submit();
+		}
+		else if (e.keyCode == 27) {
+			cancelEditCurrent();
+		}
+	});
+
 	return false;
 }
 
 function editFuture(id) {
-	// TODO
+	// Hide row and replace with form fields.
+	$('#future_' + id).after(
+		'<tr id="edit_future">' +
+		'<td class="icon"></td>' +
+		'<td class="name">{{edit_future_form.id(form="edit_future_form")}}{{edit_future_form.name(form="edit_future_form")}}</td>' +
+		'<td class="value">{{edit_future_form.value(form="edit_future_form")}}</td>' +
+		'<td class="date">{{edit_future_form.due_date(form="edit_future_form")}}</td>' +
+		'<td class="recur">{{edit_future_form.recur_freq(min=0, form="edit_future_form")}}{{edit_future_form.recur_type(form="edit_future_form")}}</td>' +
+		'<td class="note">{{edit_future_form.note(form="edit_future_form")}}</td>' +
+		'<td class="icon"><a id="submit_future_edit" href="#" onclick="submitEditFuture()"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
+		'<td class="icon"><a id="reset_future_edit" href="#" onclick="cancelEditFuture()"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
+		'</tr>'
+	);
+	$('#future_' + id).after('<tr id="blank_future_row"></tr>')
+	$('#future_' + id).hide();
+	$('#blank_future_row').hide();
+
+	// Set form field values to values from hidden row.
+	$('#edit_future_id').val(id);
+	$('#edit_future_name').val($('#future_' + id + ' > td.name').text());
+	$('#edit_future_name').select();
+	var value = $('#future_' + id + ' > td.value').text();
+	$('#edit_future_value').val(value == "—" ? "" : value);
+	$('#edit_future_due_date').val($('#future_' + id + ' > td.date').text());
+	var recur_text = $('#future_' + id + ' > td.recur').text();
+	var re = /(\d*)(\w)/;
+	$('#edit_future_recur_freq').val(recur_text.replace(re, '$1'));
+	$('#edit_future_recur_type').val(recur_text.replace(re, '$2'));
+	$('#edit_future_note').val($('#future_' + id + ' > td.note').text());
+
+	// Enable JQuery UI's date picker.
+	$("#edit_future_due_date").datepicker({dateFormat: "yy-mm-dd"});
+
+	// Add edit trigger for dropdown list. (God, so much repeated code.)
+	var v = $('#edit_future_recur_type').val();
+	if (v == "" || v == "R") {
+		$('#edit_future_recur_freq').hide();
+	}
+	$('#edit_future_recur_type').change(function (){
+		var v = $(this).val();
+		if (v == "" || v == "R") {
+			$('#edit_future_recur_freq').hide();
+		}
+		else {
+			$('#edit_future_recur_freq').show();
+		}
+	});
+
+	// Override form submission.
+	$("#edit_future_form").submit(function(e) {
+		submitEditFuture();
+		e.preventDefault();
+	});
+
+	// Submit on enter, cancel edit on escape.
+	$("#edit_future input").keydown(function(e) {
+		if (e.keyCode == 13) {
+			$('#edit_future_form').submit();
+		}
+		else if (e.keyCode == 27) {
+			cancelEditFuture();
+		}
+	});
+
+	return false;
+}
+
+function cancelEditCurrent() {
+	$('#edit_current').remove();
+	$('#blank_current_row').remove();
+	$('#current > tbody > tr').show();
+	return false;
+}
+
+function cancelEditFuture() {
+	$('#edit_future').remove();
+	$('#blank_future_row').remove();
+	$('#future > tbody > tr').show();
 	return false;
 }
 
@@ -144,7 +308,7 @@ function loadCurrent() {
 				// Add a row to the table.
 				var e = result.data.current[i];
 				$('#current > tbody').append(
-					'<tr>' +
+					'<tr id="current_' + e[0] + '">' +
 					'<td class="icon"><a href="#" onclick="settle(' + e[0] + ');"><img class="icon" src="' + $IMG_CHECK + '" title="Settle" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
 					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
@@ -181,7 +345,7 @@ function loadFuture() {
 				// Add a row to the table.
 				var e = result.data.future[i];
 				$('#future > tbody').append(
-					'<tr>' +
+					'<tr id="future_' + e[0] + '">' +
 					'<td class="icon"><a href="#" onclick="advance(' + e[0] + ');"><img class="icon" src="' + $IMG_ADVANCE + '" title="Send to Current" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
 					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
@@ -211,7 +375,7 @@ $(document).ready(function() {
 	{% endif %}
 
 	// Enable JQuery UI's date picker.
-	$("td.date > input").datepicker({dateFormat: "yy-mm-dd"});
+	$(".date input").datepicker({dateFormat: "yy-mm-dd"});
 
 	// Attach functions to form buttons.
 	$('#submit_current').on('click', addCurrent);
@@ -230,14 +394,33 @@ $(document).ready(function() {
 	});
 
 	// Submit on enter, reset on escape.
-	$("form").keydown(function(e) {
+	$("#add_current input").keydown(function(e) {
 		if (e.keyCode == 13) {
-			$(this).submit();
+			$('#current_form').submit();
 		}
 		else if (e.keyCode == 27) {
-			$(this)[0].reset();
+			$('#current_form')[0].reset();
 		}
-	})
+	});
+	$("#add_future input").keydown(function(e) {
+		if (e.keyCode == 13) {
+			$('#future_form').submit();
+		}
+		else if (e.keyCode == 27) {
+			$('#future_form')[0].reset();
+		}
+	});
+
+	// Add edit trigger for dropdown list.
+	$("#future_recur_type").change(function (){
+		var v = $(this).val();
+		if (v == "" || v == "R") {
+			$("#future_recur_freq").hide();
+		}
+		else {
+			$("#future_recur_freq").show();
+		}
+	});
 
 	// Load data.
 	loadCurrent();
@@ -247,43 +430,44 @@ $(document).ready(function() {
 
 <div class="heading">Current</div>
 
-<form id="current_form" action="#">
-	<table id="current" class="expense_table">
-		<thead>
-			<tr>
-				<th></th>
-				<th>Item</th>
-				<th>Value</th>
-				<th>Created</th>
-				<th>Notes</th>
-				<th></th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr id="add_current">
-				<td class="icon"></td>
-				<td class="name">{{current_form.name(autofocus=true)}}</td>
-				<td class="value">{{current_form.value}}</td>
-				<td class="date">{{current_form.created}}</td>
-				<td class="note">{{current_form.note}}</td>
-				<td class="icon"><a id="submit_current" href="#"><img class="icon" src="{{url_for('static', filename='check.png')}}" title="Accept" /></a></td>
-				<td class="icon"><a id="reset_current" href="#"><img class="icon" src="{{url_for('static', filename='x.png')}}" title="Cancel" /></a></td>
-			</tr>
-		</tbody>
-		<tfoot>
-			<tr>
-				<td></td>
-				<td class="name">Total</th>
-				<td id="total_value" class="value"></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-			</tr>
-		</tfoot>
-	</table>
-</form>
+<form id="current_form" action="#"></form>
+<form id="edit_current_form" action="#"></form>
+
+<table id="current" class="expense_table">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Item</th>
+			<th>Value</th>
+			<th>Created</th>
+			<th>Notes</th>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr id="add_current">
+			<td class="icon"></td>
+			<td class="name">{{current_form.name(autofocus=true, form="current_form")}}</td>
+			<td class="value">{{current_form.value(form="current_form")}}</td>
+			<td class="date">{{current_form.created(form="current_form")}}</td>
+			<td class="note">{{current_form.note(form="current_form")}}</td>
+			<td class="icon"><a id="submit_current" href="#"><img class="icon" src="{{url_for('static', filename='check.png')}}" title="Accept" /></a></td>
+			<td class="icon"><a id="reset_current" href="#"><img class="icon" src="{{url_for('static', filename='x.png')}}" title="Cancel" /></a></td>
+		</tr>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td></td>
+			<td class="name">Total</th>
+			<td id="total_value" class="value"></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</tfoot>
+</table>
 
 {% if use_loading_gif %}
 <div class="loading" id="loading_current"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>
@@ -291,34 +475,35 @@ $(document).ready(function() {
 
 <div class="heading">Future</div>
 
-<form id="future_form" action="#">
-	<table id="future" class="expense_table">
-		<thead>
-			<tr>
-				<th></th>
-				<th>Item</th>
-				<th>Value</th>
-				<th>Due</th>
-				<th>Recur</th>
-				<th>Notes</th>
-				<th></th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr id="add_future">
-				<td class="icon"></td>
-				<td class="name">{{future_form.name}}</td>
-				<td class="value">{{future_form.value}}</td>
-				<td class="date">{{future_form.due_date}}</td>
-				<td class="recur">{{future_form.recur_freq(min=0)}}{{future_form.recur_type}}</td>
-				<td class="note">{{future_form.note}}</td>
-				<td class="icon"><a id="submit_future" href="#"><img class="icon" src="{{url_for('static', filename='check.png')}}" title="Accept" /></a></td>
-				<td class="icon"><a id="reset_future" href="#"><img class="icon" src="{{url_for('static', filename='x.png')}}" title="Cancel" /></a></td>
-			</tr>
-		</tbody>
-	</table>
-</form>
+<form id="future_form" action="#"></form>
+<form id="edit_future_form" action="#"></form>
+
+<table id="future" class="expense_table">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Item</th>
+			<th>Value</th>
+			<th>Due</th>
+			<th>Recur</th>
+			<th>Notes</th>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr id="add_future">
+			<td class="icon"></td>
+			<td class="name">{{future_form.name(form="future_form")}}</td>
+			<td class="value">{{future_form.value(form="future_form")}}</td>
+			<td class="date">{{future_form.due_date(form="future_form")}}</td>
+			<td class="recur">{{future_form.recur_freq(min=0, hidden=true, form="future_form")}}{{future_form.recur_type(form="future_form")}}</td>
+			<td class="note">{{future_form.note(form="future_form")}}</td>
+			<td class="icon"><a id="submit_future" href="#"><img class="icon" src="{{url_for('static', filename='check.png')}}" title="Accept" /></a></td>
+			<td class="icon"><a id="reset_future" href="#"><img class="icon" src="{{url_for('static', filename='x.png')}}" title="Cancel" /></a></td>
+		</tr>
+	</tbody>
+</table>
 
 {% if use_loading_gif %}
 <div class="loading" id="loading_future"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>
