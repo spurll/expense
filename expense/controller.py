@@ -225,6 +225,6 @@ def load_csv(user, filename, add_function=add_current):
             )
 
 
-def save_current_csv(filename):
+def save_csv(filename):
     # TODO
     pass
