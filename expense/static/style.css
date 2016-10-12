@@ -105,7 +105,8 @@ a:visited { text-decoration: none; color: #888888; }
 a:hover { text-decoration: none; color: #ffffff; }
 a:active { text-decoration: none; color: #888888; }
 
-input { color: #ffffff; background-color: transparent; border: solid 1px #444444; font-family: serif; }
+input { color: #ffffff; background-color: transparent; border: solid 1px #444444; }
+input:not(#password):not(#username):not([type="submit"]) { font-family: serif; }
 select { color: #ffffff; background-color: transparent; border: solid 1px #444444; font-family: serif; }
 select option { background-color: #222222; }
 input[type="text"] { width: 100%; }

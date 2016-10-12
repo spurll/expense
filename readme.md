@@ -36,6 +36,7 @@ Feature Requests
 
 * Automated rolling snapshots every day
 * Invalid currencies should display warning to user as well as to console
+* Error messages should have better debugging information (error type, stack trace)
 * Error messages should be non-interrupting and auto-dismissing (then we can have success
   messages, too)
 * Implement `controller.save_csv`
