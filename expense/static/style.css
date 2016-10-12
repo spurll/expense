@@ -20,7 +20,7 @@ table {
 }
 
 th { font-variant: small-caps; }
-td { font-size: 85%; padding: 3px; }
+td { font-size: 75%; padding: 3px; }
 tfoot { font-weight: bold; font-variant: small-caps; }
 
 #content {
@@ -105,8 +105,9 @@ a:visited { text-decoration: none; color: #888888; }
 a:hover { text-decoration: none; color: #ffffff; }
 a:active { text-decoration: none; color: #888888; }
 
-input { color: #ffffff; background-color: transparent; border: solid 1px #444444; }
-select { color: #ffffff; background-color: transparent; border: solid 1px #444444; }
+input { color: #ffffff; background-color: transparent; border: solid 1px #444444; font-family: serif; }
+select { color: #ffffff; background-color: transparent; border: solid 1px #444444; font-family: serif; }
+select option { background-color: #222222; }
 input[type="text"] { width: 100%; }
 input[type="password"] { width: 100%; }
 input[name="value"] { text-align: right; }

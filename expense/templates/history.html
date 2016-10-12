@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <script type=text/javascript>
-$SCRIPT_ROOT = {{request.script_root|tojson|safe}};
 $IMG_CHECK = "{{url_for('static', filename='check.png')}}";
 $IMG_BACK = "{{url_for('static', filename='back.png')}}";
 $IMG_EDIT = "{{url_for('static', filename='edit.png')}}";
@@ -15,7 +14,7 @@ function sendBack(id) {
 	$('#loading').show('fast');
 	{% endif %}
 
-	$.getJSON($SCRIPT_ROOT + "{{url_for('send_back')}}", {id: id}, function(result) {
+	$.getJSON("{{url_for('send_back')}}", {id: id}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -26,7 +25,7 @@ function sendBack(id) {
 
 function submitEditHistory() {
 	var payload = $('#edit_history_form').serialize().replace(/edit_history_/g, "") + "&table=history";
-	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", payload, function(result) {
+	$.getJSON("{{url_for('add_expense')}}", payload, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -112,7 +111,7 @@ function removeHistory(id) {
 	$('#loading').show('fast');
 	{% endif %}
 
-	$.getJSON($SCRIPT_ROOT + "{{url_for('delete')}}", {table: 'history', id: id}, function(result) {
+	$.getJSON("{{url_for('delete')}}", {table: 'history', id: id}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -122,7 +121,7 @@ function removeHistory(id) {
 }
 
 function loadHistory() {
-	$.getJSON($SCRIPT_ROOT + "{{url_for('load_table')}}", {table: 'history'}, function(result) {
+	$.getJSON("{{url_for('load_table')}}", {table: 'history'}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}

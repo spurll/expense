@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <script type=text/javascript>
-$SCRIPT_ROOT = {{request.script_root|tojson|safe}};
 $IMG_CHECK = "{{url_for('static', filename='check.png')}}";
 $IMG_EDIT = "{{url_for('static', filename='edit.png')}}";
 $IMG_DELETE = "{{url_for('static', filename='x.png')}}";
@@ -15,7 +14,7 @@ function settle(id) {
 	$('#loading_current').show('fast');
 	{% endif %}
 
-	$.getJSON($SCRIPT_ROOT + "{{url_for('settle')}}", {id: id}, function(result) {
+	$.getJSON("{{url_for('settle')}}", {id: id}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -34,7 +33,7 @@ function advance(id) {
 	$('#loading_future').show('fast');
 	{% endif %}
 
-	$.getJSON($SCRIPT_ROOT + "{{url_for('advance')}}", {id: id}, function(result) {
+	$.getJSON("{{url_for('advance')}}", {id: id}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -52,7 +51,7 @@ function removeCurrent(id) {
 	$('#loading_current').show('fast');
 	{% endif %}
 
-	$.getJSON($SCRIPT_ROOT + "{{url_for('delete')}}", {table: 'current', id: id}, function(result) {
+	$.getJSON("{{url_for('delete')}}", {table: 'current', id: id}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -69,7 +68,7 @@ function removeFuture(id) {
 	$('#loading_future').show('fast');
 	{% endif %}
 
-	$.getJSON($SCRIPT_ROOT + "{{url_for('delete')}}", {table: 'future', id: id}, function(result) {
+	$.getJSON("{{url_for('delete')}}", {table: 'future', id: id}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -80,13 +79,13 @@ function removeFuture(id) {
 
 function addCurrent() {
 	var payload = $('#current_form').serialize().replace(/current_/g, "") + "&table=current";
-	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", payload, function(result) {
+	$.getJSON("{{url_for('add_expense')}}", payload, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
 		else {
 			$('#current_form')[0].reset();
-			$('#current_form #name').focus();
+			$('#current_name').focus();
 
 			{% if use_loading_gif %}
 			// Replace table content with loading GIF.
@@ -102,13 +101,14 @@ function addCurrent() {
 
 function addFuture() {
 	var payload = $('#future_form').serialize().replace(/future_/g, "") + "&table=future";
-	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", payload, function(result) {
+	$.getJSON("{{url_for('add_expense')}}", payload, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
 		else {
 			$('#future_form')[0].reset();
-			$('#future_form #name').focus();
+			$("#future_recur_freq").hide();
+			$('#future_name').focus();
 
 			{% if use_loading_gif %}
 			// Replace table content with loading GIF.
@@ -124,7 +124,7 @@ function addFuture() {
 
 function submitEditCurrent() {
 	var payload = $('#edit_current_form').serialize().replace(/edit_current_/g, "") + "&table=current";
-	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", payload, function(result) {
+	$.getJSON("{{url_for('add_expense')}}", payload, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -145,7 +145,7 @@ function submitEditCurrent() {
 
 function submitEditFuture() {
 	var payload = $('#edit_future_form').serialize().replace(/edit_future_/g, "") + "&table=future";
-	$.getJSON($SCRIPT_ROOT + "{{url_for('add_expense')}}", payload, function(result) {
+	$.getJSON("{{url_for('add_expense')}}", payload, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -295,7 +295,7 @@ function cancelEditFuture() {
 }
 
 function loadCurrent() {
-	$.getJSON($SCRIPT_ROOT + "{{url_for('load_table')}}", {table: 'current'}, function(result) {
+	$.getJSON("{{url_for('load_table')}}", {table: 'current'}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -332,7 +332,7 @@ function loadCurrent() {
 }
 
 function loadFuture() {
-	$.getJSON($SCRIPT_ROOT + "{{url_for('load_table')}}", {table: 'future'}, function(result) {
+	$.getJSON("{{url_for('load_table')}}", {table: 'future'}, function(result) {
 		if (result.error) {None
 			alert(result.error);
 		}

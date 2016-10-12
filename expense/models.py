@@ -198,28 +198,29 @@ class Future(db.Model):
         screw up day information (e.g., recur every month on the 30th).
         """
         # In case recur_freq, due_date, or base_date weren't set...
-        self.recur_freq = self.recur_freq or 1
-        self.due_date = self.due_date or date.today()
+        recur_freq = self.recur_freq or 1
+        due_date = self.due_date or date.today()
         self.recur_base = self.recur_base or due_date
+        # If recur_base isn't set, save it to the object.
 
         if self.recur_type == 'D':
-            self.due_date = self.due_date + timedelta(days=self.recur_freq)
+            self.due_date = due_date + timedelta(days=recur_freq)
 
         elif self.recur_type == 'W':
-            self.due_date = self.due_date + timedelta(weeks=self.recur_freq)
+            self.due_date = due_date + timedelta(weeks=recur_freq)
 
         elif self.recur_type == 'M':
-            op = lambda d, i: increment_month(d, self.recur_freq * i)
+            op = lambda d, i: increment_month(d, recur_freq * i)
             self.due_date = complex_recur(
-                self.recur_base, op, lambda dt: dt > self.due_date
+                self.recur_base, op, lambda dt: dt > due_date
             )
 
         elif self.recur_type == 'Y':
             op = lambda d, i: safe_date(
-                d.year + self.recur_freq * i, d.month, d.day
+                d.year + recur_freq * i, d.month, d.day
             )
             self.due_date = complex_recur(
-                self.recur_base, op, lambda dt: dt > self.due_date
+                self.recur_base, op, lambda dt: dt > due_date
             )
 
     def __repr__(self):
