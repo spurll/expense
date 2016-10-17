@@ -34,7 +34,6 @@ Bugs and Feature Requests
 Feature Requests
 ----------------
 
-* Automated rolling snapshots every day
 * Invalid currencies should display warning to user as well as to console
 * Error messages should have better debugging information (error type, stack trace)
 * Error messages should be non-interrupting and auto-dismissing (then we can have success
@@ -42,16 +41,13 @@ Feature Requests
 * Implement `controller.save_csv`
 * Move efficient updates: just remove the appropriate rows from the tables (rather than
   reloading the whole thing)
-* Probably need pagination for the history page (it can get *huge*)
+* Probably could use pagination for the history page (it can get *huge*)
 
 Known Bugs
 ----------
 
 * Because of the way information is sent via GET requests, it's impossible remove
   recurrence from an item (because it requires setting the value to "")
-* When editing an item, currency information is not populated (Javascript should have
-  access to the value of LOCAL_CURRENCY and should compare the title text to see if it's
-  relevant)
 
 Special Thanks
 ==============

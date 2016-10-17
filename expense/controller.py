@@ -9,10 +9,10 @@ from expense.utils import to_fractional, list_currencies
 STRPTIME_FORMAT = app.config.get('DATE_FORMAT', '%Y-%m-%d')
 DATE_FORMAT = '{:' + STRPTIME_FORMAT + '}'
 CSV_COLUMNS = ['blank', 'name', 'value', 'created', 'settled', 'note']
+LOCAL_CURRENCY = app.config.get('LOCAL_CURRENCY', 'USD')
 
 
 def current_table(user):
-    # TODO: Might want an asterisk or something to indicate approximate values?
     return [
         [
             e.id,
@@ -173,7 +173,7 @@ def delete_history(user, history_id):
 def convert_fields(fields):
     if 'value' in fields:
         if isinstance(fields['value'], str):
-            # Parse out the string value (and potential currency).
+            # Parse out the string value and potential currency.
             m = re.search(r'\$?([\d\.]+) ?(\w*)', fields['value'])
             value = float(m.group(1))
             currency = m.group(2).upper()
@@ -194,6 +194,13 @@ def convert_fields(fields):
                     )
                 else:
                     fields['currency'] = currency
+
+            if not currency:
+                # Assuming value is a string (it's from the form), make sure
+                # that it gets set to something (if it was previously set to a
+                # foreign currency, it shouldn't necessarily remain set when
+                # edited). This isn't an else because of the elif above.
+                fields['currency'] = LOCAL_CURRENCY
 
             fields['value'] = value
 

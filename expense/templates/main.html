@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+
 <script type=text/javascript>
 $IMG_CHECK = "{{url_for('static', filename='check.png')}}";
 $IMG_EDIT = "{{url_for('static', filename='edit.png')}}";
@@ -10,8 +11,7 @@ function settle(id) {
 	$('#current > tbody > tr').not('#add_current').remove();
 
 	{% if use_loading_gif %}
-	// Replace table content with loading GIF.
-	$('#loading_current').show('fast');
+	$('#loading').fadeIn('slow');
 	{% endif %}
 
 	$.getJSON("{{url_for('settle')}}", {id: id}, function(result) {
@@ -28,9 +28,7 @@ function advance(id) {
 	$('#future > tbody > tr').not('#add_future').remove();
 
 	{% if use_loading_gif %}
-	// Replace table content with loading GIF.
-	$('#loading_current').show('fast');
-	$('#loading_future').show('fast');
+	$('#loading').fadeIn('slow');
 	{% endif %}
 
 	$.getJSON("{{url_for('advance')}}", {id: id}, function(result) {
@@ -47,8 +45,7 @@ function removeCurrent(id) {
 	$('#current > tbody > tr').not('#add_current').remove();
 
 	{% if use_loading_gif %}
-	// Replace table content with loading GIF.
-	$('#loading_current').show('fast');
+	$('#loading').fadeIn('slow');
 	{% endif %}
 
 	$.getJSON("{{url_for('delete')}}", {table: 'current', id: id}, function(result) {
@@ -64,8 +61,7 @@ function removeFuture(id) {
 	$('#future > tbody > tr').not('#add_future').remove();
 
 	{% if use_loading_gif %}
-	// Replace table content with loading GIF.
-	$('#loading_future').show('fast');
+	$('#loading').fadeIn('slow');
 	{% endif %}
 
 	$.getJSON("{{url_for('delete')}}", {table: 'future', id: id}, function(result) {
@@ -88,8 +84,7 @@ function addCurrent() {
 			$('#current_name').focus();
 
 			{% if use_loading_gif %}
-			// Replace table content with loading GIF.
-			$('#loading_current').show('fast');
+			$('#loading').fadeIn('slow');
 			{% endif %}
 
 			$('#current > tbody > tr').not('#add_current').remove();
@@ -111,8 +106,7 @@ function addFuture() {
 			$('#future_name').focus();
 
 			{% if use_loading_gif %}
-			// Replace table content with loading GIF.
-			$('#loading_future').show('fast');
+			$('#loading').fadeIn('slow');
 			{% endif %}
 
 			$('#future > tbody > tr').not('#add_future').remove();
@@ -132,8 +126,7 @@ function submitEditCurrent() {
 			cancelEditCurrent();
 
 			{% if use_loading_gif %}
-			// Replace table content with loading GIF.
-			$('#loading_current').show('fast');
+			$('#loading').fadeIn('slow');
 			{% endif %}
 
 			$('#current > tbody > tr').not('#add_current').remove();
@@ -153,8 +146,7 @@ function submitEditFuture() {
 			cancelEditFuture();
 
 			{% if use_loading_gif %}
-			// Replace table content with loading GIF.
-			$('#loading_future').show('fast');
+			$('#loading').fadeIn('slow');
 			{% endif %}
 
 			$('#future > tbody > tr').not('#add_future').remove();
@@ -185,7 +177,7 @@ function editCurrent(id) {
 	$('#edit_current_id').val(id);
 	$('#edit_current_name').val($('#current_' + id + ' > td.name').text());
 	$('#edit_current_name').select();
-	var value = $('#current_' + id + ' > td.value').text();
+	var value = $('#current_' + id + ' > td.value')[0].title;
 	$('#edit_current_value').val(value == "—" ? "" : value);
 	$('#edit_current_created').val($('#current_' + id + ' > td.date').text());
 	$('#edit_current_note').val($('#current_' + id + ' > td.note').text());
@@ -234,7 +226,7 @@ function editFuture(id) {
 	$('#edit_future_id').val(id);
 	$('#edit_future_name').val($('#future_' + id + ' > td.name').text());
 	$('#edit_future_name').select();
-	var value = $('#future_' + id + ' > td.value').text();
+	var value = $('#future_' + id + ' > td.value')[0].title;
 	$('#edit_future_value').val(value == "—" ? "" : value);
 	$('#edit_future_due_date').val($('#future_' + id + ' > td.date').text());
 	var recur_text = $('#future_' + id + ' > td.recur').text();
@@ -323,8 +315,7 @@ function loadCurrent() {
 			$('#total_value').text(result.data.total);
 
 			{% if use_loading_gif %}
-			// Hide loading GIF.
-			$('#loading_current').hide('fast');
+			$('#loading').fadeOut('slow');
 			{% endif %}
 		}
 	});
@@ -359,8 +350,7 @@ function loadFuture() {
 			}
 
 			{% if use_loading_gif %}
-			// Hide loading GIF.
-			$('#loading_future').hide('fast');
+			$('#loading').fadeOut('slow');
 			{% endif %}
 		}
 	});
@@ -369,9 +359,7 @@ function loadFuture() {
 
 $(document).ready(function() {
 	{% if use_loading_gif %}
-	// Replace table content with loading GIF.
-	$('#loading_current').show('fast');
-	$('#loading_future').show('fast');
+	$('#loading').fadeIn('slow');
 	{% endif %}
 
 	// Enable JQuery UI's date picker.
@@ -428,6 +416,10 @@ $(document).ready(function() {
 });
 </script>
 
+{% if use_loading_gif %}
+<div class="loading" id="loading"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>
+{% endif %}
+
 <div class="heading">Current</div>
 
 <form id="current_form" action="#"></form>
@@ -469,10 +461,6 @@ $(document).ready(function() {
 	</tfoot>
 </table>
 
-{% if use_loading_gif %}
-<div class="loading" id="loading_current"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>
-{% endif %}
-
 <div class="heading">Future</div>
 
 <form id="future_form" action="#"></form>
@@ -505,7 +493,4 @@ $(document).ready(function() {
 	</tbody>
 </table>
 
-{% if use_loading_gif %}
-<div class="loading" id="loading_future"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>
-{% endif %}
 {% endblock %}

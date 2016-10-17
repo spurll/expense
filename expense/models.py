@@ -90,8 +90,9 @@ class Current(db.Model):
         """
         Returns the local value of the expense, formatted for display.
         """
-        return '{}{:,.2f}'.format(
-            app.config['LOCAL_SYMBOL'], to_major(self.local_value)
+        return '{}{:,.2f}{}'.format(
+            app.config['LOCAL_SYMBOL'], to_major(self.local_value),
+            '' if self.currency == LOCAL_CURRENCY else '*'
         ) if self.local_value is not None else '—'
 
     def advance(self):
@@ -153,8 +154,9 @@ class Future(db.Model):
         """
         Returns the local value of the expense, formatted for display.
         """
-        return '{}{:,.2f}'.format(
-            app.config['LOCAL_SYMBOL'], to_major(self.local_value)
+        return '{}{:,.2f}{}'.format(
+            app.config['LOCAL_SYMBOL'], to_major(self.local_value),
+            '' if self.currency == LOCAL_CURRENCY else '*'
         ) if self.local_value is not None else '—'
 
     @property
@@ -265,8 +267,9 @@ class History(db.Model):
         """
         Returns the local value of the expense, formatted for display.
         """
-        return '{}{:,.2f}'.format(
-            app.config['LOCAL_SYMBOL'], to_major(self.local_value)
+        return '{}{:,.2f}{}'.format(
+            app.config['LOCAL_SYMBOL'], to_major(self.local_value),
+            '' if self.currency == LOCAL_CURRENCY else '*'
         ) if self.local_value is not None else '—'
 
     def back(self):

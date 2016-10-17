@@ -22,5 +22,5 @@ ADMIN_USERS = ['LDAP.USER.ID.HERE']
 LOCAL_CURRENCY = 'CAD'
 LOCAL_SYMBOL = '$'
 FRACTIONS_PER_UNIT = 100    # Number of cents in a dollar (or local equivalent)
-LOADING_GIF = False
+LOADING_GIF = True
 DATE_FORMAT = '%Y-%m-%d'

@@ -11,7 +11,7 @@ function sendBack(id) {
 
 	{% if use_loading_gif %}
 	// Replace table content with loading GIF.
-	$('#loading').show('fast');
+	$('#loading').fadeIn('slow');
 	{% endif %}
 
 	$.getJSON("{{url_for('send_back')}}", {id: id}, function(result) {
@@ -34,7 +34,7 @@ function submitEditHistory() {
 
 			{% if use_loading_gif %}
 			// Replace table content with loading GIF.
-			$('#loading').show('fast');
+			$('#loading').fadeIn('slow');
 			{% endif %}
 
 			$('#history > tbody > tr').remove();
@@ -108,7 +108,7 @@ function removeHistory(id) {
 
 	{% if use_loading_gif %}
 	// Replace table content with loading GIF.
-	$('#loading').show('fast');
+	$('#loading').fadeIn('slow');
 	{% endif %}
 
 	$.getJSON("{{url_for('delete')}}", {table: 'history', id: id}, function(result) {
@@ -149,7 +149,7 @@ function loadHistory() {
 
 			{% if use_loading_gif %}
 			// Hide loading GIF.
-			$('#loading').hide('fast');
+			$('#loading').fadeOut('slow');
 			{% endif %}
 		}
 	});
@@ -159,12 +159,16 @@ function loadHistory() {
 $(document).ready(function() {
 	{% if use_loading_gif %}
 	// Replace table content with loading GIF.
-	$('#loading').show('fast');
+	$('#loading').fadeIn('slow');
 	{% endif %}
 
 	loadHistory();
 });
 </script>
+
+{% if use_loading_gif %}
+<div class="loading" id="loading"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>
+{% endif %}
 
 <div class="heading">History</div>
 
@@ -185,9 +189,5 @@ $(document).ready(function() {
 	</thead>
 	<tbody></tbody>
 </table>
-
-{% if use_loading_gif %}
-<div class="loading" id="loading"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>
-{% endif %}
 
 {% endblock %}
