@@ -7,10 +7,7 @@ $IMG_EDIT = "{{url_for('static', filename='edit.png')}}";
 $IMG_DELETE = "{{url_for('static', filename='x.png')}}";
 
 function sendBack(id) {
-	$('#history > tbody > tr').remove();
-
 	{% if use_loading_gif %}
-	// Replace table content with loading GIF.
 	$('#loading').fadeIn('slow');
 	{% endif %}
 
@@ -18,7 +15,13 @@ function sendBack(id) {
 		if (result.error) {
 			alert(result.error);
 		}
-		loadHistory();
+		else {
+			$('#history_' + id).remove();
+
+			{% if use_loading_gif %}
+			$('#loading').fadeOut('slow');
+			{% endif %}
+		}
 	});
 	return false;
 }
@@ -33,10 +36,10 @@ function submitEditHistory() {
 			cancelEditHistory();
 
 			{% if use_loading_gif %}
-			// Replace table content with loading GIF.
 			$('#loading').fadeIn('slow');
 			{% endif %}
 
+			// TODO: Should probably add a function to load a single ID from a table.
 			$('#history > tbody > tr').remove();
 			loadHistory();
 		}
@@ -104,10 +107,7 @@ function cancelEditHistory() {
 
 
 function removeHistory(id) {
-	$('#history > tbody > tr').remove();
-
 	{% if use_loading_gif %}
-	// Replace table content with loading GIF.
 	$('#loading').fadeIn('slow');
 	{% endif %}
 
@@ -115,7 +115,9 @@ function removeHistory(id) {
 		if (result.error) {
 			alert(result.error);
 		}
-		loadHistory();
+		else {
+			$('#history_' + id).remove();
+		}
 	});
 	return false;
 }
@@ -146,12 +148,10 @@ function loadHistory() {
 					'</tr>'
 				);
 			}
-
-			{% if use_loading_gif %}
-			// Hide loading GIF.
-			$('#loading').fadeOut('slow');
-			{% endif %}
 		}
+		{% if use_loading_gif %}
+		$('#loading').fadeOut('slow');
+		{% endif %}
 	});
 	return false;
 }

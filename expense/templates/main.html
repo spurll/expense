@@ -8,8 +8,6 @@ $IMG_DELETE = "{{url_for('static', filename='x.png')}}";
 $IMG_ADVANCE = "{{url_for('static', filename='up.png')}}";
 
 function settle(id) {
-	$('#current > tbody > tr').not('#add_current').remove();
-
 	{% if use_loading_gif %}
 	$('#loading').fadeIn('slow');
 	{% endif %}
@@ -18,32 +16,33 @@ function settle(id) {
 		if (result.error) {
 			alert(result.error);
 		}
-		loadCurrent();
+		else {
+			$('#current_' + id).remove();
+			loadTotal();
+		}
 	});
 	return false;
 }
 
 function advance(id) {
-	$('#current > tbody > tr').not('#add_current').remove();
-	$('#future > tbody > tr').not('#add_future').remove();
-
 	{% if use_loading_gif %}
 	$('#loading').fadeIn('slow');
 	{% endif %}
 
 	$.getJSON("{{url_for('advance')}}", {id: id}, function(result) {
 		if (result.error) {
+			$('#loading').fadeOut('slow');
 			alert(result.error);
 		}
-		loadCurrent();
-		loadFuture();
+		else {
+			$('#future_' + id).remove();
+			loadCurrent();
+		}
 	});
 	return false;
 }
 
 function removeCurrent(id) {
-	$('#current > tbody > tr').not('#add_current').remove();
-
 	{% if use_loading_gif %}
 	$('#loading').fadeIn('slow');
 	{% endif %}
@@ -52,14 +51,15 @@ function removeCurrent(id) {
 		if (result.error) {
 			alert(result.error);
 		}
-		loadCurrent();
+		else {
+			$('#current_' + id).remove();
+			loadTotal();
+		}
 	});
 	return false;
 }
 
 function removeFuture(id) {
-	$('#future > tbody > tr').not('#add_future').remove();
-
 	{% if use_loading_gif %}
 	$('#loading').fadeIn('slow');
 	{% endif %}
@@ -68,7 +68,13 @@ function removeFuture(id) {
 		if (result.error) {
 			alert(result.error);
 		}
-		loadFuture();
+		else {
+			$('#future_' + id).remove();
+		}
+
+		{% if use_loading_gif %}
+		$('#loading').fadeOut('slow');
+		{% endif %}
 	});
 	return false;
 }
@@ -129,6 +135,7 @@ function submitEditCurrent() {
 			$('#loading').fadeIn('slow');
 			{% endif %}
 
+			// TODO: Should probably add a function to load a single ID from a table.
 			$('#current > tbody > tr').not('#add_current').remove();
 			loadCurrent();
 		}
@@ -149,6 +156,7 @@ function submitEditFuture() {
 			$('#loading').fadeIn('slow');
 			{% endif %}
 
+			// TODO: Should probably add a function to load a single ID from a table.
 			$('#future > tbody > tr').not('#add_future').remove();
 			loadFuture();
 		}
@@ -313,11 +321,27 @@ function loadCurrent() {
 			}
 
 			$('#total_value').text(result.data.total);
-
-			{% if use_loading_gif %}
-			$('#loading').fadeOut('slow');
-			{% endif %}
 		}
+
+		{% if use_loading_gif %}
+		$('#loading').fadeOut('slow');
+		{% endif %}
+	});
+	return false;
+}
+
+function loadTotal() {
+	$.getJSON("{{url_for('total')}}", {}, function(result) {
+		if (result.error) {None
+			alert(result.error);
+		}
+		else {
+			$('#total_value').text(result.data);
+		}
+
+		{% if use_loading_gif %}
+		$('#loading').fadeOut('slow');
+		{% endif %}
 	});
 	return false;
 }
@@ -348,11 +372,10 @@ function loadFuture() {
 					'</tr>'
 				);
 			}
-
-			{% if use_loading_gif %}
-			$('#loading').fadeOut('slow');
-			{% endif %}
 		}
+		{% if use_loading_gif %}
+		$('#loading').fadeOut('slow');
+		{% endif %}
 	});
 	return false;
 }
