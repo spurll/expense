@@ -28,6 +28,12 @@ Starting the Server
 Start the server with `run.py`. By default it will be accessible at `localhost:9999`. To
 make the server world-accessible or for other options, see `run.py -h`.
 
+If you're having trouble configuring your sever, I wrote a <a
+href="http://blog.spurll.com/2015/02/configuring-flask-uwsgi-and-nginx.html">blog post</a>
+detailing explaining how to
+<a href="http://blog.spurll.com/2015/02/configuring-flask-uwsgi-and-nginx.html">get Flask,
+uWSGI, and Nginx working together</a>.
+
 Bugs and Feature Requests
 =========================
 
