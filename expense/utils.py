@@ -15,7 +15,10 @@ symbols_cache = []
 
 
 def to_fractional(value):
-    return int(value * CENTS)
+    # Rounding is required because of imprecise represenation of floating point
+    # numbers (e.g., 2.53 * 100 results in 252.99999999999997, which int will
+    # truncate to 252).
+    return int(round(value * CENTS))
 
 
 def to_major(value):
