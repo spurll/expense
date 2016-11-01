@@ -32,7 +32,7 @@ def history():
     View expense history.
     """
     return render_template(
-        'history.html', title='Expense', user=current_user,
+        'history.html', title='Expenses', user=current_user,
         edit_history_form=EditHistoryForm(),
         use_loading_gif=app.config.get('LOADING_GIF'),
         link={'url': url_for('main'), 'text': 'Back'}
