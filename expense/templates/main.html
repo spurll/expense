@@ -21,7 +21,6 @@ function settle(id) {
 			loadTotal();
 		}
 	});
-	return false;
 }
 
 function advance(id) {
@@ -39,7 +38,6 @@ function advance(id) {
 			loadCurrent();
 		}
 	});
-	return false;
 }
 
 function removeCurrent(id) {
@@ -56,7 +54,6 @@ function removeCurrent(id) {
 			loadTotal();
 		}
 	});
-	return false;
 }
 
 function removeFuture(id) {
@@ -76,7 +73,6 @@ function removeFuture(id) {
 		$('#loading').fadeOut('slow');
 		{% endif %}
 	});
-	return false;
 }
 
 function addCurrent() {
@@ -97,7 +93,6 @@ function addCurrent() {
 			loadCurrent();
 		}
 	});
-	return false;
 }
 
 function addFuture() {
@@ -119,7 +114,6 @@ function addFuture() {
 			loadFuture();
 		}
 	});
-	return false;
 }
 
 function submitEditCurrent() {
@@ -140,7 +134,6 @@ function submitEditCurrent() {
 			loadCurrent();
 		}
 	});
-	return false;
 }
 
 function submitEditFuture() {
@@ -161,7 +154,6 @@ function submitEditFuture() {
 			loadFuture();
 		}
 	});
-	return false;
 }
 
 function editCurrent(id) {
@@ -173,8 +165,8 @@ function editCurrent(id) {
 		'<td class="value">{{edit_current_form.value(form="edit_current_form")}}</td>' +
 		'<td class="date">{{edit_current_form.created(form="edit_current_form")}}</td>' +
 		'<td class="note">{{edit_current_form.note(form="edit_current_form")}}</td>' +
-		'<td class="icon"><a id="submit_current_edit" href="#" onclick="submitEditCurrent()"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
-		'<td class="icon"><a id="reset_current_edit" href="#" onclick="cancelEditCurrent()"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
+		'<td class="icon"><a id="submit_current_edit" href="#" onclick="submitEditCurrent(); return false;"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
+		'<td class="icon"><a id="reset_current_edit" href="#" onclick="cancelEditCurrent(); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
 		'</tr>'
 	);
 	$('#current_' + id).after('<tr id="blank_current_row"></tr>')
@@ -196,7 +188,7 @@ function editCurrent(id) {
 	// Override form submission.
 	$("#edit_current_form").submit(function(e) {
 		submitEditCurrent();
-		e.preventDefault();
+		return false;
 	});
 
 	// Submit on enter, cancel edit on escape.
@@ -208,8 +200,6 @@ function editCurrent(id) {
 			cancelEditCurrent();
 		}
 	});
-
-	return false;
 }
 
 function editFuture(id) {
@@ -222,8 +212,8 @@ function editFuture(id) {
 		'<td class="date">{{edit_future_form.due_date(form="edit_future_form")}}</td>' +
 		'<td class="recur">{{edit_future_form.recur_freq(min=0, form="edit_future_form")}}{{edit_future_form.recur_type(form="edit_future_form")}}</td>' +
 		'<td class="note">{{edit_future_form.note(form="edit_future_form")}}</td>' +
-		'<td class="icon"><a id="submit_future_edit" href="#" onclick="submitEditFuture()"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
-		'<td class="icon"><a id="reset_future_edit" href="#" onclick="cancelEditFuture()"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
+		'<td class="icon"><a id="submit_future_edit" href="#" onclick="submitEditFuture(); return false;"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
+		'<td class="icon"><a id="reset_future_edit" href="#" onclick="cancelEditFuture(); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
 		'</tr>'
 	);
 	$('#future_' + id).after('<tr id="blank_future_row"></tr>')
@@ -264,7 +254,7 @@ function editFuture(id) {
 	// Override form submission.
 	$("#edit_future_form").submit(function(e) {
 		submitEditFuture();
-		e.preventDefault();
+		return false;
 	});
 
 	// Submit on enter, cancel edit on escape.
@@ -276,22 +266,18 @@ function editFuture(id) {
 			cancelEditFuture();
 		}
 	});
-
-	return false;
 }
 
 function cancelEditCurrent() {
 	$('#edit_current').remove();
 	$('#blank_current_row').remove();
 	$('#current > tbody > tr').show();
-	return false;
 }
 
 function cancelEditFuture() {
 	$('#edit_future').remove();
 	$('#blank_future_row').remove();
 	$('#future > tbody > tr').show();
-	return false;
 }
 
 function loadCurrent() {
@@ -309,13 +295,13 @@ function loadCurrent() {
 				var e = result.data.current[i];
 				$('#current > tbody').append(
 					'<tr id="current_' + e[0] + '">' +
-					'<td class="icon"><a href="#" onclick="settle(' + e[0] + ');"><img class="icon" src="' + $IMG_CHECK + '" title="Settle" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="settle(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_CHECK + '" title="Settle" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
 					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
 					'<td class="date">' + e[4] + '</td>' +
 					'<td class="note">' + e[5] + '</td>' +
-					'<td class="icon"><a href="#" onclick="editCurrent(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-					'<td class="icon"><a href="#" onclick="removeCurrent(' + e[0] + ');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="editCurrent(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="removeCurrent(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
 					'</tr>'
 				);
 			}
@@ -327,7 +313,6 @@ function loadCurrent() {
 		$('#loading').fadeOut('slow');
 		{% endif %}
 	});
-	return false;
 }
 
 function loadTotal() {
@@ -343,7 +328,6 @@ function loadTotal() {
 		$('#loading').fadeOut('slow');
 		{% endif %}
 	});
-	return false;
 }
 
 function loadFuture() {
@@ -361,14 +345,14 @@ function loadFuture() {
 				var e = result.data.future[i];
 				$('#future > tbody').append(
 					'<tr id="future_' + e[0] + '">' +
-					'<td class="icon"><a href="#" onclick="advance(' + e[0] + ');"><img class="icon" src="' + $IMG_ADVANCE + '" title="Send to Current" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="advance(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_ADVANCE + '" title="Send to Current" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
 					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
 					'<td class="date">' + e[4] + '</td>' +
 					'<td class="recur">' + e[5] + '</td>' +
 					'<td class="note">' + e[6] + '</td>' +
-					'<td class="icon"><a href="#" onclick="editFuture(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-					'<td class="icon"><a href="#" onclick="removeFuture(' + e[0] + ');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="editFuture(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="removeFuture(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
 					'</tr>'
 				);
 			}
@@ -377,7 +361,6 @@ function loadFuture() {
 		$('#loading').fadeOut('slow');
 		{% endif %}
 	});
-	return false;
 }
 
 $(document).ready(function() {
@@ -397,11 +380,11 @@ $(document).ready(function() {
 	// Override form submission.
 	$("#current_form").submit(function(e) {
 		addCurrent();
-		e.preventDefault();
+		return false;
 	});
 	$("#future_form").submit(function(e) {
 		addFuture();
-		e.preventDefault();
+		return false;
 	});
 
 	// Submit on enter, reset on escape.

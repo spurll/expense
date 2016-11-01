@@ -23,7 +23,6 @@ function sendBack(id) {
 			{% endif %}
 		}
 	});
-	return false;
 }
 
 function submitEditHistory() {
@@ -44,7 +43,6 @@ function submitEditHistory() {
 			loadHistory();
 		}
 	});
-	return false;
 }
 
 function editHistory(id) {
@@ -57,8 +55,8 @@ function editHistory(id) {
 		'<td class="date">{{edit_history_form.created(form="edit_history_form")}}</td>' +
 		'<td class="date">{{edit_history_form.settled(form="edit_history_form")}}</td>' +
 		'<td class="note">{{edit_history_form.note(form="edit_history_form")}}</td>' +
-		'<td class="icon"><a id="submit_history_edit" href="#" onclick="submitEditHistory()"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
-		'<td class="icon"><a id="reset_history_edit" href="#" onclick="cancelEditHistory()"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
+		'<td class="icon"><a id="submit_history_edit" href="#" onclick="submitEditHistory(); return false;"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
+		'<td class="icon"><a id="reset_history_edit" href="#" onclick="cancelEditHistory(); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
 		'</tr>'
 	);
 	$('#history_' + id).after('<tr id="blank_history_row"></tr>')
@@ -82,7 +80,7 @@ function editHistory(id) {
 	// Override form submission.
 	$("#edit_history_form").submit(function(e) {
 		submitEditHistory();
-		e.preventDefault();
+		return false;
 	});
 
 	// Submit on enter, cancel edit on escape.
@@ -94,15 +92,12 @@ function editHistory(id) {
 			cancelEditHistory();
 		}
 	});
-
-	return false;
 }
 
 function cancelEditHistory() {
 	$('#edit_history').remove();
 	$('#blank_history_row').remove();
 	$('#history > tbody > tr').show();
-	return false;
 }
 
 
@@ -119,7 +114,6 @@ function removeHistory(id) {
 			$('#history_' + id).remove();
 		}
 	});
-	return false;
 }
 
 function loadHistory() {
@@ -137,14 +131,14 @@ function loadHistory() {
 				var e = result.data.history[i];
 				$('#history > tbody').append(
 					'<tr id="history_' + e[0] + '">' +
-					'<td class="icon"><a href="#" onclick="sendBack(' + e[0] + ');"><img class="icon" src="' + $IMG_BACK + '" title="Send to Current" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="sendBack(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_BACK + '" title="Send to Current" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
 					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
 					'<td class="date">' + e[4] + '</td>' +
 					'<td class="date">' + e[5] + '</td>' +
 					'<td class="note">' + e[6] + '</td>' +
-					'<td class="icon"><a href="#" onclick="editHistory(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-					'<td class="icon"><a href="#" onclick="removeHistory(' + e[0] + ');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="editHistory(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="removeHistory(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
 					'</tr>'
 				);
 			}
@@ -153,7 +147,6 @@ function loadHistory() {
 		$('#loading').fadeOut('slow');
 		{% endif %}
 	});
-	return false;
 }
 
 $(document).ready(function() {
