@@ -212,6 +212,9 @@ def convert_fields(fields):
                 fields[field], STRPTIME_FORMAT
             ).date()
 
+    if 'note' in fields:
+        fields['note'] = fields['note'].strip()
+
 
 def load_csv(user, filename, add_function=add_current):
     """

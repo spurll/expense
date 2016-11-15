@@ -34,8 +34,13 @@ function advance(id) {
 			alert(result.error);
 		}
 		else {
-			$('#future_' + id).remove();
+			// Have to reload the future table instead of simply removing the row because
+			// recurring items are complicated. Hypothetically it could be removed, then
+			// the individual item could be reloaded provided its row index were also
+			// provided, allowing it to be inserted in the appropriate place.
+			// $('#future_' + id).remove();
 			loadCurrent();
+			loadFuture();
 		}
 	});
 }

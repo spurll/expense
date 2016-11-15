@@ -43,8 +43,6 @@ Feature Requests
 * Error messages should be non-interrupting and auto-dismissing (then we can have success
   messages, too)
 * Implement `controller.save_csv`
-* Move efficient updates: just remove the appropriate rows from the tables (rather than
-  reloading the whole thing)
 * Probably could use pagination for the history page (it can get *huge*)
 
 Known Bugs
