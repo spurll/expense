@@ -1,23 +1,23 @@
-from flask.ext.wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import TextField, HiddenField, PasswordField, BooleanField, SelectField, DateField
 from wtforms.fields.html5 import IntegerField
 from wtforms.validators import Required
 
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     username = TextField("Username", validators=[Required()])
     password = PasswordField("Password", validators=[Required()])
     remember = BooleanField("Remember Me", default=False)
 
 
-class CurrentForm(Form):
+class CurrentForm(FlaskForm):
     name = TextField('Name', id="current_name")
     value = TextField('Value', id="current_value")
     created = DateField('Created', id="current_created")
     note = TextField('Note', id="current_note")
 
 
-class EditCurrentForm(Form):
+class EditCurrentForm(FlaskForm):
     id = HiddenField('ID', id="edit_current_id")
     name = TextField('Name', id="edit_current_name")
     value = TextField('Value', id="edit_current_value")
@@ -25,7 +25,7 @@ class EditCurrentForm(Form):
     note = TextField('Note', id="edit_current_note")
 
 
-class FutureForm(Form):
+class FutureForm(FlaskForm):
     id = HiddenField('ID', id="future_id")
     name = TextField('Name', id="future_name")
     value = TextField('Value', id="future_value")
@@ -44,7 +44,7 @@ class FutureForm(Form):
     note = TextField('Note', id="future_note")
 
 
-class EditFutureForm(Form):
+class EditFutureForm(FlaskForm):
     id = HiddenField('ID', id="edit_future_id")
     name = TextField('Name', id="edit_future_name")
     value = TextField('Value', id="edit_future_value")
@@ -63,7 +63,7 @@ class EditFutureForm(Form):
     note = TextField('Note', id="edit_future_note")
 
 
-class EditHistoryForm(Form):
+class EditHistoryForm(FlaskForm):
     id = HiddenField('ID', id="edit_history_id")
     name = TextField('Name', id="edit_history_name")
     value = TextField('Value', id="edit_history_value")
