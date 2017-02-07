@@ -181,9 +181,9 @@ function editCurrent(id) {
 	// Set form field values to values from hidden row.
 	$('#edit_current_id').val(id);
 	$('#edit_current_name').val($('#current_' + id + ' > td.name').text());
-	$('#edit_current_name').select();
 	var value = $('#current_' + id + ' > td.value')[0].title;
 	$('#edit_current_value').val(value == "—" ? "" : value);
+	$('#edit_current_value').select();
 	$('#edit_current_created').val($('#current_' + id + ' > td.date').text());
 	$('#edit_current_note').val($('#current_' + id + ' > td.note').text());
 
@@ -228,9 +228,9 @@ function editFuture(id) {
 	// Set form field values to values from hidden row.
 	$('#edit_future_id').val(id);
 	$('#edit_future_name').val($('#future_' + id + ' > td.name').text());
-	$('#edit_future_name').select();
 	var value = $('#future_' + id + ' > td.value')[0].title;
 	$('#edit_future_value').val(value == "—" ? "" : value);
+	$('#edit_future_value').select();
 	$('#edit_future_due_date').val($('#future_' + id + ' > td.date').text());
 	var recur_text = $('#future_' + id + ' > td.recur').text();
 	var re = /(\d*)(\w)/;

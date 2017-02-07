@@ -66,9 +66,9 @@ function editHistory(id) {
 	// Set form field values to values from hidden row.
 	$('#edit_history_id').val(id);
 	$('#edit_history_name').val($('#history_' + id + ' > td.name').text());
-	$('#edit_history_name').select();
 	var value = $('#history_' + id + ' > td.value').text();
 	$('#edit_history_value').val(value == "—" ? "" : value);
+	$('#edit_history_value').select();
 	$('#edit_history_created').val($('#history_' + id + ' > td.date:eq(0)').text());
 	$('#edit_history_settled').val($('#history_' + id + ' > td.date:eq(1)').text());
 	$('#edit_history_note').val($('#history_' + id + ' > td.note').text());
