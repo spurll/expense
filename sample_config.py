@@ -24,3 +24,4 @@ LOCAL_SYMBOL = '$'
 FRACTIONS_PER_UNIT = 100    # Number of cents in a dollar (or local equivalent)
 LOADING_GIF = True
 DATE_FORMAT = '%Y-%m-%d'
+PAGE_SIZE = 100

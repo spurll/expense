@@ -1,5 +1,6 @@
 from flask import render_template, jsonify, redirect, session, url_for, request
 from flask_login import login_user, logout_user, current_user, login_required
+from functools import partial
 import ldap3
 
 from expense import app, db, lm
@@ -103,7 +104,7 @@ def load_table():
     elif table == 'future':
         fn = future_table
     elif table == 'history':
-        fn = historical_table
+        fn = partial(historical_table, page=int(request.args.get('page', '1')))
 
     if fn:
         try:

@@ -10,6 +10,7 @@ STRPTIME_FORMAT = app.config.get('DATE_FORMAT', '%Y-%m-%d')
 DATE_FORMAT = '{:' + STRPTIME_FORMAT + '}'
 CSV_COLUMNS = ['blank', 'name', 'value', 'created', 'settled', 'note']
 LOCAL_CURRENCY = app.config.get('LOCAL_CURRENCY', 'USD')
+PAGE_SIZE = app.config.get('PAGE_SIZE', 100)
 
 
 def current_table(user):
@@ -41,7 +42,7 @@ def future_table(user):
     ]
 
 
-def historical_table(user):
+def historical_table(user, page=1):
     return [
         [
             e.id,
@@ -52,7 +53,7 @@ def historical_table(user):
             DATE_FORMAT.format(e.settled),
             e.note
         ]
-        for e in user.history
+        for e in user.history.limit(PAGE_SIZE).offset(page * PAGE_SIZE)
     ]
 
 

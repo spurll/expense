@@ -44,7 +44,6 @@ Feature Requests
 * Error messages should be non-interrupting and auto-dismissing (then we can have success
   messages, too)
 * Implement `controller.save_csv`
-* Probably could use pagination for the history page (it can get *huge*)
 
 Known Bugs
 ----------

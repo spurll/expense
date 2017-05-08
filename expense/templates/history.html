@@ -6,6 +6,8 @@ $IMG_BACK = "{{url_for('static', filename='back.png')}}";
 $IMG_EDIT = "{{url_for('static', filename='edit.png')}}";
 $IMG_DELETE = "{{url_for('static', filename='x.png')}}";
 
+window.page = 1;
+
 function sendBack(id) {
 	{% if use_loading_gif %}
 	$('#loading').fadeIn('slow');
@@ -117,7 +119,7 @@ function removeHistory(id) {
 }
 
 function loadHistory() {
-	$.getJSON("{{url_for('load_table')}}", {table: 'history'}, function(result) {
+	$.getJSON("{{url_for('load_table')}}", {table: 'history', page: window.page}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -149,11 +151,31 @@ function loadHistory() {
 	});
 }
 
+function previous() {
+	if (window.page > 1) {
+		window.page--;
+		loadHistory();
+		$('#current-page').text('Page ' + window.page);
+	}
+	return false;
+}
+
+function next() {
+	window.page++;
+	loadHistory();
+	$('#current-page').text('Page ' + window.page);
+	return false;
+}
+
 $(document).ready(function() {
 	{% if use_loading_gif %}
 	// Replace table content with loading GIF.
 	$('#loading').fadeIn('slow');
 	{% endif %}
+
+	$('#previous-page > a').on('click', previous);
+	$('#next-page > a').on('click', next);
+	$('#current-page').text('Page ' + window.page);
 
 	loadHistory();
 });
@@ -182,5 +204,11 @@ $(document).ready(function() {
 	</thead>
 	<tbody></tbody>
 </table>
+
+<div id="footer">
+	<div id="previous-page"><a href="#">Back</a></div>
+	<div id="next-page"><a href="#">Next</a></div>
+	<div id="current-page"></div>
+</div>
 
 {% endblock %}

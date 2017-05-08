@@ -69,6 +69,29 @@ tfoot { font-weight: bold; font-variant: small-caps; }
 	padding: 10px;
 }
 
+#footer {
+	width: 100%;
+}
+
+#previous-page {
+	width: calc(30% - 20px);
+	float: left;
+	text-align: left;
+	padding: 10px;
+}
+
+#next-page {
+	width: calc(30% - 20px);
+	float: right;
+	text-align: right;
+	padding: 10px;
+}
+
+#current-page {
+	text-align: center;
+	padding: 10px;
+}
+
 .heading {
 	font-variant: small-caps;
 	text-align: center;
