@@ -53,7 +53,7 @@ def historical_table(user, page=1):
             DATE_FORMAT.format(e.settled),
             e.note
         ]
-        for e in user.history.limit(PAGE_SIZE).offset(page * PAGE_SIZE)
+        for e in user.history.limit(PAGE_SIZE).offset((page - 1) * PAGE_SIZE)
     ]
 
 

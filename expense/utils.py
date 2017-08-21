@@ -33,6 +33,7 @@ def list_currencies():
         r = requests.get(SYMBOLS_REQUEST)
 
         if r.status_code == 200:
+            symbols_cache.append(r.json().get('base'))
             symbols_cache.extend(r.json().get('rates', {}).keys())
             symbols_cache.sort()
 

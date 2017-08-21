@@ -48,6 +48,10 @@ Feature Requests
 Known Bugs
 ----------
 
+* Adding/editing seems to be broken on Edge (name, value, and note are not passed)
+* Submitting a new entry (or edit) using the ENTER key multiple times in a single
+  session causes the loading GIF to pop up multiple times (once for each previous
+  add/edit)
 * Because of the way information is sent via GET requests, it's impossible remove
   recurrence from an item (because it requires setting the value to "")
 
