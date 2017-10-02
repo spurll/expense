@@ -52,6 +52,8 @@ Known Bugs
 * Submitting a new entry (or edit) using the ENTER key multiple times in a single
   session causes the loading GIF to pop up multiple times (once for each previous
   add/edit)
+* Clicking the "edit" button when another field is already being edited causes problems;
+  can probably be fixed by calling hte "cancel" button's functions first
 * Because of the way information is sent via GET requests, it's impossible remove
   recurrence from an item (because it requires setting the value to "")
 
