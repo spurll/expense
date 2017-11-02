@@ -20,6 +20,7 @@ def main():
     return render_template(
         'main.html', title='Expenses', user=current_user,
         use_loading_gif=app.config.get('LOADING_GIF'),
+        confirm_deletion=app.config.get('CONFIRM_DELETION'),
         current_form=CurrentForm(), future_form=FutureForm(),
         edit_current_form=EditCurrentForm(), edit_future_form=EditFutureForm(),
         link={'url': url_for('history'), 'text': 'History'}
@@ -36,6 +37,7 @@ def history():
         'history.html', title='Expenses', user=current_user,
         edit_history_form=EditHistoryForm(),
         use_loading_gif=app.config.get('LOADING_GIF'),
+        confirm_deletion=app.config.get('CONFIRM_DELETION'),
         link={'url': url_for('main'), 'text': 'Back'}
     )
 

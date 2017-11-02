@@ -103,7 +103,11 @@ function cancelEditHistory() {
 }
 
 
-function removeHistory(id) {
+function removeHistory(id, name) {
+	{% if confirm_deletion %}
+	if (!window.confirm('Delete ' + name + '?')) { return false; }
+	{% endif %}
+
 	{% if use_loading_gif %}
 	$('#loading').fadeIn('slow');
 	{% endif %}
@@ -115,6 +119,10 @@ function removeHistory(id) {
 		else {
 			$('#history_' + id).remove();
 		}
+
+		{% if use_loading_gif %}
+		$('#loading').fadeOut('slow');
+		{% endif %}
 	});
 }
 
@@ -140,7 +148,7 @@ function loadHistory() {
 					'<td class="date">' + e[5] + '</td>' +
 					'<td class="note">' + e[6] + '</td>' +
 					'<td class="icon"><a href="#" onclick="editHistory(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-					'<td class="icon"><a href="#" onclick="removeHistory(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="removeHistory(' + e[0] + ', \'' + e[1] + '\'); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
 					'</tr>'
 				);
 			}

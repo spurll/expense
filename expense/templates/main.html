@@ -45,7 +45,11 @@ function advance(id) {
 	});
 }
 
-function removeCurrent(id) {
+function removeCurrent(id, name) {
+	{% if confirm_deletion %}
+	if (!window.confirm('Delete ' + name + '?')) { return false; }
+	{% endif %}
+
 	{% if use_loading_gif %}
 	$('#loading').fadeIn('slow');
 	{% endif %}
@@ -61,7 +65,11 @@ function removeCurrent(id) {
 	});
 }
 
-function removeFuture(id) {
+function removeFuture(id, name) {
+	{% if confirm_deletion %}
+	if (!window.confirm('Delete ' + name + '?')) { return false; }
+	{% endif %}
+
 	{% if use_loading_gif %}
 	$('#loading').fadeIn('slow');
 	{% endif %}
@@ -306,7 +314,7 @@ function loadCurrent() {
 					'<td class="date">' + e[4] + '</td>' +
 					'<td class="note">' + e[5] + '</td>' +
 					'<td class="icon"><a href="#" onclick="editCurrent(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-					'<td class="icon"><a href="#" onclick="removeCurrent(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="removeCurrent(' + e[0] + ', \'' + e[1] + '\'); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
 					'</tr>'
 				);
 			}
@@ -357,7 +365,7 @@ function loadFuture() {
 					'<td class="recur">' + e[5] + '</td>' +
 					'<td class="note">' + e[6] + '</td>' +
 					'<td class="icon"><a href="#" onclick="editFuture(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-					'<td class="icon"><a href="#" onclick="removeFuture(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="removeFuture(' + e[0] + ', \'' + e[1] + '\'); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
 					'</tr>'
 				);
 			}
