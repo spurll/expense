@@ -54,8 +54,8 @@ function editHistory(id) {
 		'<td class="icon"></td>' +
 		'<td class="name">{{edit_history_form.id(form="edit_history_form")}}{{edit_history_form.name(form="edit_history_form")}}</td>' +
 		'<td class="value">{{edit_history_form.value(form="edit_history_form")}}</td>' +
-		'<td class="date">{{edit_history_form.created(form="edit_history_form")}}</td>' +
-		'<td class="date">{{edit_history_form.settled(form="edit_history_form")}}</td>' +
+		'<td class="date' + (small_screen ? ' hidden' : '') + '">{{edit_history_form.created(form="edit_history_form")}}</td>' +
+		'<td class="date' + (small_screen ? ' hidden' : '') + '">{{edit_history_form.settled(form="edit_history_form")}}</td>' +
 		'<td class="note">{{edit_history_form.note(form="edit_history_form")}}</td>' +
 		'<td class="icon"><a id="submit_history_edit" href="#" onclick="submitEditHistory(); return false;"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
 		'<td class="icon"><a id="reset_history_edit" href="#" onclick="cancelEditHistory(); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
@@ -102,7 +102,6 @@ function cancelEditHistory() {
 	$('#history > tbody > tr').show();
 }
 
-
 function removeHistory(id, name) {
 	{% if confirm_deletion %}
 	if (!window.confirm('Delete ' + name + '?')) { return false; }
@@ -144,8 +143,8 @@ function loadHistory() {
 					'<td class="icon"><a href="#" onclick="sendBack(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_BACK + '" title="Send to Current" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
 					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
-					'<td class="date">' + e[4] + '</td>' +
-					'<td class="date">' + e[5] + '</td>' +
+					'<td class="date' + (small_screen ? ' hidden' : '') + '">' + e[4] + '</td>' +
+					'<td class="date' + (small_screen ? ' hidden' : '') + '">' + e[5] + '</td>' +
 					'<td class="note">' + e[6] + '</td>' +
 					'<td class="icon"><a href="#" onclick="editHistory(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
 					'<td class="icon"><a href="#" onclick="removeHistory(' + e[0] + ', \'' + e[1] + '\'); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
@@ -200,14 +199,14 @@ $(document).ready(function() {
 <table id="history">
 	<thead>
 		<tr>
-			<th></th>
-			<th>Item</th>
-			<th>Value</th>
-			<th>Created</th>
-			<th>Settled</th>
-			<th>Notes</th>
-			<th></th>
-			<th></th>
+			<th class="icon"></th>
+			<th class="name">Item</th>
+			<th class="value">Value</th>
+			<th class="date">Created</th>
+			<th class="date">Settled</th>
+			<th class="notes">Notes</th>
+			<th class="icon"></th>
+			<th class="icon"></th>
 		</tr>
 	</thead>
 	<tbody></tbody>

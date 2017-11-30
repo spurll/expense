@@ -176,7 +176,7 @@ function editCurrent(id) {
 		'<td class="icon"></td>' +
 		'<td class="name">{{edit_current_form.id(form="edit_current_form")}}{{edit_current_form.name(form="edit_current_form")}}</td>' +
 		'<td class="value">{{edit_current_form.value(form="edit_current_form")}}</td>' +
-		'<td class="date">{{edit_current_form.created(form="edit_current_form")}}</td>' +
+		'<td class="date' + (small_screen ? ' hidden' : '') + '">{{edit_current_form.created(form="edit_current_form")}}</td>' +
 		'<td class="note">{{edit_current_form.note(form="edit_current_form")}}</td>' +
 		'<td class="icon"><a id="submit_current_edit" href="#" onclick="submitEditCurrent(); return false;"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
 		'<td class="icon"><a id="reset_current_edit" href="#" onclick="cancelEditCurrent(); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
@@ -222,7 +222,7 @@ function editFuture(id) {
 		'<td class="icon"></td>' +
 		'<td class="name">{{edit_future_form.id(form="edit_future_form")}}{{edit_future_form.name(form="edit_future_form")}}</td>' +
 		'<td class="value">{{edit_future_form.value(form="edit_future_form")}}</td>' +
-		'<td class="date">{{edit_future_form.due_date(form="edit_future_form")}}</td>' +
+		'<td class="date' + (small_screen ? ' hidden' : '') + '">{{edit_future_form.due_date(form="edit_future_form")}}</td>' +
 		'<td class="recur">{{edit_future_form.recur_freq(min=0, form="edit_future_form")}}{{edit_future_form.recur_type(form="edit_future_form")}}</td>' +
 		'<td class="note">{{edit_future_form.note(form="edit_future_form")}}</td>' +
 		'<td class="icon"><a id="submit_future_edit" href="#" onclick="submitEditFuture(); return false;"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
@@ -311,7 +311,7 @@ function loadCurrent() {
 					'<td class="icon"><a href="#" onclick="settle(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_CHECK + '" title="Settle" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
 					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
-					'<td class="date">' + e[4] + '</td>' +
+					'<td class="date' + (small_screen ? ' hidden' : '') + '">' + e[4] + '</td>' +
 					'<td class="note">' + e[5] + '</td>' +
 					'<td class="icon"><a href="#" onclick="editCurrent(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
 					'<td class="icon"><a href="#" onclick="removeCurrent(' + e[0] + ', \'' + e[1] + '\'); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
@@ -361,7 +361,7 @@ function loadFuture() {
 					'<td class="icon"><a href="#" onclick="advance(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_ADVANCE + '" title="Send to Current" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
 					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
-					'<td class="date">' + e[4] + '</td>' +
+					'<td class="date' + (small_screen ? ' hidden' : '') + '">' + e[4] + '</td>' +
 					'<td class="recur">' + e[5] + '</td>' +
 					'<td class="note">' + e[6] + '</td>' +
 					'<td class="icon"><a href="#" onclick="editFuture(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
@@ -447,13 +447,13 @@ $(document).ready(function() {
 <table id="current" class="expense_table">
 	<thead>
 		<tr>
-			<th></th>
-			<th>Item</th>
-			<th>Value</th>
-			<th>Created</th>
-			<th>Notes</th>
-			<th></th>
-			<th></th>
+			<th class="icon"></th>
+			<th class="name">Item</th>
+			<th class="value">Value</th>
+			<th class="date">Created</th>
+			<th class="note">Notes</th>
+			<th class="icon"></th>
+			<th class="icon"></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -469,13 +469,13 @@ $(document).ready(function() {
 	</tbody>
 	<tfoot>
 		<tr>
-			<td></td>
+			<td class="icon"></td>
 			<td class="name">Total</th>
 			<td id="total_value" class="value"></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
+			<td class="date"></td>
+			<td class="note"></td>
+			<td class="icon"></td>
+			<td class="icon"></td>
 		</tr>
 	</tfoot>
 </table>
@@ -488,14 +488,14 @@ $(document).ready(function() {
 <table id="future" class="expense_table">
 	<thead>
 		<tr>
-			<th></th>
-			<th>Item</th>
-			<th>Value</th>
-			<th>Due</th>
-			<th>Recur</th>
-			<th>Notes</th>
-			<th></th>
-			<th></th>
+			<th class="icon"></th>
+			<th class="name">Item</th>
+			<th class="value">Value</th>
+			<th class="date">Due</th>
+			<th class="recur">Recur</th>
+			<th class="note">Notes</th>
+			<th class="icon"></th>
+			<th class="icon"></th>
 		</tr>
 	</thead>
 	<tbody>

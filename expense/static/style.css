@@ -46,7 +46,7 @@ tfoot { font-weight: bold; font-variant: small-caps; }
 }
 
 #title {
-	width: 60%;
+	width: 40%;
 	margin: auto;
 	font-variant: small-caps;
 	font-size: 200%;
@@ -56,14 +56,14 @@ tfoot { font-weight: bold; font-variant: small-caps; }
 }
 
 #links {
-	width: calc(20% - 20px);
+	width: calc(30% - 20px);
 	float: left;
 	text-align: left;
 	padding: 10px;
 }
 
 #user {
-	width: calc(20% - 20px);
+	width: calc(30% - 20px);
 	float: right;
 	text-align: right;
 	padding: 10px;
@@ -106,6 +106,7 @@ tfoot { font-weight: bold; font-variant: small-caps; }
 .right { float: right; text-align: right; }
 .section { padding-top: 5px; padding-bottom: 10px; }
 .login { max-width: 320px; margin: auto; }
+.hidden { display: none; }
 
 .ui-datepicker { background-color: #111111; }
 .ui-state-highlight { background-color: #dddddd !important; border-color: #000000 !important; color: #000000 !important; }

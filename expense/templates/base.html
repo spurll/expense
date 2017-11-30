@@ -15,12 +15,20 @@
 		<script type="text/javascript" src="{{url_for('static', filename='jquery-ui-1.12.1.min.js')}}"></script>
    
 		<script>
+			var small_screen;
+
 			$(document).ready(function() {
 				resizeContent();
 				resizeBuffer();
 			});
 
 			$(window).resize(function() {
+				resizeContent();
+				resizeBuffer();
+			});
+
+			$(window).orientationchange(function() {
+				resizeContent();
 				resizeBuffer();
 			});
 
@@ -30,11 +38,22 @@
 			}
 
 			function resizeContent() {
-				if ($(window).width() < 700) {
+				small_screen = ($(window).width() < 700);
+				if (small_screen) {
 					// Moves and resizes the links and login information information on a smaller screen.
 					$('#links').css({'width': 'auto', 'margin': 'auto', 'float': 'none', 'text-align': 'center', 'padding': '2px'});
 					$('#user').css({'width': 'auto', 'margin': 'auto', 'float': 'none', 'text-align': 'center', 'padding': '2px'});
 					$('#title').css({'padding': '2px'});
+
+					$('.date').addClass('hidden');
+				}
+				else {
+					// Moves and resizes the links and login information information on a smaller screen.
+					$('#links').removeAttr('style');
+					$('#user').removeAttr('style');
+					$('#title').removeAttr('style');
+
+					$('.date').removeClass('hidden');
 				}
 			}
 		</script>
