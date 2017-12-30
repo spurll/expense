@@ -175,7 +175,8 @@ def convert_fields(fields):
     if 'value' in fields:
         if isinstance(fields['value'], str):
             # Parse out the string value and potential currency.
-            m = re.search(r'\$?([\d\.]+) ?(\w*)', fields['value'])
+            value = fields['value'].replace(",", "")
+            m = re.search(r'\$?([\d\.]+) ?(\w*)', value)
             value = float(m.group(1))
             currency = m.group(2).upper()
             if currency == 'US':
