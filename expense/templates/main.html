@@ -198,14 +198,14 @@ function editCurrent(id) {
 	// Enable JQuery UI's date picker.
 	$("#edit_current_created").datepicker({dateFormat: "yy-mm-dd"});
 
-	// Override form submission.
-	$("#edit_current_form").submit(function(e) {
+	// Override form submission (and prevent binding multiple copies of the event listener).
+	$("#edit_current_form:not(.bound)").addClass("bound").submit(function(e) {
 		submitEditCurrent();
 		return false;
 	});
 
-	// Submit on enter, cancel edit on escape.
-	$("#edit_current input").keydown(function(e) {
+	// Submit on enter, cancel edit on escape (and prevent binding multiple copies of the event listener).
+	$("#edit_current input:not(.bound)").addClass("bound").keydown(function(e) {
 		if (e.keyCode == 13) {
 			$('#edit_current_form').submit();
 		}
@@ -264,14 +264,14 @@ function editFuture(id) {
 		}
 	});
 
-	// Override form submission.
-	$("#edit_future_form").submit(function(e) {
+	// Override form submission (and prevent binding multiple copies of the event listener).
+	$("#edit_future_form:not(.bound)").addClass("bound").submit(function(e) {
 		submitEditFuture();
 		return false;
 	});
 
-	// Submit on enter, cancel edit on escape.
-	$("#edit_future input").keydown(function(e) {
+	// Submit on enter, cancel edit on escape (and prevent binding multiple copies of the event listener).
+	$("#edit_future input:not(.bound)").addClass("bound").keydown(function(e) {
 		if (e.keyCode == 13) {
 			$('#edit_future_form').submit();
 		}
@@ -390,18 +390,18 @@ $(document).ready(function() {
 	$('#submit_future').on('click', addFuture);
 	$('#reset_future').on('click', function() { $('#future_form')[0].reset(); });
 
-	// Override form submission.
-	$("#current_form").submit(function(e) {
+	// Override form submission (and prevent binding multiple copies of the event listener).
+	$("#current_form:not(.bound)").addClass("bound").submit(function(e) {
 		addCurrent();
 		return false;
 	});
-	$("#future_form").submit(function(e) {
+	$("#future_form:not(.bound)").addClass("bound").submit(function(e) {
 		addFuture();
 		return false;
 	});
 
-	// Submit on enter, reset on escape.
-	$("#add_current input").keydown(function(e) {
+	// Submit on enter, reset on escape (and prevent binding multiple copies of the event listener).
+	$("#add_current input:not(.bound)").addClass("bound").keydown(function(e) {
 		if (e.keyCode == 13) {
 			$('#current_form').submit();
 		}
@@ -409,7 +409,7 @@ $(document).ready(function() {
 			$('#current_form')[0].reset();
 		}
 	});
-	$("#add_future input").keydown(function(e) {
+	$("#add_future input:not(.bound)").addClass("bound").keydown(function(e) {
 		if (e.keyCode == 13) {
 			$('#future_form').submit();
 		}
@@ -419,7 +419,7 @@ $(document).ready(function() {
 	});
 
 	// Add edit trigger for dropdown list.
-	$("#future_recur_type").change(function (){
+	$("#future_recur_type:not(.bound)").addClass("bound").change(function (){
 		var v = $(this).val();
 		if (v == "" || v == "R") {
 			$("#future_recur_freq").hide();

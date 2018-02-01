@@ -79,14 +79,14 @@ function editHistory(id) {
 	$("#edit_history_created").datepicker({dateFormat: "yy-mm-dd"});
 	$("#edit_history_settled").datepicker({dateFormat: "yy-mm-dd"});
 
-	// Override form submission.
-	$("#edit_history_form").submit(function(e) {
+	// Override form submission (and prevent binding multiple copies of the event listener).
+	$("#edit_history_form:not(.bound)").addClass("bound").submit(function(e) {
 		submitEditHistory();
 		return false;
 	});
 
-	// Submit on enter, cancel edit on escape.
-	$("#edit_history input").keydown(function(e) {
+	// Submit on enter, cancel edit on escape (and prevent binding multiple copies of the event listener).
+	$("#edit_history input:not(.bound)").addClass("bound").keydown(function(e) {
 		if (e.keyCode == 13) {
 			$('#edit_history_form').submit();
 		}
