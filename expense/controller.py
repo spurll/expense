@@ -126,8 +126,15 @@ def edit_future(user, future_id, fields):
     expense = Future.query.get(future_id)
     if expense in user.future:
         convert_fields(fields)
+
+        if ("due_date" in fields) and ("recur_base" not in fields):
+            # When due_date is changed on a recurring item, recur_base needs to
+            # be reset (otherwise, it will recur based on the old date)
+            fields["recur_base"] = None
+
         for field, value in fields.items():
             setattr(expense, field, value)
+
         db.session.commit()
     else:
         raise Exception('User is not authorized to perform this action.')
