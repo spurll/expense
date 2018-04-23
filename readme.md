@@ -3,6 +3,8 @@ Expense
 
 A web application that tracks expenses.
 
+![Screenshot](/screenshots/exp.png?raw=true)
+
 Usage
 =====
 
