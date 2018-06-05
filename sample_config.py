@@ -21,8 +21,9 @@ ADMIN_USERS = ['LDAP.USER.ID.HERE']
 # Expense Settings
 LOCAL_CURRENCY = 'CAD'
 LOCAL_SYMBOL = '$'
-FRACTIONS_PER_UNIT = 100    # Number of cents in a dollar (or local equivalent)
+FRACTIONS_PER_UNIT = 100        # Number of cents in a dollar (or equivalent)
 LOADING_GIF = True
 CONFIRM_DELETION = True
 DATE_FORMAT = '%Y-%m-%d'
 PAGE_SIZE = 100
+FIXER_API_KEY = YOUR_API_KEY    # Sign up at Fixer.io

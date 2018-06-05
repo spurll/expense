@@ -25,6 +25,9 @@ Configuration
 You'll need to create a `config.py` file, which specifies details such as which LDAP
 server to use. A sample configuration file can be found at `sample_config.py`.
 
+You will also need to sign up for an account at [Fixer.io](https://fixer.io), which
+handles currency conversions. Once you've done so, add your API key to `config.py`.
+
 Starting the Server
 -------------------
 

@@ -4,9 +4,10 @@ import requests
 
 from expense import app
 
-
-RATE_REQUEST = 'http://api.fixer.io/{date:%Y-%m-%d}?base={src}&symbols={dst}'
-SYMBOLS_REQUEST = 'http://api.fixer.io/latest'
+KEY = 'access_key=' + app.config.get('FIXER_API_KEY')
+FIXER_URL = 'https://data.fixer.io/api/'
+RATE_URL = FIXER_URL + '{date:%Y-%m-%d}?' + KEY + '&base={src}&symbols={dst}'
+SYMBOLS_URL = FIXER_URL + 'latest?' + KEY
 CENTS = app.config.get('FRACTIONS_PER_UNIT', 100)
 LOCAL = app.config.get('LOCAL_CURRENCY')
 
@@ -30,7 +31,7 @@ def list_currencies():
     Lists all valid currencies (those supported by fixer.io).
     """
     if not symbols_cache:
-        r = requests.get(SYMBOLS_REQUEST)
+        r = requests.get(SYMBOLS_URL)
 
         if r.status_code == 200:
             symbols_cache.append(r.json().get('base'))
@@ -66,7 +67,7 @@ def conversion_rate(src, dst, d):
     """
     Returns the historical conversion rate between two currencies.
     """
-    request = RATE_REQUEST.format(date=d, src=src, dst=dst)
+    request = RATE_URL.format(date=d, src=src, dst=dst)
 
     if request not in rate_cache:
         r = requests.get(request)
