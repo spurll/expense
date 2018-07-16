@@ -35,6 +35,7 @@ tfoot { font-weight: bold; font-variant: small-caps; }
 	height: 52px;
 	top: 0px;
 	position: static;
+	z-index: 500;
 }
 
 #title-bar {
@@ -53,6 +54,7 @@ tfoot { font-weight: bold; font-variant: small-caps; }
 	text-align: center;
 	padding-top: 10px;
 	padding-bottom: 10px;
+	position: relative;
 }
 
 #links {
@@ -122,31 +124,18 @@ td.note {}
 td.recur { text-align: center; width: 80px; }
 
 div.loading {
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  height: 256px;
-  width: 256px;
-  position: fixed;
-  z-index: 999;
-  overflow: show;
-  margin: auto;
+	bottom: 5px;
+	right: 10px;
+	height: 24px;
+	width: 24px;
+	z-index: 999;
+	position: absolute;
+	margin: auto;
+	overflow: show;
 }
 
-div.loading:before {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  content: '';
-  display: block;
-  position: fixed;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
+img.loading { width: 24px; height: 24px; }
 img.icon { width: 24px; height: 24px; }
-img.loading { width: 256px; height: 256px; display: block; margin: auto; }
 
 a:link { text-decoration: none; color: #888888; }
 a:visited { text-decoration: none; color: #888888; }

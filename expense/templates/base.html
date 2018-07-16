@@ -27,7 +27,7 @@
 				resizeBuffer();
 			});
 
-			$(window).orientationchange(function() {
+			$(window).on('orientationchange', function() {
 				resizeContent();
 				resizeBuffer();
 			});
@@ -72,9 +72,15 @@
 				{% if user %}
 				Logged in as {{user.name}}. <a href="{{ url_for('logout') }}">Log out.</a>
 				{% endif %}
+
+				{% if use_loading_gif %}
+				<div class="loading" id="loading"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>
+				{% endif %}
 			</div>
 
-			<div id="title">{{title}}</div>
+			<div id="title">
+				{{title}}
+			</div>
 		</div>
 
 		{% with messages = get_flashed_messages() %}

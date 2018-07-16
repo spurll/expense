@@ -7,6 +7,9 @@ $IMG_EDIT = "{{url_for('static', filename='edit.png')}}";
 $IMG_DELETE = "{{url_for('static', filename='x.png')}}";
 $IMG_ADVANCE = "{{url_for('static', filename='up.png')}}";
 
+const refreshInterval = 3600000;	// One hour
+var nextRefresh;
+
 function settle(id) {
 	{% if use_loading_gif %}
 	$('#loading').fadeIn('slow');
@@ -322,6 +325,9 @@ function loadCurrent() {
 			$('#total_value').text(result.data.total);
 		}
 
+		// When the page is loaded, reset the auto-refresh interval.
+		nextRefresh = Date.now() + refreshInterval;
+
 		{% if use_loading_gif %}
 		$('#loading').fadeOut('slow');
 		{% endif %}
@@ -390,7 +396,11 @@ $(document).ready(function() {
 	$('#submit_future').on('click', addFuture);
 	$('#reset_future').on('click', function() { $('#future_form')[0].reset(); });
 
+	// When the window gets focus, if the data haven't been refreshed in a while, refresh them.
+	$(window).on('focus', function() { if(Date.now() > nextRefresh){ loadCurrent(); } });
+
 	// Override form submission (and prevent binding multiple copies of the event listener).
+	// Could probably use JQuery's .one instead of .on to make this simpler...
 	$("#current_form:not(.bound)").addClass("bound").submit(function(e) {
 		addCurrent();
 		return false;
@@ -434,10 +444,6 @@ $(document).ready(function() {
 	loadFuture();
 });
 </script>
-
-{% if use_loading_gif %}
-<div class="loading" id="loading"><img class="loading" src="{{url_for('static', filename='loading.gif')}}" /></div>
-{% endif %}
 
 <div class="heading">Current</div>
 
