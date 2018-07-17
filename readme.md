@@ -54,8 +54,6 @@ Known Bugs
 ----------
 
 * Adding/editing seems to be broken on Edge (name, value, and note are not passed)
-* Clicking the "edit" button when another field is already being edited causes problems;
-  can probably be fixed by calling hte "cancel" button's functions first
 * Because of the way information is sent via GET requests, it's impossible remove
   recurrence from an item (because it requires setting the value to "")
 

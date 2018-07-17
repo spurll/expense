@@ -48,6 +48,9 @@ function submitEditHistory() {
 }
 
 function editHistory(id) {
+	// Cancel all other edits in progress. (We're not keeping track of them.)
+	cancelEditHistory();
+
 	// Hide row and replace with form fields.
 	$('#history_' + id).after(
 		'<tr id="edit_history">' +

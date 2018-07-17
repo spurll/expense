@@ -173,6 +173,9 @@ function submitEditFuture() {
 }
 
 function editCurrent(id) {
+	// Cancel all other edits in progress. (We're not keeping track of them.)
+	cancelEditCurrent();
+
 	// Hide row and replace with form fields.
 	$('#current_' + id).after(
 		'<tr id="edit_current">' +
@@ -219,6 +222,9 @@ function editCurrent(id) {
 }
 
 function editFuture(id) {
+	// Cancel all other edits in progress. (We're not keeping track of them.)
+	cancelEditFuture();
+
 	// Hide row and replace with form fields.
 	$('#future_' + id).after(
 		'<tr id="edit_future">' +
