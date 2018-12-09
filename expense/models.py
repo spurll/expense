@@ -12,7 +12,8 @@ class User(db.Model):
     name = db.Column(db.String, index=True, unique=True)
     email = db.Column(db.String, index=True)
     current = db.relationship(
-        'Current', backref='user', order_by='Current.created.desc()',
+        'Current', backref='user',
+        order_by='Current.created.desc(),Current.id.desc()',
         lazy='dynamic', cascade='all, delete-orphan'
     )
     future = db.relationship(
@@ -20,7 +21,8 @@ class User(db.Model):
         lazy='dynamic', cascade='all, delete-orphan'
     )
     history = db.relationship(
-        'History', backref='user', order_by='History.created.desc()',
+        'History', backref='user',
+        order_by='History.created.desc(),History.id.desc()',
         lazy='dynamic', cascade='all, delete-orphan'
     )
 
