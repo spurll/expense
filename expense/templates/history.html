@@ -132,6 +132,7 @@ function loadHistory() {
 	$.getJSON("{{url_for('load_table')}}", {table: 'history', page: window.page}, function(result) {
 		if (result.error) {
 			alert(result.error);
+			location.reload();
 		}
 		else {
 			// Remove existing content.

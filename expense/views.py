@@ -87,14 +87,16 @@ def load_user(id):
 
 
 # AJAX BACK-END
-
+# Don't use @login_required, because that will trigger a login redirect.
 
 @app.route('/_load_table')
-@login_required
 def load_table():
     """
     Return all current expenses.
     """
+    if current_user is None or not current_user.is_authenticated:
+        return jsonify(data={}, error='User must be logged in.')
+
     data = {}
     error = None
     fn = None
@@ -122,11 +124,13 @@ def load_table():
 
 
 @app.route('/_add_expense')
-@login_required
 def add_expense():
     """
     Adds or edits an expense.
     """
+    if current_user is None or not current_user.is_authenticated:
+        return jsonify(data={}, error='User must be logged in.')
+
     fn = None
     error = None
 
@@ -156,11 +160,13 @@ def add_expense():
 
 
 @app.route('/_total')
-@login_required
 def total():
     """
     Return the total value (in local currency) of all current expenses.
     """
+    if current_user is None or not current_user.is_authenticated:
+        return jsonify(data={}, error='User must be logged in.')
+
     data = None
     error = None
 
@@ -174,11 +180,13 @@ def total():
 
 
 @app.route('/_settle')
-@login_required
 def settle():
     """
     Move an expense from Current to History.
     """
+    if current_user is None or not current_user.is_authenticated:
+        return jsonify(data={}, error='User must be logged in.')
+
     error = None
 
     try:
@@ -192,11 +200,13 @@ def settle():
 
 
 @app.route('/_advance')
-@login_required
 def advance():
     """
     Move an expense from Future to Current.
     """
+    if current_user is None or not current_user.is_authenticated:
+        return jsonify(data={}, error='User must be logged in.')
+
     error = None
 
     try:
@@ -210,11 +220,13 @@ def advance():
 
 
 @app.route('/_send_back')
-@login_required
 def send_back():
     """
     Move an expense from History back to Current.
     """
+    if current_user is None or not current_user.is_authenticated:
+        return jsonify(data={}, error='User must be logged in.')
+
     error = None
 
     try:
@@ -228,11 +240,13 @@ def send_back():
 
 
 @app.route('/_delete')
-@login_required
 def delete():
     """
     Delete an expense.
     """
+    if current_user is None or not current_user.is_authenticated:
+        return jsonify(data={}, error='User must be logged in.')
+
     error = None
 
     table = request.args.get('table', None)

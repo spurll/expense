@@ -306,6 +306,7 @@ function loadCurrent() {
 	$.getJSON("{{url_for('load_table')}}", {table: 'current'}, function(result) {
 		if (result.error) {
 			alert(result.error);
+			location.reload();
 		}
 		else {
 			// Remove existing content.
@@ -344,6 +345,7 @@ function loadTotal() {
 	$.getJSON("{{url_for('total')}}", {}, function(result) {
 		if (result.error) {None
 			alert(result.error);
+			location.reload();
 		}
 		else {
 			$('#total_value').text(result.data);
@@ -359,6 +361,7 @@ function loadFuture() {
 	$.getJSON("{{url_for('load_table')}}", {table: 'future'}, function(result) {
 		if (result.error) {None
 			alert(result.error);
+			location.reload();
 		}
 		else {
 			// Remove existing content.
