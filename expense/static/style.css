@@ -109,6 +109,7 @@ tfoot { font-weight: bold; font-variant: small-caps; }
 .section { padding-top: 5px; padding-bottom: 10px; }
 .login { max-width: 320px; margin: auto; }
 .hidden { display: none; }
+.negative { color: #cc4444; }
 
 .ui-datepicker { background-color: #111111; }
 .ui-state-highlight { background-color: #dddddd !important; border-color: #000000 !important; color: #000000 !important; }

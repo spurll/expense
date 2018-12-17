@@ -26,6 +26,34 @@ def to_major(value):
     return float(value) / CENTS
 
 
+def format_local(value, original_currency=LOCAL):
+    """
+    Converts a local currency value (in cents) in a readable string format.
+    """
+    if value is None:
+        return '—'
+
+    fmt = '{n_open}{symbol}{value:,.2f}{converted}{n_close}'
+    return fmt.format(
+        n_open='(' if value < 0 else '',
+        symbol=app.config.get('LOCAL_SYMBOL', '$'),
+        value=abs(to_major(value)),
+        converted='' if original_currency == LOCAL else '*',
+        n_close=')' if value < 0 else ''
+    )
+
+
+def format_raw(value, currency=LOCAL):
+    """
+    Converts a currency value (in cents) in a raw-ish string format.
+    """
+    if value is None:
+        return ''
+
+    fmt = '{value:,.2f} {currency}'
+    return fmt.format(value=to_major(value), currency=currency)
+
+
 def list_currencies():
     """
     Lists all valid currencies (those supported by fixer.io).

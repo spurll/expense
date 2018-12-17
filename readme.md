@@ -15,9 +15,10 @@ Requirements
 * flask-login
 * flask-wtf
 * flask-sqlalchemy
-* sqlalchemy
-* requests
 * ldap3
+* regex
+* requests
+* sqlalchemy
 
 Configuration
 -------------

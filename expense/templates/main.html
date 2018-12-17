@@ -196,7 +196,7 @@ function editCurrent(id) {
 	$('#edit_current_id').val(id);
 	$('#edit_current_name').val($('#current_' + id + ' > td.name').text());
 	var value = $('#current_' + id + ' > td.value')[0].title;
-	$('#edit_current_value').val(value == "—" ? "" : value);
+	$('#edit_current_value').val(value);
 	$('#edit_current_value').select();
 	$('#edit_current_created').val($('#current_' + id + ' > td.date').text());
 	$('#edit_current_note').val($('#current_' + id + ' > td.note').text());
@@ -246,7 +246,7 @@ function editFuture(id) {
 	$('#edit_future_id').val(id);
 	$('#edit_future_name').val($('#future_' + id + ' > td.name').text());
 	var value = $('#future_' + id + ' > td.value')[0].title;
-	$('#edit_future_value').val(value == "—" ? "" : value);
+	$('#edit_future_value').val(value);
 	$('#edit_future_value').select();
 	$('#edit_future_due_date').val($('#future_' + id + ' > td.date').text());
 	var recur_text = $('#future_' + id + ' > td.recur').text();
@@ -320,7 +320,7 @@ function loadCurrent() {
 					'<tr id="current_' + e[0] + '">' +
 					'<td class="icon"><a href="#" onclick="settle(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_CHECK + '" title="Settle" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
-					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
+					'<td class="value' + (e[2].charAt(0) == '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
 					'<td class="date' + (small_screen ? ' hidden' : '') + '">' + e[4] + '</td>' +
 					'<td class="note">' + e[5] + '</td>' +
 					'<td class="icon"><a href="#" onclick="editCurrent(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
@@ -329,7 +329,7 @@ function loadCurrent() {
 				);
 			}
 
-			$('#total_value').text(result.data.total);
+			setTotal(result.data.total);
 		}
 
 		// When the page is loaded, reset the auto-refresh interval.
@@ -343,12 +343,12 @@ function loadCurrent() {
 
 function loadTotal() {
 	$.getJSON("{{url_for('total')}}", {}, function(result) {
-		if (result.error) {None
+		if (result.error) {
 			alert(result.error);
 			location.reload();
 		}
 		else {
-			$('#total_value').text(result.data);
+			setTotal(result.data);
 		}
 
 		{% if use_loading_gif %}
@@ -357,9 +357,22 @@ function loadTotal() {
 	});
 }
 
+function setTotal(value) {
+	const negative = value.charAt(0) == '(';
+	const obj = $('#total_value');
+
+	obj.text(value);
+	if (negative && !obj.hasClass('negative')) {
+		obj.addClass('negative');
+	}
+	else if (!negative && obj.hasClass('negative')) {
+		obj.removeClass('negative');
+	}
+}
+
 function loadFuture() {
 	$.getJSON("{{url_for('load_table')}}", {table: 'future'}, function(result) {
-		if (result.error) {None
+		if (result.error) {
 			alert(result.error);
 			location.reload();
 		}
@@ -375,7 +388,7 @@ function loadFuture() {
 					'<tr id="future_' + e[0] + '">' +
 					'<td class="icon"><a href="#" onclick="advance(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_ADVANCE + '" title="Send to Current" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
-					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
+					'<td class="value' + (e[2].charAt(0) == '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
 					'<td class="date' + (small_screen ? ' hidden' : '') + '">' + e[4] + '</td>' +
 					'<td class="recur">' + e[5] + '</td>' +
 					'<td class="note">' + e[6] + '</td>' +

@@ -1,4 +1,4 @@
-import csv, re
+import csv, regex
 from datetime import datetime
 
 from expense import app, db
@@ -181,11 +181,18 @@ def delete_history(user, history_id):
 def convert_fields(fields):
     if 'value' in fields:
         if isinstance(fields['value'], str):
-            # Parse out the string value and potential currency.
+            # Remove thousands separators.
             value = fields['value'].replace(",", "")
-            m = re.search(r'\$?([\d\.]+) ?(\w*)', value)
-            value = float(m.group(1))
-            currency = m.group(2).upper()
+
+            # Parse out sign, optional symbol, value, and optional currency.
+            m = regex.search(
+                r'(\p{Sc})?([-−(])?(\p{Sc})?([\d\.]+) ?(\w*)', value
+            )
+
+            sign = 1.0 if not m.group(2) else -1.0
+            value = sign * float(m.group(4))
+
+            currency = m.group(5).upper()
             if currency == 'US':
                 currency = 'USD'
 

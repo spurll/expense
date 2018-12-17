@@ -1,7 +1,8 @@
 from datetime import date, timedelta
 
 from expense import app, db
-from expense.utils import complex_recur, increment_month, safe_date, convert_currency, to_major
+from expense.utils import complex_recur, increment_month, safe_date, \
+    convert_currency, format_local, format_raw
 
 
 LOCAL_CURRENCY = app.config.get('LOCAL_CURRENCY', 'USD')
@@ -50,9 +51,7 @@ class User(db.Model):
 
     @property
     def formatted_total(self):
-        return '{}{:,.2f}'.format(
-            app.config['LOCAL_SYMBOL'], to_major(self.current_total)
-        )
+        return format_local(self.current_total)
 
     def __repr__(self):
         return '<User {}>'.format(self.id)
@@ -84,18 +83,14 @@ class Current(db.Model):
         """
         Returns the value of the expense, formatted for display.
         """
-        return '{:,.2f} {}'.format(to_major(self.value), self.currency) \
-            if self.value is not None else '—'
+        return format_raw(self.value, self.currency)
 
     @property
     def formatted_local(self):
         """
         Returns the local value of the expense, formatted for display.
         """
-        return '{}{:,.2f}{}'.format(
-            app.config['LOCAL_SYMBOL'], to_major(self.local_value),
-            '' if self.currency == LOCAL_CURRENCY else '*'
-        ) if self.local_value is not None else '—'
+        return format_local(self.local_value, self.currency)
 
     def advance(self):
         """
@@ -116,7 +111,9 @@ class Current(db.Model):
         return '<Current {}>'.format(self.id)
 
     def __str__(self):
-        return '<Current Expense: {}, {}>'.format(self.name, self.value)
+        return '<Current Expense: {}, {}>'.format(
+            self.name, self.formatted_value
+        )
 
 
 class Future(db.Model):
@@ -148,18 +145,14 @@ class Future(db.Model):
         """
         Returns the value of the expense, formatted for display.
         """
-        return '{:,.2f} {}'.format(to_major(self.value), self.currency) \
-            if self.value is not None else '—'
+        return format_raw(self.value, self.currency)
 
     @property
     def formatted_local(self):
         """
         Returns the local value of the expense, formatted for display.
         """
-        return '{}{:,.2f}{}'.format(
-            app.config['LOCAL_SYMBOL'], to_major(self.local_value),
-            '' if self.currency == LOCAL_CURRENCY else '*'
-        ) if self.local_value is not None else '—'
+        return format_local(self.value, self.currency)
 
     @property
     def recur(self):
@@ -232,7 +225,7 @@ class Future(db.Model):
 
     def __str__(self):
         return '<Future Expense: {}, {}{}>'.format(
-            self.name, self.value,
+            self.name, self.formatted_value,
             ' (Recurring)' if self.recur_type is not None else ''
         )
 
@@ -261,18 +254,14 @@ class History(db.Model):
         """
         Returns the value of the expense, formatted for display.
         """
-        return '{:,.2f} {}'.format(to_major(self.value), self.currency) \
-            if self.value is not None else '—'
+        return format_raw(self.value, self.currency)
 
     @property
     def formatted_local(self):
         """
         Returns the local value of the expense, formatted for display.
         """
-        return '{}{:,.2f}{}'.format(
-            app.config['LOCAL_SYMBOL'], to_major(self.local_value),
-            '' if self.currency == LOCAL_CURRENCY else '*'
-        ) if self.local_value is not None else '—'
+        return format_local(self.value, self.currency)
 
     def back(self):
         """
@@ -294,5 +283,5 @@ class History(db.Model):
 
     def __str__(self):
         return '<Historical Expense: {}, {}, {}>'.format(
-            self.date, self.name, self.value
+            self.date, self.name, self.formatted_value
         )

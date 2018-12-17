@@ -71,8 +71,8 @@ function editHistory(id) {
 	// Set form field values to values from hidden row.
 	$('#edit_history_id').val(id);
 	$('#edit_history_name').val($('#history_' + id + ' > td.name').text());
-	var value = $('#history_' + id + ' > td.value').text();
-	$('#edit_history_value').val(value == "—" ? "" : value);
+	var value = $('#history_' + id + ' > td.value')[0].title;
+	$('#edit_history_value').val(value);
 	$('#edit_history_value').select();
 	$('#edit_history_created').val($('#history_' + id + ' > td.date:eq(0)').text());
 	$('#edit_history_settled').val($('#history_' + id + ' > td.date:eq(1)').text());
@@ -146,7 +146,7 @@ function loadHistory() {
 					'<tr id="history_' + e[0] + '">' +
 					'<td class="icon"><a href="#" onclick="sendBack(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_BACK + '" title="Send to Current" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
-					'<td class="value" title="' + e[3] + '">' + e[2] + '</td>' +
+					'<td class="value' + (e[2].charAt(0) == '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
 					'<td class="date' + (small_screen ? ' hidden' : '') + '">' + e[4] + '</td>' +
 					'<td class="date' + (small_screen ? ' hidden' : '') + '">' + e[5] + '</td>' +
 					'<td class="note">' + e[6] + '</td>' +
