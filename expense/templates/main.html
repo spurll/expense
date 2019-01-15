@@ -65,6 +65,10 @@ function removeCurrent(id, name) {
 			$('#current_' + id).remove();
 			loadTotal();
 		}
+
+		{% if use_loading_gif %}
+		$('#loading').fadeOut('slow');
+		{% endif %}
 	});
 }
 
@@ -324,7 +328,7 @@ function loadCurrent() {
 					'<td class="date' + (small_screen ? ' hidden' : '') + '">' + e[4] + '</td>' +
 					'<td class="note">' + e[5] + '</td>' +
 					'<td class="icon"><a href="#" onclick="editCurrent(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-					'<td class="icon"><a href="#" onclick="removeCurrent(' + e[0] + ', \'' + e[1] + '\'); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+					'<td class="icon"><a href="#" onclick="removeCurrent(' + e[0] + ', \'' + e[1].replace('\'', '\\\'') + '\'); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
 					'</tr>'
 				);
 			}
