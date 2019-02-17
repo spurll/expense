@@ -41,18 +41,16 @@
 				small_screen = ($(window).width() < 700);
 				if (small_screen) {
 					// Moves and resizes the links and login information information on a smaller screen.
-					$('#links').css({'width': 'auto', 'margin': 'auto', 'float': 'none', 'text-align': 'center', 'padding': '2px'});
-					$('#user').css({'width': 'auto', 'margin': 'auto', 'float': 'none', 'text-align': 'center', 'padding': '2px'});
-					$('#title').css({'padding': '2px'});
-
+					$('#links').addClass('small-screen');
+					$('#user').addClass('small-screen');
+					$('#title').addClass('small-screen');
 					$('.date').addClass('hidden');
 				}
 				else {
-					// Moves and resizes the links and login information information on a smaller screen.
-					$('#links').removeAttr('style');
-					$('#user').removeAttr('style');
-					$('#title').removeAttr('style');
-
+					// Moves and resizes the links and login information information on a bigger (or horizontal) screen.
+					$('#links').removeClass('small-screen');
+					$('#user').removeClass('small-screen');
+					$('#title').removeClass('small-screen');
 					$('.date').removeClass('hidden');
 				}
 			}

@@ -94,6 +94,14 @@ tfoot { font-weight: bold; font-variant: small-caps; }
 	padding: 10px;
 }
 
+.small-screen {
+	width: auto;
+	margin: auto;
+	float: none;
+	text-align: center;
+	padding: 2px;
+}
+
 .heading {
 	font-variant: small-caps;
 	text-align: center;
