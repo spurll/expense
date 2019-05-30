@@ -4,10 +4,9 @@ import requests
 
 from expense import app
 
-KEY = 'access_key=' + app.config.get('FIXER_API_KEY')
-FIXER_URL = 'https://data.fixer.io/api/'
-RATE_URL = FIXER_URL + '{date:%Y-%m-%d}?' + KEY + '&base={src}&symbols={dst}'
-SYMBOLS_URL = FIXER_URL + 'latest?' + KEY
+CURRENCY_URL = 'https://api.exchangeratesapi.io/'
+RATE_URL = CURRENCY_URL + '{date:%Y-%m-%d}?base={src}&symbols={dst}'
+SYMBOLS_URL = CURRENCY_URL + 'latest'
 CENTS = app.config.get('FRACTIONS_PER_UNIT', 100)
 LOCAL = app.config.get('LOCAL_CURRENCY')
 
@@ -56,7 +55,7 @@ def format_raw(value, currency=LOCAL):
 
 def list_currencies():
     """
-    Lists all valid currencies (those supported by fixer.io).
+    Lists all valid currencies (those supported by exchangeratesapi.io).
     """
     if not symbols_cache:
         r = requests.get(SYMBOLS_URL)

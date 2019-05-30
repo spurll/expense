@@ -29,4 +29,3 @@ LOADING_GIF = True
 CONFIRM_DELETION = True
 DATE_FORMAT = '%Y-%m-%d'
 PAGE_SIZE = 100
-FIXER_API_KEY = YOUR_API_KEY    # Sign up at Fixer.io
