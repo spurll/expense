@@ -152,7 +152,7 @@ class Future(db.Model):
         """
         Returns the local value of the expense, formatted for display.
         """
-        return format_local(self.value, self.currency)
+        return format_local(self.local_value, self.currency)
 
     @property
     def recur(self):
