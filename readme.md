@@ -51,6 +51,8 @@ Feature Requests
 Known Bugs
 ----------
 
+* Screenshot (above) hasn't been updated to match new styling
+* Because of the way `justify-content` works, the title is often not quite centred...
 * Adding/editing seems to be broken on Edge (name, value, and note are not passed)
 * Because of the way information is sent via GET requests, it's impossible remove
   recurrence from an item (because it requires setting the value to "")

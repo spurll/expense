@@ -1,6 +1,6 @@
 body {
-	font-family: serif;
-	color: #ffffff;
+    font-family: "Lato", "Helvetica Neue", "Helvetica", sans-serif;
+    color: #cccccc;
 	background-color: #222222;
 	overflow-y: auto;
 	margin: 0px;
@@ -19,9 +19,9 @@ table {
 	border-spacing: 0px;
 }
 
-th { font-variant: small-caps; }
+th { font-weight: bold; }
 td { font-size: 75%; padding: 3px; }
-tfoot { font-weight: bold; font-variant: small-caps; }
+tfoot { font-size: auto; font-weight: bold; font-weight: bold; }
 
 #content {
 	width: 100%;
@@ -44,32 +44,51 @@ tfoot { font-weight: bold; font-variant: small-caps; }
 	position: fixed;
 	background-color: #111111;
 	border-bottom: solid #444444;
+    display: flex;
 }
 
 #title {
-	width: 40%;
 	margin: auto;
-	font-variant: small-caps;
-	font-size: 200%;
+	font-size: 22px;
+	font-weight: bold;
+    height: 30px;
+    line-height: 30px;
 	text-align: center;
-	padding-top: 10px;
-	padding-bottom: 10px;
-	position: relative;
+    justify-content: center;
 }
 
 #links {
-	width: calc(30% - 20px);
-	float: left;
+    padding: 10px 20px;
 	text-align: left;
-	padding: 10px;
+    white-space: nowrap;
 }
 
 #user {
-	width: calc(30% - 20px);
-	float: right;
-	text-align: right;
-	padding: 10px;
+    padding: 10px 20px;
+    text-align: right;
+    white-space: nowrap;
 }
+
+.small-screen #current-user {
+    display: none;
+}
+
+.small-screen .date {
+    display: none;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.flex-box {
+    flex: 1;
+    display: flex;
+}
+
+.flex-box:first-child > span { margin-right: auto; }
+
+.flex-box:last-child > span { margin-left: auto; }
 
 #footer {
 	width: 100%;
@@ -103,20 +122,51 @@ tfoot { font-weight: bold; font-variant: small-caps; }
 }
 
 .heading {
-	font-variant: small-caps;
+	font-weight: bold;
 	text-align: center;
-	font-size: 150%;
+	font-size: 16px;
 	padding-top: 5px;
 	padding-bottom: 10px;
 }
 
-.messages { font-style: italic; text-align: center; }
+.messages { text-align: center; color: #aa3333; }
+.messages p { margin-top: 20px; }
+
 .wide { width: 60%; top: 0px; }
 .narrow { width: 40%; top: 0px; }
 .right { float: right; text-align: right; }
 .section { padding-top: 5px; padding-bottom: 10px; }
-.login { max-width: 320px; margin: auto; }
-.hidden { display: none; }
+
+.login {
+    max-width: 320px;
+    margin: auto;
+}
+
+.login form div, .signup form div {
+    height: 30px;
+}
+
+.login label {
+    width: 40%;
+    display: inline-block;
+}
+
+.login input[type="text"], .login input[type="password"] {
+    width: 60%;
+}
+
+.login input[type="checkbox"] {
+    margin: 7px 10px 0 0;
+}
+
+.login form a.button {
+    float: right;
+}
+
+.login p:first-of-type, .signup p:first-of-type {
+    margin-top: 40px;
+}
+
 .negative { color: #cc4444; }
 
 .ui-datepicker { background-color: #111111; }
@@ -124,7 +174,11 @@ tfoot { font-weight: bold; font-variant: small-caps; }
 .ui-state-active { background-color: #888888 !important; border-color: #000000 !important; color: #ffffff !important; }
 table.ui-datepicker-calendar th { color: #000000; }
 
-table:not(.ui-datepicker-calendar) tr:nth-child(even) { background-color: #444444; border-color: #444444; }
+table:not(.ui-datepicker-calendar) tr:nth-child(even) {
+    background-color: #303030;
+    border-color: #303030;
+}
+
 td.icon { width: 24px; }
 td.name {}
 td.value { text-align: right; width: 60px; }
@@ -133,27 +187,46 @@ td.note {}
 td.recur { text-align: center; width: 80px; }
 
 div.loading {
-	bottom: 5px;
-	right: 10px;
 	height: 24px;
 	width: 24px;
 	z-index: 999;
-	position: absolute;
-	margin: auto;
-	overflow: show;
+    display: inline-block;
+    padding-left: 20px;
 }
 
-img.loading { width: 24px; height: 24px; }
+img.loading { vertical-align: middle; width: 24px; height: 24px; }
 img.icon { width: 24px; height: 24px; }
 
-a:link { text-decoration: none; color: #888888; }
-a:visited { text-decoration: none; color: #888888; }
-a:hover { text-decoration: none; color: #ffffff; }
-a:active { text-decoration: none; color: #888888; }
+a:link, a:visited, a:active {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+a:hover {
+    text-decoration: none;
+    color: #cccccc;
+}
+
+a.button {
+    border: 1px solid #ffffff;
+    padding: 3px 5px;
+    white-space: nowrap;
+    display: inline-block;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#previous-page a.button, #next-page a.button {
+    margin: 0;
+}
+
+a.button:hover {
+    border: 1px solid #cccccc;
+}
 
 input { color: #ffffff; background-color: transparent; border: solid 1px #444444; }
-input:not(#password):not(#username):not([type="submit"]) { font-family: serif; }
-select { color: #ffffff; background-color: transparent; border: solid 1px #444444; font-family: serif; }
+input:not(#password):not(#username):not([type="submit"]) { font-family: unset; }
+select { color: #ffffff; background-color: transparent; border: solid 1px #444444; font-family: unset; }
 select option { background-color: #222222; }
 input[type="text"] { width: 100%; }
 input[type="password"] { width: 100%; }
@@ -162,3 +235,4 @@ input[name="created"] { width: 80px; text-align: center; }
 input[name="due_date"] { width: 80px; text-align: center; }
 input[name="recur_freq"] { width: 30px; text-align: right; }
 input[name="recur_type"] { width: 60px; }
+
