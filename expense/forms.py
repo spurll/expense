@@ -5,8 +5,8 @@ from wtforms.validators import Required
 
 
 class LoginForm(FlaskForm):
-    username = TextField("Username", validators=[Required()])
-    password = PasswordField("Password", validators=[Required()])
+    username = TextField("Username:", validators=[Required()])
+    password = PasswordField("Password:", validators=[Required()])
     remember = BooleanField("Remember Me", default=False)
 
 
