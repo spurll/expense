@@ -156,6 +156,18 @@ function loadHistory() {
 				);
 			}
 		}
+
+        if (window.page > 1)
+        {
+            $('#previous a').show();
+        }
+        else
+        {
+            $('#previous a').hide();
+        }
+
+        $('#current').text('Page ' + window.page);
+
 		{% if use_loading_gif %}
 		$('#loading').fadeOut('slow');
 		{% endif %}
@@ -168,14 +180,12 @@ function previous() {
 		loadHistory();
 		$('#current-page').text('Page ' + window.page);
 	}
-	return false;
 }
 
 function next() {
 	window.page++;
 	loadHistory();
 	$('#current-page').text('Page ' + window.page);
-	return false;
 }
 
 $(document).ready(function() {
@@ -184,17 +194,13 @@ $(document).ready(function() {
 	$('#loading').fadeIn('slow');
 	{% endif %}
 
-	$('#previous-page > a').on('click', previous);
-	$('#next-page > a').on('click', next);
-	$('#current-page').text('Page ' + window.page);
-
 	loadHistory();
 });
 </script>
 
-<div class="heading">History</div>
+<h1>History</h1>
 
-<form id="edit_history_form" action="#"></form>
+<form id="edit_history_form" action="#" />
 
 <table id="history">
 	<thead>
@@ -212,10 +218,10 @@ $(document).ready(function() {
 	<tbody></tbody>
 </table>
 
-<div id="footer">
-	<div id="previous-page"><a class="button" href="#">Previous</a></div>
-	<div id="next-page"><a class="button" href="#">Next</a></div>
-	<div id="current-page"></div>
+<div class="pages">
+	<div id="previous"><a class="button" href="javascript:previous()">Previous</a>&nbsp;</div>
+	<div id="next"><a class="button" href="javascript:next()">Next</a></div>
+    <div id="current"></div>
 </div>
 
 {% endblock %}
