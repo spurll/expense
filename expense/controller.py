@@ -127,10 +127,14 @@ def edit_future(user, future_id, fields):
     if expense in user.future:
         convert_fields(fields)
 
+        # When due_date is changed on a recurring item, recur_base needs to be
+        # reset (otherwise, it will recur based on the old date)
         if ("due_date" in fields) and ("recur_base" not in fields):
-            # When due_date is changed on a recurring item, recur_base needs to
-            # be reset (otherwise, it will recur based on the old date)
             fields["recur_base"] = None
+
+        # Ensure that if recur_type is not sent, it's removed from the object
+        if ("recur_type" not in fields):
+            fields["recur_type"] = None
 
         for field, value in fields.items():
             setattr(expense, field, value)
@@ -221,6 +225,8 @@ def convert_fields(fields):
             fields['value'] = value
 
         fields['value'] = to_fractional(fields['value'])
+    else:
+        fields['value'] = None
 
     for field in ['due_date', 'created', 'settled']:
         if field in fields:
@@ -230,6 +236,8 @@ def convert_fields(fields):
 
     if 'note' in fields:
         fields['note'] = fields['note'].strip()
+    else:
+        fields['note'] = ''
 
 
 def load_csv(user, filename, add_function=add_current):

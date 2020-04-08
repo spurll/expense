@@ -123,42 +123,6 @@ def load_table():
     return jsonify(data=data, error=error)
 
 
-@app.route('/_add_expense')
-def add_expense():
-    """
-    Adds or edits an expense.
-    """
-    if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, error='User must be logged in.')
-
-    fn = None
-    error = None
-
-    # Make it mutable.
-    args = {k: v for (k, v) in request.args.items() if v is not ''}
-    table = args.pop('table', None)
-
-    if table == 'current':
-        fn = add_current
-    elif table == 'future':
-        fn = add_future
-    elif table == 'history':
-        fn = add_history
-
-    if fn:
-        try:
-            print('Adding {} expense: {}'.format(table, args))
-            fn(current_user, args)
-        except Exception as e:
-            print(e)
-            error = str(e)
-    else:
-        error = 'Attempted to edit an invalid table {}.'.format(table)
-        print(error)
-
-    return jsonify(error=error)
-
-
 @app.route('/_total')
 def total():
     """
@@ -179,7 +143,41 @@ def total():
     return jsonify(data=data, error=error)
 
 
-@app.route('/_settle')
+@app.route('/_add_expense', methods=['POST'])
+def add_expense():
+    """
+    Adds or edits an expense.
+    """
+    if current_user is None or not current_user.is_authenticated:
+        return jsonify(data={}, error='User must be logged in.')
+
+    fn, error = None, None
+
+    # Make it mutable.
+    args = {k: v for (k, v) in request.form.items() if v is not ''}
+    table = args.pop('table', None)
+
+    if table == 'current':
+        fn = add_current
+    elif table == 'future':
+        fn = add_future
+    elif table == 'history':
+        fn = add_history
+    else:
+        error = 'Attempted to edit an invalid table {}.'.format(table)
+        print(error)
+
+    try:
+        print('Adding {} expense: {}'.format(table, args))
+        fn(current_user, args)
+    except Exception as e:
+        print(e)
+        error = str(e)
+
+    return jsonify(error=error)
+
+
+@app.route('/_settle', methods=['POST'])
 def settle():
     """
     Move an expense from Current to History.
@@ -190,8 +188,8 @@ def settle():
     error = None
 
     try:
-        print('Settling current expense: {}'.format(request.args.get('id')))
-        advance_current(current_user, request.args.get('id', None, type=int))
+        print('Settling current expense: {}'.format(request.form.get('id')))
+        advance_current(current_user, request.form.get('id', None, type=int))
     except Exception as e:
         print(e)
         error = str(e)
@@ -199,7 +197,7 @@ def settle():
     return jsonify(error=error)
 
 
-@app.route('/_advance')
+@app.route('/_advance', methods=['POST'])
 def advance():
     """
     Move an expense from Future to Current.
@@ -210,8 +208,8 @@ def advance():
     error = None
 
     try:
-        print('Advancing future expense: {}'.format(request.args.get('id')))
-        advance_future(current_user, request.args.get('id', None, type=int))
+        print('Advancing future expense: {}'.format(request.form.get('id')))
+        advance_future(current_user, request.form.get('id', None, type=int))
     except Exception as e:
         print(e)
         error = str(e)
@@ -219,7 +217,7 @@ def advance():
     return jsonify(error=error)
 
 
-@app.route('/_send_back')
+@app.route('/_send_back', methods=['POST'])
 def send_back():
     """
     Move an expense from History back to Current.
@@ -230,8 +228,8 @@ def send_back():
     error = None
 
     try:
-        print('Sending expense back to current: {}'.format(request.args))
-        history_to_current(current_user,request.args.get('id', None, type=int))
+        print('Sending expense back to current: {}'.format(request.form))
+        history_to_current(current_user,request.form.get('id', None, type=int))
     except Exception as e:
         print(e)
         error = str(e)
@@ -239,7 +237,7 @@ def send_back():
     return jsonify(error=error)
 
 
-@app.route('/_delete')
+@app.route('/_delete', methods=['POST'])
 def delete():
     """
     Delete an expense.
@@ -249,7 +247,7 @@ def delete():
 
     error = None
 
-    table = request.args.get('table', None)
+    table = request.form.get('table', None)
 
     if table == 'current':
         fn = delete_current
@@ -259,8 +257,8 @@ def delete():
         fn = delete_history
 
     try:
-        print('Deleting {} expense: {}'.format(table, request.args.get('id')))
-        fn(current_user, request.args.get('id', None, type=int))
+        print('Deleting {} expense: {}'.format(table, request.form.get('id')))
+        fn(current_user, request.form.get('id', None, type=int))
     except Exception as e:
         print(e)
         error = str(e)

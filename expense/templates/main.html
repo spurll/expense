@@ -15,7 +15,7 @@ function settle(id) {
 	$('#loading').fadeIn('slow');
 	{% endif %}
 
-	$.getJSON("{{url_for('settle')}}", {id: id}, function(result) {
+	$.post("{{url_for('settle')}}", {id: id}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -31,7 +31,7 @@ function advance(id) {
 	$('#loading').fadeIn('slow');
 	{% endif %}
 
-	$.getJSON("{{url_for('advance')}}", {id: id}, function(result) {
+	$.post("{{url_for('advance')}}", {id: id}, function(result) {
 		if (result.error) {
 			$('#loading').fadeOut('slow');
 			alert(result.error);
@@ -57,7 +57,7 @@ function removeCurrent(id, name) {
 	$('#loading').fadeIn('slow');
 	{% endif %}
 
-	$.getJSON("{{url_for('delete')}}", {table: 'current', id: id}, function(result) {
+	$.post("{{url_for('delete')}}", {table: 'current', id: id}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -81,7 +81,7 @@ function removeFuture(id, name) {
 	$('#loading').fadeIn('slow');
 	{% endif %}
 
-	$.getJSON("{{url_for('delete')}}", {table: 'future', id: id}, function(result) {
+	$.post("{{url_for('delete')}}", {table: 'future', id: id}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -97,7 +97,7 @@ function removeFuture(id, name) {
 
 function addCurrent() {
 	var payload = $('#current_form').serialize().replace(/current_/g, "") + "&table=current";
-	$.getJSON("{{url_for('add_expense')}}", payload, function(result) {
+	$.post("{{url_for('add_expense')}}", payload, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -117,7 +117,7 @@ function addCurrent() {
 
 function addFuture() {
 	var payload = $('#future_form').serialize().replace(/future_/g, "") + "&table=future";
-	$.getJSON("{{url_for('add_expense')}}", payload, function(result) {
+	$.post("{{url_for('add_expense')}}", payload, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -138,7 +138,7 @@ function addFuture() {
 
 function submitEditCurrent() {
 	var payload = $('#edit_current_form').serialize().replace(/edit_current_/g, "") + "&table=current";
-	$.getJSON("{{url_for('add_expense')}}", payload, function(result) {
+	$.post("{{url_for('add_expense')}}", payload, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -150,6 +150,7 @@ function submitEditCurrent() {
 			{% endif %}
 
 			// TODO: Should probably add a function to load a single ID from a table.
+            // Or, better yet, have the endpoint you posted to return the new row.
 			$('#current > tbody > tr').not('#add_current').remove();
 			loadCurrent();
 		}
@@ -158,8 +159,7 @@ function submitEditCurrent() {
 
 function submitEditFuture() {
 	var payload = $('#edit_future_form').serialize().replace(/edit_future_/g, "") + "&table=future";
-    console.log(payload);
-	$.getJSON("{{url_for('add_expense')}}", payload, function(result) {
+	$.post("{{url_for('add_expense')}}", payload, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -171,6 +171,7 @@ function submitEditFuture() {
 			{% endif %}
 
 			// TODO: Should probably add a function to load a single ID from a table.
+            // Or, better yet, have the endpoint you posted to return the new row.
 			$('#future > tbody > tr').not('#add_future').remove();
 			loadFuture();
 		}

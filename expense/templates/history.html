@@ -13,7 +13,7 @@ function sendBack(id) {
 	$('#loading').fadeIn('slow');
 	{% endif %}
 
-	$.getJSON("{{url_for('send_back')}}", {id: id}, function(result) {
+	$.post("{{url_for('send_back')}}", {id: id}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -29,7 +29,7 @@ function sendBack(id) {
 
 function submitEditHistory() {
 	var payload = $('#edit_history_form').serialize().replace(/edit_history_/g, "") + "&table=history";
-	$.getJSON("{{url_for('add_expense')}}", payload, function(result) {
+	$.post("{{url_for('add_expense')}}", payload, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
@@ -41,6 +41,7 @@ function submitEditHistory() {
 			{% endif %}
 
 			// TODO: Should probably add a function to load a single ID from a table.
+            // Or, better yet, have the endpoint you posted to return the new row.
 			$('#history > tbody > tr').remove();
 			loadHistory();
 		}
@@ -114,7 +115,7 @@ function removeHistory(id, name) {
 	$('#loading').fadeIn('slow');
 	{% endif %}
 
-	$.getJSON("{{url_for('delete')}}", {table: 'history', id: id}, function(result) {
+	$.post("{{url_for('delete')}}", {table: 'history', id: id}, function(result) {
 		if (result.error) {
 			alert(result.error);
 		}
