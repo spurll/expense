@@ -158,6 +158,7 @@ function submitEditCurrent() {
 
 function submitEditFuture() {
 	var payload = $('#edit_future_form').serialize().replace(/edit_future_/g, "") + "&table=future";
+    console.log(payload);
 	$.getJSON("{{url_for('add_expense')}}", payload, function(result) {
 		if (result.error) {
 			alert(result.error);
@@ -514,8 +515,8 @@ $(document).ready(function() {
 
 <h1>Future</h1>
 
-<form id="future_form" action="#" />
-<form id="edit_future_form" action="#" />
+<form id="future_form" action="#"></form>
+<form id="edit_future_form" action="#"></form>
 
 <table id="future" class="expense_table">
 	<thead>
