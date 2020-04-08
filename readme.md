@@ -42,6 +42,8 @@ Bugs and Feature Requests
 Feature Requests
 ----------------
 
+* Shouldn't have to reload the entire table after an edit (nontrivial, because the row's
+  location may change, but not impossible either)
 * Invalid currencies should display warning to user as well as to console
 * Error messages should have better debugging information (error type, stack trace)
 * Error messages should be non-interrupting and auto-dismissing (then we can have success

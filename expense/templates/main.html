@@ -41,7 +41,6 @@ function advance(id) {
 			// recurring items are complicated. Hypothetically it could be removed, then
 			// the individual item could be reloaded provided its row index were also
 			// provided, allowing it to be inserted in the appropriate place.
-			// $('#future_' + id).remove();
 			loadCurrent();
 			loadFuture();
 		}
