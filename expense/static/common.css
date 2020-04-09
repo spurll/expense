@@ -251,7 +251,7 @@ select {
 }
 
 select:not([multiple]) {
-    padding: 1px 5px;
+    padding: 2px 5px;
 }
 
 select option { background-color: #222222; }
@@ -278,11 +278,11 @@ textarea, input[type="text"], input[type="password"], input[type="number"] {
 }
 
 .small-screen h1 {
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .small-screen h2 {
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .small-screen textarea, .small-screen input[type="text"], .small-screen input[type="password"], .small-screen input[type="number"] {

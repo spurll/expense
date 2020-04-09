@@ -1,17 +1,47 @@
-.small-screen .date {
-    display: none;
-}
-
 .section { padding-top: 5px; padding-bottom: 10px; }
 
 .negative { color: #cc4444; }
 
-td.icon { width: 24px; }
-td.name {}
-td.value { text-align: right; width: 60px; }
-td.date { text-align: center; width: 80px; }
-td.note {}
-td.recur { text-align: center; width: 80px; }
+td.icon {
+    width: 24px;
+}
+
+td.value {
+    text-align: right;
+    width: 60px;
+}
+
+td.date {
+    text-align: center;
+    width: 80px;
+}
+
+td.recur {
+    text-align: center;
+    width: 80px;
+}
+
+
+.small-screen, .small-screen td, .small-screen th {
+    font-size: 10px;
+}
+
+.small-screen textarea, .small-screen input[type="text"], .small-screen input[type="password"], .small-screen input[type="number"], .small-screen select {
+    font-size: 10px;
+}
+
+.small-screen .date {
+    display: none;
+}
+
+.small-screen td.value {
+    width: 50px;
+}
+
+.small-screen td.recur {
+    width: 70px;
+}
+
 
 div.loading {
 	height: 24px;
