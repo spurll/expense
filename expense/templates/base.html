@@ -1,78 +1,43 @@
 <html>
     <head>
-		<!-- Support for iOS device sizes. -->
-		<meta name="viewport" content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no'>
+        <!-- Support for iOS device sizes. -->
+        <meta name="viewport" content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no'>
 
-		{% if title %}
-		<title>{{title}}</title>
-		{% endif %}
+        {% if title %}
+        <title>{{ title }}</title>
+        {% endif %}
 
-		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='common.css')}}"/>
-		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}"/>
-		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='jquery-ui-1.12.1.min.css')}}"/>
-		<link rel="shortcut icon" href="{{url_for('static', filename='icon.png')}}"/>
+        <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='common.css') }} />
+        <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='style.css') }} />
+        <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='jquery-ui-1.12.1.min.css') }} />
+        <link rel="shortcut icon" href={{ url_for('static', filename='icon.png') }} />
 
-		<script type="text/javascript" src="{{url_for('static', filename='jquery-3.1.0.min.js')}}"></script>
-		<script type="text/javascript" src="{{url_for('static', filename='jquery-ui-1.12.1.min.js')}}"></script>
-   
-		<script>
-			var small_screen;
+        <script type="text/javascript" src={{ url_for('static', filename='jquery-3.1.0.min.js') }}></script>
+        <script type="text/javascript" src={{ url_for('static', filename='jquery-ui-1.12.1.min.js') }}></script>
+        <script type="text/javascript" src={{ url_for('static', filename='resize.js') }} ></script>
+    </head>
 
-			$(document).ready(function() {
-				resizeContent();
-				resizeBuffer();
-			});
-
-			$(window).resize(function() {
-				resizeContent();
-				resizeBuffer();
-			});
-
-			$(window).on('orientationchange', function() {
-				resizeContent();
-				resizeBuffer();
-			});
-
-			function resizeBuffer() {
-				// Resizes the title buffer which pushes content down below the floating title bar.
-				$('#title-buffer').height($('#title-bar').outerHeight());
-			}
-
-			function resizeContent() {
-				small_screen = ($(window).width() < 700);
-				if (small_screen) {
-					// Moves and resizes the links and login information information on a smaller screen.
-					$('body').addClass('small-screen');
-				}
-				else {
-					// Moves and resizes the links and login information information on a bigger (or horizontal) screen.
-					$('body').removeClass('small-screen');
-				}
-			}
-		</script>
-	 </head>
-
-	<body>
-		<div id="title-buffer"></div>
-		<div id="title-bar" class="flex-container">
-			<div id="links" class="flex-box">
+    <body>
+        <div id="title-buffer"></div>
+        <div id="title-bar" class="flex-container">
+            <div id="links" class="flex-box">
                 <span>
                     {% if link %}
                     <a class="button" href={{ link['url'] }}>{{ link['text'] }}</a>
                     {% endif %}
                 </span>
-			</div>
+            </div>
 
-			<div id="title" class="flex-box">
+            <div id="title" class="flex-box">
                 <a href={{ url_for('main') }}>{{ title }}</a>
-			</div>
+            </div>
 
-			<div id="user" class="flex-box">
+            <div id="user" class="flex-box">
                 <span>
                     {% if not hide_user %}
                     {% if user and user.is_authenticated %}
-                    <span id="current-user">Logged in as {{user.name}}.</span>
-                    <span><a class="button" title="Logged in as {{user.name}}." href={{ url_for('logout') }}>Log Out</a></span>
+                    <span id="current-user">Logged in as {{ user.name }}.</span>
+                    <span><a class="button" title="Logged in as {{ user.name }}." href={{ url_for('logout') }}>Log Out</a></span>
                     {% else %}
                     <a class="button" href={{ url_for('login', next=url_for(request.endpoint, **dict(request.view_args))) }}>Log In</a>
                     {% endif %}
@@ -82,22 +47,22 @@
                     <div class="loading" id="loading"><img class="loading" src={{ url_for('static', filename='loading.gif') }} /></div>
                     {% endif %}
                 </span>
-			</div>
-		</div>
+            </div>
+        </div>
 
-		{% with messages = get_flashed_messages() %}
-		<div class="messages">
-			{% if messages %}
-			{% for message in messages %}
-			<p>{{ message }}</p>
-			{% endfor %}
-			{% endif %}
-		</div>
-		{% endwith %}
+        {% with messages = get_flashed_messages() %}
+        <div class="messages">
+            {% if messages %}
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+            {% endif %}
+        </div>
+        {% endwith %}
 
-		<div id="content">
-			{% block content %}
-			{% endblock %}
-		</div>
-	</body>
+        <div id="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </body>
 </html>

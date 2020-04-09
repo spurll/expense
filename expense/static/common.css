@@ -31,6 +31,7 @@ div#title {
     line-height: 56px;
 	text-align: center;
     justify-content: center;
+    white-space: nowrap;
 }
 
 div#links {
