@@ -58,8 +58,8 @@ function editHistory(id) {
 		'<td class="icon"></td>' +
 		'<td class="name">{{edit_history_form.id(form="edit_history_form")}}{{edit_history_form.name(form="edit_history_form")}}</td>' +
 		'<td class="value">{{edit_history_form.value(form="edit_history_form")}}</td>' +
-		'<td class="date' + (small_screen ? ' hidden' : '') + '">{{edit_history_form.created(form="edit_history_form")}}</td>' +
-		'<td class="date' + (small_screen ? ' hidden' : '') + '">{{edit_history_form.settled(form="edit_history_form")}}</td>' +
+		'<td class="date">{{edit_history_form.created(form="edit_history_form")}}</td>' +
+		'<td class="date">{{edit_history_form.settled(form="edit_history_form")}}</td>' +
 		'<td class="note">{{edit_history_form.note(form="edit_history_form")}}</td>' +
 		'<td class="icon"><a id="submit_history_edit" href="#" onclick="submitEditHistory(); return false;"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
 		'<td class="icon"><a id="reset_history_edit" href="#" onclick="cancelEditHistory(); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
@@ -148,8 +148,8 @@ function loadHistory() {
 					'<td class="icon"><a href="#" onclick="sendBack(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_BACK + '" title="Send to Current" /></a></td>' +
 					'<td class="name">' + e[1] + '</td>' +
 					'<td class="value' + (e[2].charAt(0) == '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
-					'<td class="date' + (small_screen ? ' hidden' : '') + '">' + e[4] + '</td>' +
-					'<td class="date' + (small_screen ? ' hidden' : '') + '">' + e[5] + '</td>' +
+					'<td class="date">' + e[4] + '</td>' +
+					'<td class="date">' + e[5] + '</td>' +
 					'<td class="note">' + e[6] + '</td>' +
 					'<td class="icon"><a href="#" onclick="editHistory(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
 					'<td class="icon"><a href="#" onclick="removeHistory(' + e[0] + ', \'' + e[1].replace('\'', '\\\'') + '\'); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
