@@ -22,11 +22,7 @@ td.recur {
 }
 
 
-.small-screen, .small-screen td, .small-screen th {
-    font-size: 10px;
-}
-
-.small-screen textarea, .small-screen input[type="text"], .small-screen input[type="password"], .small-screen input[type="number"], .small-screen select {
+.small-screen td, .small-screen th {
     font-size: 10px;
 }
 
