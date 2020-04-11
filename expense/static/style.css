@@ -59,23 +59,11 @@ input[name="recur_type"] {
     font-size: 10px;
 }
 
-.small-screen .date {
+.small-screen .date, .small-screen .recur {
     display: none;
 }
 
 .small-screen td.value {
     width: 50px;
-}
-
-.small-screen td.recur {
-    min-width: 70px;
-}
-
-.small-screen input[name="recur_freq"] {
-    width: 25px;
-}
-
-.small-screen input[name="recur_type"] {
-    width: 40px;
 }
 
