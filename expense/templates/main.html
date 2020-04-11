@@ -1,475 +1,469 @@
 {% extends "base.html" %}
 {% block content %}
 
-<script type=text/javascript>
-$IMG_CHECK = "{{url_for('static', filename='check.png')}}";
-$IMG_EDIT = "{{url_for('static', filename='edit.png')}}";
-$IMG_DELETE = "{{url_for('static', filename='x.png')}}";
-$IMG_ADVANCE = "{{url_for('static', filename='up.png')}}";
+<script type="text/javascript">
+    $IMG_CHECK = "{{ url_for('static', filename='check.png') }}";
+    $IMG_EDIT = "{{ url_for('static', filename='edit.png') }}";
+    $IMG_DELETE = "{{ url_for('static', filename='x.png') }}";
+    $IMG_ADVANCE = "{{ url_for('static', filename='up.png') }}";
 
-const refreshInterval = 3600000;	// One hour
-var nextRefresh;
+    const refreshInterval = 3600000;    // One hour
+    var nextRefresh;
 
-function settle(id) {
-	{% if use_loading_gif %}
-	$('#loading').fadeIn('slow');
-	{% endif %}
+    function settle(id) {
+        {% if use_loading_gif %}
+        $('#loading').fadeIn('slow');
+        {% endif %}
 
-	$.post("{{url_for('settle')}}", {id: id}, function(result) {
-		if (result.error) {
-			alert(result.error);
-		}
-		else {
-			$('#current_' + id).remove();
-			loadTotal();
-		}
-	});
-}
+        $.post("{{ url_for('settle') }}", {id: id}, function(result) {
+            if (result.error) {
+                alert(result.error);
+            }
+            else {
+                $('#current_' + id).remove();
+                loadTotal();
+            }
+        });
+    }
 
-function advance(id) {
-	{% if use_loading_gif %}
-	$('#loading').fadeIn('slow');
-	{% endif %}
+    function advance(id) {
+        {% if use_loading_gif %}
+        $('#loading').fadeIn('slow');
+        {% endif %}
 
-	$.post("{{url_for('advance')}}", {id: id}, function(result) {
-		if (result.error) {
-			$('#loading').fadeOut('slow');
-			alert(result.error);
-		}
-		else {
-			// Have to reload the future table instead of simply removing the row because
-			// recurring items are complicated. Hypothetically it could be removed, then
-			// the individual item could be reloaded provided its row index were also
-			// provided, allowing it to be inserted in the appropriate place.
-			loadCurrent();
-			loadFuture();
-		}
-	});
-}
+        $.post("{{ url_for('advance') }}", {id: id}, function(result) {
+            if (result.error) {
+                $('#loading').fadeOut('slow');
+                alert(result.error);
+            }
+            else {
+                // Have to reload the future table instead of simply removing the row because
+                // recurring items are complicated. Hypothetically it could be removed, then
+                // the individual item could be reloaded provided its row index were also
+                // provided, allowing it to be inserted in the appropriate place.
+                loadCurrent();
+                loadFuture();
+            }
+        });
+    }
 
-function removeCurrent(id, name) {
-	{% if confirm_deletion %}
-	if (!window.confirm('Delete ' + name + '?')) { return false; }
-	{% endif %}
+    function removeCurrent(id, name) {
+        {% if confirm_deletion %}
+        if (!window.confirm('Delete ' + name + '?')) { return false; }
+        {% endif %}
 
-	{% if use_loading_gif %}
-	$('#loading').fadeIn('slow');
-	{% endif %}
+        {% if use_loading_gif %}
+        $('#loading').fadeIn('slow');
+        {% endif %}
 
-	$.post("{{url_for('delete')}}", {table: 'current', id: id}, function(result) {
-		if (result.error) {
-			alert(result.error);
-		}
-		else {
-			$('#current_' + id).remove();
-			loadTotal();
-		}
+        $.post("{{ url_for('delete') }}", {table: 'current', id: id}, function(result) {
+            if (result.error) {
+                alert(result.error);
+            }
+            else {
+                $('#current_' + id).remove();
+                loadTotal();
+            }
 
-		{% if use_loading_gif %}
-		$('#loading').fadeOut('slow');
-		{% endif %}
-	});
-}
+            {% if use_loading_gif %}
+            $('#loading').fadeOut('slow');
+            {% endif %}
+        });
+    }
 
-function removeFuture(id, name) {
-	{% if confirm_deletion %}
-	if (!window.confirm('Delete ' + name + '?')) { return false; }
-	{% endif %}
+    function removeFuture(id, name) {
+        {% if confirm_deletion %}
+        if (!window.confirm('Delete ' + name + '?')) { return false; }
+        {% endif %}
 
-	{% if use_loading_gif %}
-	$('#loading').fadeIn('slow');
-	{% endif %}
+        {% if use_loading_gif %}
+        $('#loading').fadeIn('slow');
+        {% endif %}
 
-	$.post("{{url_for('delete')}}", {table: 'future', id: id}, function(result) {
-		if (result.error) {
-			alert(result.error);
-		}
-		else {
-			$('#future_' + id).remove();
-		}
+        $.post("{{ url_for('delete') }}", {table: 'future', id: id}, function(result) {
+            if (result.error) {
+                alert(result.error);
+            }
+            else {
+                $('#future_' + id).remove();
+            }
 
-		{% if use_loading_gif %}
-		$('#loading').fadeOut('slow');
-		{% endif %}
-	});
-}
+            {% if use_loading_gif %}
+            $('#loading').fadeOut('slow');
+            {% endif %}
+        });
+    }
 
-function addCurrent() {
-	var payload = $('#current_form').serialize().replace(/current_/g, "") + "&table=current";
-	$.post("{{url_for('add_expense')}}", payload, function(result) {
-		if (result.error) {
-			alert(result.error);
-		}
-		else {
-			$('#current_form')[0].reset();
-			$('#current_name').focus();
+    function addCurrent() {
+        var payload = $('#current_form').serialize().replace(/current_/g, "") + "&table=current";
+        $.post("{{ url_for('add_expense') }}", payload, function(result) {
+            if (result.error) {
+                alert(result.error);
+            }
+            else {
+                $('#current_form')[0].reset();
+                $('#current_name').focus();
 
-			{% if use_loading_gif %}
-			$('#loading').fadeIn('slow');
-			{% endif %}
+                {% if use_loading_gif %}
+                $('#loading').fadeIn('slow');
+                {% endif %}
 
-			$('#current > tbody > tr').not('#add_current').remove();
-			loadCurrent();
-		}
-	});
-}
+                $('#current > tbody > tr').not('#add_current').remove();
+                loadCurrent();
+            }
+        });
+    }
 
-function addFuture() {
-	var payload = $('#future_form').serialize().replace(/future_/g, "") + "&table=future";
-	$.post("{{url_for('add_expense')}}", payload, function(result) {
-		if (result.error) {
-			alert(result.error);
-		}
-		else {
-			$('#future_form')[0].reset();
-			$("#future_recur_freq").hide();
-			$('#future_name').focus();
+    function addFuture() {
+        var payload = $('#future_form').serialize().replace(/future_/g, "") + "&table=future";
+        $.post("{{ url_for('add_expense') }}", payload, function(result) {
+            if (result.error) {
+                alert(result.error);
+            }
+            else {
+                $('#future_form')[0].reset();
+                $("#future_recur_freq").hide();
+                $('#future_name').focus();
 
-			{% if use_loading_gif %}
-			$('#loading').fadeIn('slow');
-			{% endif %}
+                {% if use_loading_gif %}
+                $('#loading').fadeIn('slow');
+                {% endif %}
 
-			$('#future > tbody > tr').not('#add_future').remove();
-			loadFuture();
-		}
-	});
-}
+                $('#future > tbody > tr').not('#add_future').remove();
+                loadFuture();
+            }
+        });
+    }
 
-function submitEditCurrent() {
-	var payload = $('#edit_current_form').serialize().replace(/edit_current_/g, "") + "&table=current";
-	$.post("{{url_for('add_expense')}}", payload, function(result) {
-		if (result.error) {
-			alert(result.error);
-		}
-		else {
-			cancelEditCurrent();
+    function submitEditCurrent() {
+        var payload = $('#edit_current_form').serialize().replace(/edit_current_/g, "") + "&table=current";
+        $.post("{{ url_for('add_expense') }}", payload, function(result) {
+            if (result.error) {
+                alert(result.error);
+            }
+            else {
+                cancelEditCurrent();
 
-			{% if use_loading_gif %}
-			$('#loading').fadeIn('slow');
-			{% endif %}
+                {% if use_loading_gif %}
+                $('#loading').fadeIn('slow');
+                {% endif %}
 
-			// TODO: Should probably add a function to load a single ID from a table.
-            // Or, better yet, have the endpoint you posted to return the new row.
-			$('#current > tbody > tr').not('#add_current').remove();
-			loadCurrent();
-		}
-	});
-}
+                // TODO: Should probably add a function to load a single ID from a table.
+                // Or, better yet, have the endpoint you posted to return the new row.
+                $('#current > tbody > tr').not('#add_current').remove();
+                loadCurrent();
+            }
+        });
+    }
 
-function submitEditFuture() {
-	var payload = $('#edit_future_form').serialize().replace(/edit_future_/g, "") + "&table=future";
-	$.post("{{url_for('add_expense')}}", payload, function(result) {
-		if (result.error) {
-			alert(result.error);
-		}
-		else {
-			cancelEditFuture();
+    function submitEditFuture() {
+        var payload = $('#edit_future_form').serialize().replace(/edit_future_/g, "") + "&table=future";
+        $.post("{{ url_for('add_expense') }}", payload, function(result) {
+            if (result.error) {
+                alert(result.error);
+            }
+            else {
+                cancelEditFuture();
 
-			{% if use_loading_gif %}
-			$('#loading').fadeIn('slow');
-			{% endif %}
+                {% if use_loading_gif %}
+                $('#loading').fadeIn('slow');
+                {% endif %}
 
-			// TODO: Should probably add a function to load a single ID from a table.
-            // Or, better yet, have the endpoint you posted to return the new row.
-			$('#future > tbody > tr').not('#add_future').remove();
-			loadFuture();
-		}
-	});
-}
+                // TODO: Should probably add a function to load a single ID from a table.
+                // Or, better yet, have the endpoint you posted to return the new row.
+                $('#future > tbody > tr').not('#add_future').remove();
+                loadFuture();
+            }
+        });
+    }
 
-function editCurrent(id) {
-	// Cancel all other edits in progress. (We're not keeping track of them.)
-	cancelEditCurrent();
+    function editCurrent(id) {
+        // Cancel all other edits in progress. (We're not keeping track of them.)
+        cancelEditCurrent();
 
-	// Hide row and replace with form fields.
-	$('#current_' + id).after(
-		'<tr id="edit_current">' +
-		'<td class="icon"></td>' +
-		'<td class="name">{{edit_current_form.id(form="edit_current_form")}}{{edit_current_form.name(form="edit_current_form")}}</td>' +
-		'<td class="value">{{edit_current_form.value(form="edit_current_form")}}</td>' +
-		'<td class="date">{{edit_current_form.created(form="edit_current_form")}}</td>' +
-		'<td class="note">{{edit_current_form.note(form="edit_current_form")}}</td>' +
-		'<td class="icon"><a id="submit_current_edit" href="#" onclick="submitEditCurrent(); return false;"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
-		'<td class="icon"><a id="reset_current_edit" href="#" onclick="cancelEditCurrent(); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
-		'</tr>'
-	);
-	$('#current_' + id).after('<tr id="blank_current_row"></tr>')
-	$('#current_' + id).hide();
-	$('#blank_current_row').hide();
+        // Hide row and replace with form fields.
+        $('#current_' + id).after(
+            '<tr id="edit_current">' +
+            '<td class="icon"></td>' +
+            '<td class="name">{{ edit_current_form.id(form="edit_current_form") }}{{ edit_current_form.name(form="edit_current_form") }}</td>' +
+            '<td class="value">{{ edit_current_form.value(form="edit_current_form") }}</td>' +
+            '<td class="date">{{ edit_current_form.created(form="edit_current_form") }}</td>' +
+            '<td class="note">{{ edit_current_form.note(form="edit_current_form") }}</td>' +
+            '<td class="icon"><a id="submit_current_edit" href="javascript:submitEditCurrent()"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
+            '<td class="icon"><a id="reset_current_edit" href="javascript:cancelEditCurrent()"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
+            '</tr>'
+        );
+        $('#current_' + id).after('<tr id="blank_current_row"></tr>')
+        $('#current_' + id).hide();
+        $('#blank_current_row').hide();
 
-	// Set form field values to values from hidden row.
-	$('#edit_current_id').val(id);
-	$('#edit_current_name').val($('#current_' + id + ' > td.name').text());
-	var value = $('#current_' + id + ' > td.value')[0].title;
-	$('#edit_current_value').val(value);
-	$('#edit_current_value').select();
-	$('#edit_current_created').val($('#current_' + id + ' > td.date').text());
-	$('#edit_current_note').val($('#current_' + id + ' > td.note').text());
+        // Set form field values to values from hidden row.
+        $('#edit_current_id').val(id);
+        $('#edit_current_name').val($('#current_' + id + ' > td.name').text());
+        var value = $('#current_' + id + ' > td.value')[0].title;
+        $('#edit_current_value').val(value);
+        $('#edit_current_value').select();
+        $('#edit_current_created').val($('#current_' + id + ' > td.date').text());
+        $('#edit_current_note').val($('#current_' + id + ' > td.note').text());
 
-	// Enable JQuery UI's date picker.
-	$("#edit_current_created").datepicker({dateFormat: "yy-mm-dd"});
+        // Enable JQuery UI's date picker.
+        $("#edit_current_created").datepicker({dateFormat: "yy-mm-dd"});
 
-	// Override form submission (and prevent binding multiple copies of the event listener).
-	$("#edit_current_form:not(.bound)").addClass("bound").submit(function(e) {
-		submitEditCurrent();
-		return false;
-	});
+        // Override form submission (and prevent binding multiple copies of the event listener).
+        $("#edit_current_form:not(.bound)").addClass("bound").submit(function(e) {
+            submitEditCurrent();
+            return false;
+        });
 
-	// Submit on enter, cancel edit on escape (and prevent binding multiple copies of the event listener).
-	$("#edit_current input:not(.bound)").addClass("bound").keydown(function(e) {
-		if (e.keyCode == 13) {
-			$('#edit_current_form').submit();
-		}
-		else if (e.keyCode == 27) {
-			cancelEditCurrent();
-		}
-	});
-}
+        // Submit on enter, cancel edit on escape (and prevent binding multiple copies of the event listener).
+        $("#edit_current input:not(.bound)").addClass("bound").keydown(function(e) {
+            if (e.keyCode == 13) {
+                $('#edit_current_form').submit();
+            }
+            else if (e.keyCode == 27) {
+                cancelEditCurrent();
+            }
+        });
+    }
 
-function editFuture(id) {
-	// Cancel all other edits in progress. (We're not keeping track of them.)
-	cancelEditFuture();
+    function editFuture(id) {
+        // Cancel all other edits in progress. (We're not keeping track of them.)
+        cancelEditFuture();
 
-	// Hide row and replace with form fields.
-	$('#future_' + id).after(
-		'<tr id="edit_future">' +
-		'<td class="icon"></td>' +
-		'<td class="name">{{edit_future_form.id(form="edit_future_form")}}{{edit_future_form.name(form="edit_future_form")}}</td>' +
-		'<td class="value">{{edit_future_form.value(form="edit_future_form")}}</td>' +
-		'<td class="date">{{edit_future_form.due_date(form="edit_future_form")}}</td>' +
-		'<td class="recur">{{edit_future_form.recur_freq(min=0, form="edit_future_form")}}{{edit_future_form.recur_type(form="edit_future_form")}}</td>' +
-		'<td class="note">{{edit_future_form.note(form="edit_future_form")}}</td>' +
-		'<td class="icon"><a id="submit_future_edit" href="#" onclick="submitEditFuture(); return false;"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
-		'<td class="icon"><a id="reset_future_edit" href="#" onclick="cancelEditFuture(); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
-		'</tr>'
-	);
-	$('#future_' + id).after('<tr id="blank_future_row"></tr>')
-	$('#future_' + id).hide();
-	$('#blank_future_row').hide();
+        // Hide row and replace with form fields.
+        $('#future_' + id).after(
+            '<tr id="edit_future">' +
+            '<td class="icon"></td>' +
+            '<td class="name">{{ edit_future_form.id(form="edit_future_form") }}{{ edit_future_form.name(form="edit_future_form") }}</td>' +
+            '<td class="value">{{ edit_future_form.value(form="edit_future_form") }}</td>' +
+            '<td class="date">{{ edit_future_form.due_date(form="edit_future_form") }}</td>' +
+            '<td class="recur">{{ edit_future_form.recur_freq(min=0, form="edit_future_form") }}{{ edit_future_form.recur_type(form="edit_future_form") }}</td>' +
+            '<td class="note">{{ edit_future_form.note(form="edit_future_form") }}</td>' +
+            '<td class="icon"><a id="submit_future_edit" href="javascript:submitEditFuture()"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
+            '<td class="icon"><a id="reset_future_edit" href="javascript:cancelEditFuture()"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
+            '</tr>'
+        );
+        $('#future_' + id).after('<tr id="blank_future_row"></tr>')
+        $('#future_' + id).hide();
+        $('#blank_future_row').hide();
 
-	// Set form field values to values from hidden row.
-	$('#edit_future_id').val(id);
-	$('#edit_future_name').val($('#future_' + id + ' > td.name').text());
-	var value = $('#future_' + id + ' > td.value')[0].title;
-	$('#edit_future_value').val(value);
-	$('#edit_future_value').select();
-	$('#edit_future_due_date').val($('#future_' + id + ' > td.date').text());
-	var recur_text = $('#future_' + id + ' > td.recur').text();
-	var re = /(\d*)(\w)/;
-	$('#edit_future_recur_freq').val(recur_text.replace(re, '$1'));
-	$('#edit_future_recur_type').val(recur_text.replace(re, '$2'));
-	$('#edit_future_note').val($('#future_' + id + ' > td.note').text());
+        // Set form field values to values from hidden row.
+        $('#edit_future_id').val(id);
+        $('#edit_future_name').val($('#future_' + id + ' > td.name').text());
+        var value = $('#future_' + id + ' > td.value')[0].title;
+        $('#edit_future_value').val(value);
+        $('#edit_future_value').select();
+        $('#edit_future_due_date').val($('#future_' + id + ' > td.date').text());
+        var recur_text = $('#future_' + id + ' > td.recur').text();
+        var re = /(\d*)(\w)/;
+        $('#edit_future_recur_freq').val(recur_text.replace(re, '$1'));
+        $('#edit_future_recur_type').val(recur_text.replace(re, '$2'));
+        $('#edit_future_note').val($('#future_' + id + ' > td.note').text());
 
-	// Enable JQuery UI's date picker.
-	$("#edit_future_due_date").datepicker({dateFormat: "yy-mm-dd"});
+        // Enable JQuery UI's date picker.
+        $("#edit_future_due_date").datepicker({dateFormat: "yy-mm-dd"});
 
-	// Add edit trigger for dropdown list. (God, so much repeated code.)
-	var v = $('#edit_future_recur_type').val();
-	if (v == "" || v == "R") {
-		$('#edit_future_recur_freq').hide();
-	}
-	$('#edit_future_recur_type').change(function (){
-		var v = $(this).val();
-		if (v == "" || v == "R") {
-			$('#edit_future_recur_freq').hide();
-		}
-		else {
-			$('#edit_future_recur_freq').show();
-		}
-	});
+        // Add edit trigger for dropdown list. (God, so much repeated code.)
+        var v = $('#edit_future_recur_type').val();
+        if (v == "" || v == "R") {
+            $('#edit_future_recur_freq').hide();
+        }
+        $('#edit_future_recur_type').change(function (){
+            var v = $(this).val();
+            if (v == "" || v == "R") {
+                $('#edit_future_recur_freq').hide();
+            }
+            else {
+                $('#edit_future_recur_freq').show();
+            }
+        });
 
-	// Override form submission (and prevent binding multiple copies of the event listener).
-	$("#edit_future_form:not(.bound)").addClass("bound").submit(function(e) {
-		submitEditFuture();
-		return false;
-	});
+        // Override form submission (and prevent binding multiple copies of the event listener).
+        $("#edit_future_form:not(.bound)").addClass("bound").submit(function(e) {
+            submitEditFuture();
+            return false;
+        });
 
-	// Submit on enter, cancel edit on escape (and prevent binding multiple copies of the event listener).
-	$("#edit_future input:not(.bound)").addClass("bound").keydown(function(e) {
-		if (e.keyCode == 13) {
-			$('#edit_future_form').submit();
-		}
-		else if (e.keyCode == 27) {
-			cancelEditFuture();
-		}
-	});
-}
+        // Submit on enter, cancel edit on escape (and prevent binding multiple copies of the event listener).
+        $("#edit_future input:not(.bound)").addClass("bound").keydown(function(e) {
+            if (e.keyCode == 13) {
+                $('#edit_future_form').submit();
+            }
+            else if (e.keyCode == 27) {
+                cancelEditFuture();
+            }
+        });
+    }
 
-function cancelEditCurrent() {
-	$('#edit_current').remove();
-	$('#blank_current_row').remove();
-	$('#current > tbody > tr').show();
-}
+    function cancelEditCurrent() {
+        $('#edit_current').remove();
+        $('#blank_current_row').remove();
+        $('#current > tbody > tr').show();
+    }
 
-function cancelEditFuture() {
-	$('#edit_future').remove();
-	$('#blank_future_row').remove();
-	$('#future > tbody > tr').show();
-}
+    function cancelEditFuture() {
+        $('#edit_future').remove();
+        $('#blank_future_row').remove();
+        $('#future > tbody > tr').show();
+    }
 
-function loadCurrent() {
-	$.getJSON("{{url_for('load_table')}}", {table: 'current'}, function(result) {
-		if (result.error) {
-			alert(result.error);
-			location.reload();
-		}
-		else {
-			// Remove existing content.
-			$('#current > tbody > tr').not('#add_current').remove();
+    function loadCurrent() {
+        $.getJSON("{{ url_for('load_table') }}", {table: 'current'}, function(result) {
+            if (result.error) {
+                alert(result.error);
+                location.reload();
+            }
+            else {
+                // Remove existing content.
+                $('#current > tbody > tr').not('#add_current').remove();
 
-			// Load data into current table.
-			for (var i = 0; i < result.data.current.length; i++) {
-				// Add a row to the table.
-				var e = result.data.current[i];
-				$('#current > tbody').append(
-					'<tr id="current_' + e[0] + '">' +
-					'<td class="icon"><a href="#" onclick="settle(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_CHECK + '" title="Settle" /></a></td>' +
-					'<td class="name">' + e[1] + '</td>' +
-					'<td class="value' + (e[2].charAt(0) == '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
-					'<td class="date">' + e[4] + '</td>' +
-					'<td class="note">' + e[5] + '</td>' +
-					'<td class="icon"><a href="#" onclick="editCurrent(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-					'<td class="icon"><a href="#" onclick="removeCurrent(' + e[0] + ', \'' + e[1].replace('\'', '\\\'') + '\'); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
-					'</tr>'
-				);
-			}
+                // Load data into current table.
+                for (var i = 0; i < result.data.current.length; i++) {
+                    // Add a row to the table.
+                    var e = result.data.current[i];
+                    $('#current > tbody').append(
+                        '<tr id="current_' + e[0] + '">' +
+                        '<td class="icon"><a href="javascript:settle(' + e[0] + ')"><img class="icon" src="' + $IMG_CHECK + '" title="Settle" /></a></td>' +
+                        '<td class="name">' + e[1] + '</td>' +
+                        '<td class="value' + (e[2].charAt(0) == '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
+                        '<td class="date">' + e[4] + '</td>' +
+                        '<td class="note">' + e[5] + '</td>' +
+                        '<td class="icon"><a href="javascript:editCurrent(' + e[0] + ')"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+                        '<td class="icon"><a href="javascript:removeCurrent(' + e[0] + ', \'' + e[1].replace('\'', '\\\'') + '\')"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+                        '</tr>'
+                    );
+                }
 
-			setTotal(result.data.total);
-		}
+                setTotal(result.data.total);
+            }
 
-		// When the page is loaded, reset the auto-refresh interval.
-		nextRefresh = Date.now() + refreshInterval;
+            // When the page is loaded, reset the auto-refresh interval.
+            nextRefresh = Date.now() + refreshInterval;
 
-		{% if use_loading_gif %}
-		$('#loading').fadeOut('slow');
-		{% endif %}
-	});
-}
+            {% if use_loading_gif %}
+            $('#loading').fadeOut('slow');
+            {% endif %}
+        });
+    }
 
-function loadTotal() {
-	$.getJSON("{{url_for('total')}}", {}, function(result) {
-		if (result.error) {
-			alert(result.error);
-			location.reload();
-		}
-		else {
-			setTotal(result.data);
-		}
+    function loadTotal() {
+        $.getJSON("{{ url_for('total') }}", {}, function(result) {
+            if (result.error) {
+                alert(result.error);
+                location.reload();
+            }
+            else {
+                setTotal(result.data);
+            }
 
-		{% if use_loading_gif %}
-		$('#loading').fadeOut('slow');
-		{% endif %}
-	});
-}
+            {% if use_loading_gif %}
+            $('#loading').fadeOut('slow');
+            {% endif %}
+        });
+    }
 
-function setTotal(value) {
-	const negative = value.charAt(0) == '(';
-	const obj = $('#total_value');
+    function setTotal(value) {
+        const negative = value.charAt(0) == '(';
+        const obj = $('#total_value');
 
-	obj.text(value);
-	if (negative && !obj.hasClass('negative')) {
-		obj.addClass('negative');
-	}
-	else if (!negative && obj.hasClass('negative')) {
-		obj.removeClass('negative');
-	}
-}
+        obj.text(value);
+        if (negative && !obj.hasClass('negative')) {
+            obj.addClass('negative');
+        }
+        else if (!negative && obj.hasClass('negative')) {
+            obj.removeClass('negative');
+        }
+    }
 
-function loadFuture() {
-	$.getJSON("{{url_for('load_table')}}", {table: 'future'}, function(result) {
-		if (result.error) {
-			alert(result.error);
-			location.reload();
-		}
-		else {
-			// Remove existing content.
-			$('#future > tbody > tr').not('#add_future').remove();
+    function loadFuture() {
+        $.getJSON("{{ url_for('load_table') }}", {table: 'future'}, function(result) {
+            if (result.error) {
+                alert(result.error);
+                location.reload();
+            }
+            else {
+                // Remove existing content.
+                $('#future > tbody > tr').not('#add_future').remove();
 
-			// Load data into future table.
-			for (var i = 0; i < result.data.future.length; i++) {
-				// Add a row to the table.
-				var e = result.data.future[i];
-				$('#future > tbody').append(
-					'<tr id="future_' + e[0] + '">' +
-					'<td class="icon"><a href="#" onclick="advance(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_ADVANCE + '" title="Send to Current" /></a></td>' +
-					'<td class="name">' + e[1] + '</td>' +
-					'<td class="value' + (e[2].charAt(0) == '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
-					'<td class="date">' + e[4] + '</td>' +
-					'<td class="recur">' + e[5] + '</td>' +
-					'<td class="note">' + e[6] + '</td>' +
-					'<td class="icon"><a href="#" onclick="editFuture(' + e[0] + '); return false;"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-					'<td class="icon"><a href="#" onclick="removeFuture(' + e[0] + ', \'' + e[1] + '\'); return false;"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
-					'</tr>'
-				);
-			}
-		}
-		{% if use_loading_gif %}
-		$('#loading').fadeOut('slow');
-		{% endif %}
-	});
-}
+                // Load data into future table.
+                for (var i = 0; i < result.data.future.length; i++) {
+                    // Add a row to the table.
+                    var e = result.data.future[i];
+                    $('#future > tbody').append(
+                        '<tr id="future_' + e[0] + '">' +
+                        '<td class="icon"><a href="javascript:advance(' + e[0] + ')"><img class="icon" src="' + $IMG_ADVANCE + '" title="Send to Current" /></a></td>' +
+                        '<td class="name">' + e[1] + '</td>' +
+                        '<td class="value' + (e[2].charAt(0) == '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
+                        '<td class="date">' + e[4] + '</td>' +
+                        '<td class="recur">' + e[5] + '</td>' +
+                        '<td class="note">' + e[6] + '</td>' +
+                        '<td class="icon"><a href="javascript:editFuture(' + e[0] + ')"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+                        '<td class="icon"><a href="javascript:removeFuture(' + e[0] + ', \'' + e[1] + '\')"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+                        '</tr>'
+                    );
+                }
+            }
+            {% if use_loading_gif %}
+            $('#loading').fadeOut('slow');
+            {% endif %}
+        });
+    }
 
-$(document).ready(function() {
-	{% if use_loading_gif %}
-	$('#loading').fadeIn('slow');
-	{% endif %}
+    $(document).ready(function() {
+        {% if use_loading_gif %}
+        $('#loading').fadeIn('slow');
+        {% endif %}
 
-	// Enable JQuery UI's date picker.
-	$(".date input").datepicker({dateFormat: "yy-mm-dd"});
+        // Enable JQuery UI's date picker.
+        $(".date input").datepicker({dateFormat: "yy-mm-dd"});
 
-	// Attach functions to form buttons.
-	$('#submit_current').on('click', addCurrent);
-	$('#reset_current').on('click', function() { $('#current_form')[0].reset(); });
-	$('#submit_future').on('click', addFuture);
-	$('#reset_future').on('click', function() { $('#future_form')[0].reset(); });
+        // When the window gets focus, if the data haven't been refreshed in a while, refresh them.
+        $(window).on('focus', function() { if(Date.now() > nextRefresh){ loadCurrent(); } });
 
-	// When the window gets focus, if the data haven't been refreshed in a while, refresh them.
-	$(window).on('focus', function() { if(Date.now() > nextRefresh){ loadCurrent(); } });
+        // Override form submission (and prevent binding multiple copies of the event listener).
+        // Could probably use JQuery's .one instead of .on to make this simpler...
+        $("#current_form:not(.bound)").addClass("bound").submit(function(e) {
+            addCurrent();
+            return false;
+        });
+        $("#future_form:not(.bound)").addClass("bound").submit(function(e) {
+            addFuture();
+            return false;
+        });
 
-	// Override form submission (and prevent binding multiple copies of the event listener).
-	// Could probably use JQuery's .one instead of .on to make this simpler...
-	$("#current_form:not(.bound)").addClass("bound").submit(function(e) {
-		addCurrent();
-		return false;
-	});
-	$("#future_form:not(.bound)").addClass("bound").submit(function(e) {
-		addFuture();
-		return false;
-	});
+        // Submit on enter, reset on escape (and prevent binding multiple copies of the event listener).
+        $("#add_current input:not(.bound)").addClass("bound").keydown(function(e) {
+            if (e.keyCode == 13) {
+                $('#current_form').submit();
+            }
+            else if (e.keyCode == 27) {
+                $('#current_form')[0].reset();
+            }
+        });
+        $("#add_future input:not(.bound)").addClass("bound").keydown(function(e) {
+            if (e.keyCode == 13) {
+                $('#future_form').submit();
+            }
+            else if (e.keyCode == 27) {
+                $('#future_form')[0].reset();
+            }
+        });
 
-	// Submit on enter, reset on escape (and prevent binding multiple copies of the event listener).
-	$("#add_current input:not(.bound)").addClass("bound").keydown(function(e) {
-		if (e.keyCode == 13) {
-			$('#current_form').submit();
-		}
-		else if (e.keyCode == 27) {
-			$('#current_form')[0].reset();
-		}
-	});
-	$("#add_future input:not(.bound)").addClass("bound").keydown(function(e) {
-		if (e.keyCode == 13) {
-			$('#future_form').submit();
-		}
-		else if (e.keyCode == 27) {
-			$('#future_form')[0].reset();
-		}
-	});
+        // Add edit trigger for dropdown list.
+        $("#future_recur_type:not(.bound)").addClass("bound").change(function (){
+            var v = $(this).val();
+            if (v == "" || v == "R") {
+                $("#future_recur_freq").hide();
+            }
+            else {
+                $("#future_recur_freq").show();
+            }
+        });
 
-	// Add edit trigger for dropdown list.
-	$("#future_recur_type:not(.bound)").addClass("bound").change(function (){
-		var v = $(this).val();
-		if (v == "" || v == "R") {
-			$("#future_recur_freq").hide();
-		}
-		else {
-			$("#future_recur_freq").show();
-		}
-	});
-
-	// Load data.
-	loadCurrent();
-	loadFuture();
-});
+        // Load data.
+        loadCurrent();
+        loadFuture();
+    });
 </script>
 
 <h1>Current</h1>
@@ -478,39 +472,39 @@ $(document).ready(function() {
 <form id="edit_current_form" action="#"></form>
 
 <table id="current" class="expense_table">
-	<thead>
-		<tr>
-			<th class="icon"></th>
-			<th class="name">Item</th>
-			<th class="value">Value</th>
-			<th class="date">Created</th>
-			<th class="note">Notes</th>
-			<th class="icon"></th>
-			<th class="icon"></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr id="add_current">
-			<td class="icon"></td>
-			<td class="name">{{current_form.name(autofocus=true, form="current_form")}}</td>
-			<td class="value">{{current_form.value(form="current_form")}}</td>
-			<td class="date">{{current_form.created(form="current_form")}}</td>
-			<td class="note">{{current_form.note(form="current_form")}}</td>
-			<td class="icon"><a id="submit_current" href="#"><img class="icon" src="{{url_for('static', filename='check.png')}}" title="Accept" /></a></td>
-			<td class="icon"><a id="reset_current" href="#"><img class="icon" src="{{url_for('static', filename='x.png')}}" title="Cancel" /></a></td>
-		</tr>
-	</tbody>
-	<tfoot>
-		<tr>
-			<td class="icon"></td>
-			<td class="name">Total</th>
-			<td id="total_value" class="value"></td>
-			<td class="date"></td>
-			<td class="note"></td>
-			<td class="icon"></td>
-			<td class="icon"></td>
-		</tr>
-	</tfoot>
+    <thead>
+        <tr>
+            <th class="icon"></th>
+            <th class="name">Item</th>
+            <th class="value">Value</th>
+            <th class="date">Created</th>
+            <th class="note">Notes</th>
+            <th class="icon"></th>
+            <th class="icon"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr id="add_current">
+            <td class="icon"></td>
+            <td class="name">{{ current_form.name(autofocus=true, form="current_form") }}</td>
+            <td class="value">{{ current_form.value(form="current_form") }}</td>
+            <td class="date">{{ current_form.created(form="current_form") }}</td>
+            <td class="note">{{ current_form.note(form="current_form") }}</td>
+            <td class="icon"><a href="javascript:addCurrent()"><img class="icon" src={{ url_for('static', filename='check.png') }} title="Accept" /></a></td>
+            <td class="icon"><a href="javascript:$('#current_form')[0].reset()"><img class="icon" src={{ url_for('static', filename='x.png') }} title="Cancel" /></a></td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td class="icon"></td>
+            <td class="name">Total</th>
+            <td id="total_value" class="value"></td>
+            <td class="date"></td>
+            <td class="note"></td>
+            <td class="icon"></td>
+            <td class="icon"></td>
+        </tr>
+    </tfoot>
 </table>
 
 <h1>Future</h1>
@@ -519,30 +513,30 @@ $(document).ready(function() {
 <form id="edit_future_form" action="#"></form>
 
 <table id="future" class="expense_table">
-	<thead>
-		<tr>
-			<th class="icon"></th>
-			<th class="name">Item</th>
-			<th class="value">Value</th>
-			<th class="date">Due</th>
-			<th class="recur">Recur</th>
-			<th class="note">Notes</th>
-			<th class="icon"></th>
-			<th class="icon"></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr id="add_future">
-			<td class="icon"></td>
-			<td class="name">{{future_form.name(form="future_form")}}</td>
-			<td class="value">{{future_form.value(form="future_form")}}</td>
-			<td class="date">{{future_form.due_date(form="future_form")}}</td>
-			<td class="recur">{{future_form.recur_freq(min=0, hidden=true, form="future_form")}}{{future_form.recur_type(form="future_form")}}</td>
-			<td class="note">{{future_form.note(form="future_form")}}</td>
-			<td class="icon"><a id="submit_future" href="#"><img class="icon" src="{{url_for('static', filename='check.png')}}" title="Accept" /></a></td>
-			<td class="icon"><a id="reset_future" href="#"><img class="icon" src="{{url_for('static', filename='x.png')}}" title="Cancel" /></a></td>
-		</tr>
-	</tbody>
+    <thead>
+        <tr>
+            <th class="icon"></th>
+            <th class="name">Item</th>
+            <th class="value">Value</th>
+            <th class="date">Due</th>
+            <th class="recur">Recur</th>
+            <th class="note">Notes</th>
+            <th class="icon"></th>
+            <th class="icon"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr id="add_future">
+            <td class="icon"></td>
+            <td class="name">{{ future_form.name(form="future_form") }}</td>
+            <td class="value">{{ future_form.value(form="future_form") }}</td>
+            <td class="date">{{ future_form.due_date(form="future_form") }}</td>
+            <td class="recur">{{ future_form.recur_freq(min=0, hidden=true, form="future_form") }}{{ future_form.recur_type(form="future_form") }}</td>
+            <td class="note">{{ future_form.note(form="future_form") }}</td>
+            <td class="icon"><a href="javascript:addFuture()"><img class="icon" src={{ url_for('static', filename='check.png') }} title="Accept" /></a></td>
+            <td class="icon"><a href="javascript:$('#future_form')[0].reset()"><img class="icon" src={{ url_for('static', filename='x.png') }} title="Cancel" /></a></td>
+        </tr>
+    </tbody>
 </table>
 
 {% endblock %}

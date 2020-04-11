@@ -1,3 +1,7 @@
+#content {
+    max-width: 800px;
+}
+
 .section { padding-top: 5px; padding-bottom: 10px; }
 
 .negative { color: #cc4444; }
@@ -8,17 +12,46 @@ td.icon {
 
 td.value {
     text-align: right;
-    width: 60px;
+    width: 80px;
 }
 
 td.date {
+    width: 90px;
     text-align: center;
-    width: 80px;
 }
 
 td.recur {
     text-align: center;
-    width: 80px;
+    min-width: 95px;
+}
+
+
+div.loading {
+    height: 24px;
+    width: 24px;
+    z-index: 999;
+    display: inline-block;
+    padding-left: 20px;
+}
+
+img.loading { vertical-align: middle; width: 24px; height: 24px; }
+img.icon { width: 24px; height: 24px; }
+
+input[name="value"], input[name="recur_freq"] {
+    text-align: right;
+}
+
+input[name="created"], input[name="due_date"] {
+    text-align: center;
+}
+
+input[name="recur_freq"] {
+    width: 30px;
+    margin-right: 5px;
+}
+
+input[name="recur_type"] {
+    width: 60px;
 }
 
 
@@ -35,36 +68,14 @@ td.recur {
 }
 
 .small-screen td.recur {
-    width: 70px;
+    min-width: 70px;
 }
 
-
-div.loading {
-	height: 24px;
-	width: 24px;
-	z-index: 999;
-    display: inline-block;
-    padding-left: 20px;
+.small-screen input[name="recur_freq"] {
+    width: 25px;
 }
 
-img.loading { vertical-align: middle; width: 24px; height: 24px; }
-img.icon { width: 24px; height: 24px; }
-
-input[name="value"], input[name="recur_freq"] {
-    text-align: right;
-}
-
-input[name="created"], input[name="due_date"] {
-    width: 80px;
-    text-align: center;
-}
-
-input[name="recur_freq"] {
-    width: 30px;
-    margin-right: 5px;
-}
-
-input[name="recur_type"] {
-    width: 60px;
+.small-screen input[name="recur_type"] {
+    width: 40px;
 }
 
