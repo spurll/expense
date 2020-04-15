@@ -22,7 +22,7 @@
 
                 $("#messages").append(`<p id="${id}">${message}</p>`);
                 setTimeout(() => {
-                    $(`#${id}`).fadeOut();
+                    $(`#${id}`).fadeOut('slow');
                     if (callback) { callback(); }
                 }, timeout);
             }

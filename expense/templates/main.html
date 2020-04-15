@@ -8,7 +8,7 @@
     $IMG_ADVANCE = "{{ url_for('static', filename='up.png') }}";
 
     const refreshInterval = 3600000;    // One hour
-    var nextRefresh;
+    var refreshTimeout;
 
     function settle(id) {
         {% if use_loading_gif %}
@@ -294,8 +294,17 @@
                 setTotal(result.data.total);
             }
 
-            // When the page is loaded, reset the auto-refresh interval.
-            nextRefresh = Date.now() + refreshInterval;
+            // When the data are loaded, reset the auto-refresh interval.
+            if (refreshTimeout) { clearTimeout(refreshTimeout); }
+
+            refreshTimeout = setTimeout(() => {
+                {% if use_loading_gif %}
+                $('#loading').fadeIn('slow');
+                {% endif %}
+
+                loadCurrent();
+                loadFuture();
+            }, refreshInterval);
 
             {% if use_loading_gif %}
             $('#loading').fadeOut('slow');
@@ -306,7 +315,7 @@
     function loadTotal() {
         $.getJSON("{{ url_for('total') }}", {}, function(result) {
             if (result.error) {
-                errorMessage(result.error, () => location.reload());
+                errorMessage(result.error);
             }
             else {
                 setTotal(result.data);
@@ -418,14 +427,6 @@
 
         // Enable JQuery UI's date picker.
         $(".date input").datepicker({dateFormat: "yy-mm-dd"});
-
-        // When the window gets focus, if the data haven't been refreshed in a while, refresh them.
-        $(window).on('focus', () => {
-            if (Date.now() > nextRefresh) {
-                loadCurrent();
-                loadTotal();
-            }
-        });
 
         // Load data.
         loadCurrent();
