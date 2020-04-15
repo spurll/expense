@@ -16,7 +16,7 @@
 
         $.post("{{ url_for('send_back') }}", {id: id}, function(result) {
             if (result.error) {
-                alert(result.error);
+                errorMessage(result.error);
             }
             else {
                 $('#history_' + id).remove();
@@ -29,10 +29,10 @@
     }
 
     function submitEditHistory() {
-        var payload = $('#edit_history_form').serialize().replace(/edit_history_/g, "") + "&table=history";
+        var payload = $('#edit_history_form').serialize().replace(/_field/g, "") + "&table=history";
         $.post("{{ url_for('add_expense') }}", payload, function(result) {
             if (result.error) {
-                alert(result.error);
+                errorMessage(result.error);
             }
             else {
                 cancelEditHistory();
@@ -57,11 +57,11 @@
         $('#history_' + id).after(
             '<tr id="edit_history">' +
             '<td class="icon"></td>' +
-            '<td class="name">{{ edit_history_form.id(form="edit_history_form") }}{{ edit_history_form.name(form="edit_history_form") }}</td>' +
-            '<td class="value">{{ edit_history_form.value(form="edit_history_form") }}</td>' +
-            '<td class="date">{{ edit_history_form.created(form="edit_history_form") }}</td>' +
-            '<td class="date">{{ edit_history_form.settled(form="edit_history_form") }}</td>' +
-            '<td class="note">{{ edit_history_form.note(form="edit_history_form") }}</td>' +
+            '<td class="name">{{ edit_history_form.id_field(form="edit_history_form") }}{{ edit_history_form.name(form="edit_history_form", onkeydown="handleKeyDown(event);") }}</td>' +
+            '<td class="value">{{ edit_history_form.value(form="edit_history_form", onkeydown="handleKeyDown(event);") }}</td>' +
+            '<td class="date">{{ edit_history_form.created(form="edit_history_form", onkeydown="handleKeyDown(event);") }}</td>' +
+            '<td class="date">{{ edit_history_form.settled(form="edit_history_form", onkeydown="handleKeyDown(event);") }}</td>' +
+            '<td class="note">{{ edit_history_form.note(form="edit_history_form", onkeydown="handleKeyDown(event);") }}</td>' +
             '<td class="icon"><a id="submit_history_edit" href="javascript:submitEditHistory()"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
             '<td class="icon"><a id="reset_history_edit" href="javascript:cancelEditHistory()"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
             '</tr>'
@@ -83,22 +83,6 @@
         // Enable JQuery UI's date picker.
         $("#edit_history_created").datepicker({dateFormat: "yy-mm-dd"});
         $("#edit_history_settled").datepicker({dateFormat: "yy-mm-dd"});
-
-        // Override form submission (and prevent binding multiple copies of the event listener).
-        $("#edit_history_form:not(.bound)").addClass("bound").submit(function(e) {
-            submitEditHistory();
-            return false;
-        });
-
-        // Submit on enter, cancel edit on escape (and prevent binding multiple copies of the event listener).
-        $("#edit_history input:not(.bound)").addClass("bound").keydown(function(e) {
-            if (e.keyCode == 13) {
-                $('#edit_history_form').submit();
-            }
-            else if (e.keyCode == 27) {
-                cancelEditHistory();
-            }
-        });
     }
 
     function cancelEditHistory() {
@@ -118,7 +102,7 @@
 
         $.post("{{ url_for('delete') }}", {table: 'history', id: id}, function(result) {
             if (result.error) {
-                alert(result.error);
+                errorMessage(result.error);
             }
             else {
                 $('#history_' + id).remove();
@@ -133,8 +117,7 @@
     function loadHistory() {
         $.getJSON("{{ url_for('load_table') }}", {table: 'history', page: window.page}, function(result) {
             if (result.error) {
-                alert(result.error);
-                location.reload();
+                errorMessage(result.error, () => location.reload());
             }
             else {
                 // Remove existing content.
@@ -146,14 +129,14 @@
                     var e = result.data.history[i];
                     $('#history > tbody').append(
                         '<tr id="history_' + e[0] + '">' +
-                        '<td class="icon"><a href="javascript:sendBack(' + e[0] + ')"><img class="icon" src="' + $IMG_BACK + '" title="Send to Current" /></a></td>' +
+                        '<td class="icon"><a href="javascript:sendBack(' + e[0] + ');"><img class="icon" src="' + $IMG_BACK + '" title="Send to Current" /></a></td>' +
                         '<td class="name">' + e[1] + '</td>' +
                         '<td class="value' + (e[2].charAt(0) == '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
                         '<td class="date">' + e[4] + '</td>' +
                         '<td class="date">' + e[5] + '</td>' +
                         '<td class="note">' + e[6] + '</td>' +
-                        '<td class="icon"><a href="javascript:editHistory(' + e[0] + ')"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-                        '<td class="icon"><a href="javascript:removeHistory(' + e[0] + ', \'' + e[1].replace('\'', '\\\'') + '\')"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+                        '<td class="icon"><a href="javascript:editHistory(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+                        '<td class="icon"><a href="javascript:removeHistory(' + e[0] + ', \'' + e[1].replace('\'', '\\\'') + '\');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
                         '</tr>'
                     );
                 }
@@ -190,6 +173,17 @@
         $('#current-page').text('Page ' + window.page);
     }
 
+    function handleKeyDown(e) {
+        if (e.keyCode !== 13 && e.keyCode !== 27) { return; }
+
+        if (e.keyCode === 13) {
+            submitEditHistory();
+        }
+        else if (e.keyCode === 27) {
+            cancelEditHistory();
+        }
+    }
+
     $(document).ready(function() {
         {% if use_loading_gif %}
         // Replace table content with loading GIF.
@@ -202,7 +196,7 @@
 
 <h1>History</h1>
 
-<form id="edit_history_form" action="#" />
+<form id="edit_history_form" onsubmit="javascript:submitEditHistory();" />
 
 <table id="history">
 	<thead>

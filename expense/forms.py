@@ -18,7 +18,7 @@ class CurrentForm(FlaskForm):
 
 
 class EditCurrentForm(FlaskForm):
-    id = HiddenField('ID', id="edit_current_id")
+    id_field = HiddenField('ID', id="edit_current_id")
     name = TextField('Name', id="edit_current_name")
     value = TextField('Value', id="edit_current_value")
     created = DateField('Created', id="edit_current_created")
@@ -26,7 +26,6 @@ class EditCurrentForm(FlaskForm):
 
 
 class FutureForm(FlaskForm):
-    id = HiddenField('ID', id="future_id")
     name = TextField('Name', id="future_name")
     value = TextField('Value', id="future_value")
     due_date = DateField('Due Date', id="future_due_date")
@@ -45,7 +44,7 @@ class FutureForm(FlaskForm):
 
 
 class EditFutureForm(FlaskForm):
-    id = HiddenField('ID', id="edit_future_id")
+    id_field = HiddenField('ID', id="edit_future_id")
     name = TextField('Name', id="edit_future_name")
     value = TextField('Value', id="edit_future_value")
     due_date = DateField('Due Date', id="edit_future_due_date")
@@ -64,7 +63,7 @@ class EditFutureForm(FlaskForm):
 
 
 class EditHistoryForm(FlaskForm):
-    id = HiddenField('ID', id="edit_history_id")
+    id_field = HiddenField('ID', id="edit_history_id")
     name = TextField('Name', id="edit_history_name")
     value = TextField('Value', id="edit_history_value")
     created = DateField('Created', id="edit_history_created")

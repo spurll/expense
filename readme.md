@@ -46,15 +46,12 @@ Feature Requests
   location may change, but not impossible either)
 * Invalid currencies should display warning to user as well as to console
 * Error messages should have better debugging information (error type, stack trace)
-* Error messages should be non-interrupting and auto-dismissing (then we can have success
-  messages, too)
 * Implement `controller.save_csv`
 
 Known Bugs
 ----------
 
 * Because of the way `justify-content` works, the title is often not quite centred...
-* Adding/editing seems to be broken on Edge (name, value, and note are not passed)
 
 Special Thanks
 ==============

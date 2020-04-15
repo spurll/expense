@@ -15,6 +15,18 @@
         <script type="text/javascript" src="{{ url_for('static', filename='jquery-3.1.0.min.js') }}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='jquery-ui-1.12.1.min.js') }}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='resize.js') }}" ></script>
+        <script type="text/javascript">
+            function errorMessage(message, callback) {
+                const timeout = callback ? 10000 : 5000;
+                const id = Math.floor(Math.random() * 10000000);
+
+                $("#messages").append(`<p id="${id}">${message}</p>`);
+                setTimeout(() => {
+                    $(`#${id}`).fadeOut();
+                    if (callback) { callback(); }
+                }, timeout);
+            }
+        </script>
     </head>
 
     <body>
@@ -51,7 +63,7 @@
         </div>
 
         {% with messages = get_flashed_messages() %}
-        <div class="messages">
+        <div id="messages" class="messages">
             {% if messages %}
             {% for message in messages %}
             <p>{{ message }}</p>

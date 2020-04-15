@@ -17,7 +17,7 @@
 
         $.post("{{ url_for('settle') }}", {id: id}, function(result) {
             if (result.error) {
-                alert(result.error);
+                errorMessage(result.error);
             }
             else {
                 $('#current_' + id).remove();
@@ -34,7 +34,7 @@
         $.post("{{ url_for('advance') }}", {id: id}, function(result) {
             if (result.error) {
                 $('#loading').fadeOut('slow');
-                alert(result.error);
+                errorMessage(result.error);
             }
             else {
                 // Have to reload the future table instead of simply removing the row because
@@ -58,7 +58,7 @@
 
         $.post("{{ url_for('delete') }}", {table: 'current', id: id}, function(result) {
             if (result.error) {
-                alert(result.error);
+                errorMessage(result.error);
             }
             else {
                 $('#current_' + id).remove();
@@ -82,7 +82,7 @@
 
         $.post("{{ url_for('delete') }}", {table: 'future', id: id}, function(result) {
             if (result.error) {
-                alert(result.error);
+                errorMessage(result.error);
             }
             else {
                 $('#future_' + id).remove();
@@ -95,10 +95,10 @@
     }
 
     function addCurrent() {
-        var payload = $('#current_form').serialize().replace(/current_/g, "") + "&table=current";
+        var payload = $('#current_form').serialize() + "&table=current";
         $.post("{{ url_for('add_expense') }}", payload, function(result) {
             if (result.error) {
-                alert(result.error);
+                errorMessage(result.error);
             }
             else {
                 $('#current_form')[0].reset();
@@ -115,10 +115,10 @@
     }
 
     function addFuture() {
-        var payload = $('#future_form').serialize().replace(/future_/g, "") + "&table=future";
+        var payload = $('#future_form').serialize() + "&table=future";
         $.post("{{ url_for('add_expense') }}", payload, function(result) {
             if (result.error) {
-                alert(result.error);
+                errorMessage(result.error);
             }
             else {
                 $('#future_form')[0].reset();
@@ -136,10 +136,10 @@
     }
 
     function submitEditCurrent() {
-        var payload = $('#edit_current_form').serialize().replace(/edit_current_/g, "") + "&table=current";
+        var payload = $('#edit_current_form').serialize().replace(/_field/g, "") + "&table=current";
         $.post("{{ url_for('add_expense') }}", payload, function(result) {
             if (result.error) {
-                alert(result.error);
+                errorMessage(result.error);
             }
             else {
                 cancelEditCurrent();
@@ -157,10 +157,10 @@
     }
 
     function submitEditFuture() {
-        var payload = $('#edit_future_form').serialize().replace(/edit_future_/g, "") + "&table=future";
+        var payload = $('#edit_future_form').serialize().replace(/_field/g, "") + "&table=future";
         $.post("{{ url_for('add_expense') }}", payload, function(result) {
             if (result.error) {
-                alert(result.error);
+                errorMessage(result.error);
             }
             else {
                 cancelEditFuture();
@@ -185,12 +185,12 @@
         $('#current_' + id).after(
             '<tr id="edit_current">' +
             '<td class="icon"></td>' +
-            '<td class="name">{{ edit_current_form.id(form="edit_current_form") }}{{ edit_current_form.name(form="edit_current_form") }}</td>' +
-            '<td class="value">{{ edit_current_form.value(form="edit_current_form") }}</td>' +
-            '<td class="date">{{ edit_current_form.created(form="edit_current_form") }}</td>' +
-            '<td class="note">{{ edit_current_form.note(form="edit_current_form") }}</td>' +
-            '<td class="icon"><a id="submit_current_edit" href="javascript:submitEditCurrent()"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
-            '<td class="icon"><a id="reset_current_edit" href="javascript:cancelEditCurrent()"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
+            '<td class="name">{{ edit_current_form.id_field(form="edit_current_form") }}{{ edit_current_form.name(form="edit_current_form", onkeydown="handleKeyDown(event);") }}</td>' +
+            '<td class="value">{{ edit_current_form.value(form="edit_current_form", onkeydown="handleKeyDown(event);") }}</td>' +
+            '<td class="date">{{ edit_current_form.created(form="edit_current_form", onkeydown="handleKeyDown(event);") }}</td>' +
+            '<td class="note">{{ edit_current_form.note(form="edit_current_form", onkeydown="handleKeyDown(event);") }}</td>' +
+            '<td class="icon"><a id="submit_current_edit" href="javascript:submitEditCurrent();"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
+            '<td class="icon"><a id="reset_current_edit" href="javascript:cancelEditCurrent();"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
             '</tr>'
         );
         $('#current_' + id).after('<tr id="blank_current_row"></tr>')
@@ -208,22 +208,6 @@
 
         // Enable JQuery UI's date picker.
         $("#edit_current_created").datepicker({dateFormat: "yy-mm-dd"});
-
-        // Override form submission (and prevent binding multiple copies of the event listener).
-        $("#edit_current_form:not(.bound)").addClass("bound").submit(function(e) {
-            submitEditCurrent();
-            return false;
-        });
-
-        // Submit on enter, cancel edit on escape (and prevent binding multiple copies of the event listener).
-        $("#edit_current input:not(.bound)").addClass("bound").keydown(function(e) {
-            if (e.keyCode == 13) {
-                $('#edit_current_form').submit();
-            }
-            else if (e.keyCode == 27) {
-                cancelEditCurrent();
-            }
-        });
     }
 
     function editFuture(id) {
@@ -234,13 +218,13 @@
         $('#future_' + id).after(
             '<tr id="edit_future">' +
             '<td class="icon"></td>' +
-            '<td class="name">{{ edit_future_form.id(form="edit_future_form") }}{{ edit_future_form.name(form="edit_future_form") }}</td>' +
-            '<td class="value">{{ edit_future_form.value(form="edit_future_form") }}</td>' +
-            '<td class="date">{{ edit_future_form.due_date(form="edit_future_form") }}</td>' +
-            '<td class="recur">{{ edit_future_form.recur_freq(min=0, form="edit_future_form") }}{{ edit_future_form.recur_type(form="edit_future_form") }}</td>' +
-            '<td class="note">{{ edit_future_form.note(form="edit_future_form") }}</td>' +
-            '<td class="icon"><a id="submit_future_edit" href="javascript:submitEditFuture()"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
-            '<td class="icon"><a id="reset_future_edit" href="javascript:cancelEditFuture()"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
+            '<td class="name">{{ edit_future_form.id_field(form="edit_future_form") }}{{ edit_future_form.name(form="edit_future_form", onkeydown="handleKeyDown(event);") }}</td>' +
+            '<td class="value">{{ edit_future_form.value(form="edit_future_form", onkeydown="handleKeyDown(event);") }}</td>' +
+            '<td class="date">{{ edit_future_form.due_date(form="edit_future_form", onkeydown="handleKeyDown(event);") }}</td>' +
+            '<td class="recur">{{ edit_future_form.recur_freq(min=0, form="edit_future_form") }}{{ edit_future_form.recur_type(form="edit_future_form", onchange="handleSelectChange(event);") }}</td>' +
+            '<td class="note">{{ edit_future_form.note(form="edit_future_form", onkeydown="handleKeyDown(event);") }}</td>' +
+            '<td class="icon"><a id="submit_future_edit" href="javascript:submitEditFuture();"><img class="icon" src="' + $IMG_CHECK + '" title="Submit" /></a></td>' +
+            '<td class="icon"><a id="reset_future_edit" href="javascript:cancelEditFuture();"><img class="icon" src="' + $IMG_DELETE + '" title="Cancel" /></a></td>' +
             '</tr>'
         );
         $('#future_' + id).after('<tr id="blank_future_row"></tr>')
@@ -263,36 +247,10 @@
         // Enable JQuery UI's date picker.
         $("#edit_future_due_date").datepicker({dateFormat: "yy-mm-dd"});
 
-        // Add edit trigger for dropdown list. (God, so much repeated code.)
-        var v = $('#edit_future_recur_type').val();
-        if (v == "" || v == "R") {
+        const v = $('#edit_future_recur_type').val();
+        if (!v || v === "R") {
             $('#edit_future_recur_freq').hide();
         }
-        $('#edit_future_recur_type').change(function (){
-            var v = $(this).val();
-            if (v == "" || v == "R") {
-                $('#edit_future_recur_freq').hide();
-            }
-            else {
-                $('#edit_future_recur_freq').show();
-            }
-        });
-
-        // Override form submission (and prevent binding multiple copies of the event listener).
-        $("#edit_future_form:not(.bound)").addClass("bound").submit(function(e) {
-            submitEditFuture();
-            return false;
-        });
-
-        // Submit on enter, cancel edit on escape (and prevent binding multiple copies of the event listener).
-        $("#edit_future input:not(.bound)").addClass("bound").keydown(function(e) {
-            if (e.keyCode == 13) {
-                $('#edit_future_form').submit();
-            }
-            else if (e.keyCode == 27) {
-                cancelEditFuture();
-            }
-        });
     }
 
     function cancelEditCurrent() {
@@ -310,8 +268,7 @@
     function loadCurrent() {
         $.getJSON("{{ url_for('load_table') }}", {table: 'current'}, function(result) {
             if (result.error) {
-                alert(result.error);
-                location.reload();
+                errorMessage(result.error, () => location.reload());
             }
             else {
                 // Remove existing content.
@@ -323,13 +280,13 @@
                     var e = result.data.current[i];
                     $('#current > tbody').append(
                         '<tr id="current_' + e[0] + '">' +
-                        '<td class="icon"><a href="javascript:settle(' + e[0] + ')"><img class="icon" src="' + $IMG_CHECK + '" title="Settle" /></a></td>' +
+                        '<td class="icon"><a href="javascript:settle(' + e[0] + ');"><img class="icon" src="' + $IMG_CHECK + '" title="Settle" /></a></td>' +
                         '<td class="name">' + e[1] + '</td>' +
-                        '<td class="value' + (e[2].charAt(0) == '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
+                        '<td class="value' + (e[2].charAt(0) === '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
                         '<td class="date">' + e[4] + '</td>' +
                         '<td class="note">' + e[5] + '</td>' +
-                        '<td class="icon"><a href="javascript:editCurrent(' + e[0] + ')"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-                        '<td class="icon"><a href="javascript:removeCurrent(' + e[0] + ', \'' + e[1].replace('\'', '\\\'') + '\')"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+                        '<td class="icon"><a href="javascript:editCurrent(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+                        '<td class="icon"><a href="javascript:removeCurrent(' + e[0] + ', \'' + e[1].replace('\'', '\\\'') + '\');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
                         '</tr>'
                     );
                 }
@@ -349,8 +306,7 @@
     function loadTotal() {
         $.getJSON("{{ url_for('total') }}", {}, function(result) {
             if (result.error) {
-                alert(result.error);
-                location.reload();
+                errorMessage(result.error, () => location.reload());
             }
             else {
                 setTotal(result.data);
@@ -363,7 +319,7 @@
     }
 
     function setTotal(value) {
-        const negative = value.charAt(0) == '(';
+        const negative = value.charAt(0) === '(';
         const obj = $('#total_value');
 
         obj.text(value);
@@ -378,8 +334,7 @@
     function loadFuture() {
         $.getJSON("{{ url_for('load_table') }}", {table: 'future'}, function(result) {
             if (result.error) {
-                alert(result.error);
-                location.reload();
+                errorMessage(result.error, () => location.reload());
             }
             else {
                 // Remove existing content.
@@ -391,14 +346,14 @@
                     var e = result.data.future[i];
                     $('#future > tbody').append(
                         '<tr id="future_' + e[0] + '">' +
-                        '<td class="icon"><a href="javascript:advance(' + e[0] + ')"><img class="icon" src="' + $IMG_ADVANCE + '" title="Send to Current" /></a></td>' +
+                        '<td class="icon"><a href="javascript:advance(' + e[0] + ');"><img class="icon" src="' + $IMG_ADVANCE + '" title="Send to Current" /></a></td>' +
                         '<td class="name">' + e[1] + '</td>' +
-                        '<td class="value' + (e[2].charAt(0) == '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
+                        '<td class="value' + (e[2].charAt(0) === '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
                         '<td class="date">' + e[4] + '</td>' +
                         '<td class="recur">' + e[5] + '</td>' +
                         '<td class="note">' + e[6] + '</td>' +
-                        '<td class="icon"><a href="javascript:editFuture(' + e[0] + ')"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-                        '<td class="icon"><a href="javascript:removeFuture(' + e[0] + ', \'' + e[1] + '\')"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+                        '<td class="icon"><a href="javascript:editFuture(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+                        '<td class="icon"><a href="javascript:removeFuture(' + e[0] + ', \'' + e[1] + '\');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
                         '</tr>'
                     );
                 }
@@ -407,6 +362,53 @@
             $('#loading').fadeOut('slow');
             {% endif %}
         });
+    }
+
+    function handleKeyDown(e) {
+        if (e.keyCode !== 13 && e.keyCode !== 27) { return; }
+
+        const form = e.currentTarget.form;
+        const edit = form.id.match(/edit_.+_form/);
+        const current = form.id.match(/.*current_form/);
+
+        if (e.keyCode === 13) {
+            if (edit && current) {
+                submitEditCurrent();
+            }
+            else if (!edit && current) {
+                addCurrent();
+            }
+            else if (edit && !current) {
+                submitEditFuture();
+            }
+            else {
+                addFuture();
+            }
+        }
+        else {
+            if (edit) {
+                if (current) {
+                    cancelEditCurrent();
+                }
+                else {
+                    cancelEditFuture();
+                }
+            }
+            else {
+                form.reset();
+            }
+        }
+    }
+
+    function handleSelectChange(e) {
+        const selector = `#${e.currentTarget.id.replace('_type', '_freq')}`;
+
+        if (!e.currentTarget.value || e.currentTarget.value === "R") {
+            $(selector).hide();
+        }
+        else {
+            $(selector).show();
+        }
     }
 
     $(document).ready(function() {
@@ -418,45 +420,10 @@
         $(".date input").datepicker({dateFormat: "yy-mm-dd"});
 
         // When the window gets focus, if the data haven't been refreshed in a while, refresh them.
-        $(window).on('focus', function() { if(Date.now() > nextRefresh){ loadCurrent(); } });
-
-        // Override form submission (and prevent binding multiple copies of the event listener).
-        // Could probably use JQuery's .one instead of .on to make this simpler...
-        $("#current_form:not(.bound)").addClass("bound").submit(function(e) {
-            addCurrent();
-            return false;
-        });
-        $("#future_form:not(.bound)").addClass("bound").submit(function(e) {
-            addFuture();
-            return false;
-        });
-
-        // Submit on enter, reset on escape (and prevent binding multiple copies of the event listener).
-        $("#add_current input:not(.bound)").addClass("bound").keydown(function(e) {
-            if (e.keyCode == 13) {
-                $('#current_form').submit();
-            }
-            else if (e.keyCode == 27) {
-                $('#current_form')[0].reset();
-            }
-        });
-        $("#add_future input:not(.bound)").addClass("bound").keydown(function(e) {
-            if (e.keyCode == 13) {
-                $('#future_form').submit();
-            }
-            else if (e.keyCode == 27) {
-                $('#future_form')[0].reset();
-            }
-        });
-
-        // Add edit trigger for dropdown list.
-        $("#future_recur_type:not(.bound)").addClass("bound").change(function (){
-            var v = $(this).val();
-            if (v == "" || v == "R") {
-                $("#future_recur_freq").hide();
-            }
-            else {
-                $("#future_recur_freq").show();
+        $(window).on('focus', () => {
+            if (Date.now() > nextRefresh) {
+                loadCurrent();
+                loadTotal();
             }
         });
 
@@ -468,8 +435,8 @@
 
 <h1>Current</h1>
 
-<form id="current_form" action="#"></form>
-<form id="edit_current_form" action="#"></form>
+<form id="current_form" onsubmit="javascript:addCurrent(); return false;"></form>
+<form id="edit_current_form" onsubmit="javascript:submitEditCurrent(); return false;"></form>
 
 <table id="current" class="expense_table">
     <thead>
@@ -486,12 +453,12 @@
     <tbody>
         <tr id="add_current">
             <td class="icon"></td>
-            <td class="name">{{ current_form.name(autofocus=true, form="current_form") }}</td>
-            <td class="value">{{ current_form.value(form="current_form") }}</td>
-            <td class="date">{{ current_form.created(form="current_form") }}</td>
-            <td class="note">{{ current_form.note(form="current_form") }}</td>
-            <td class="icon"><a href="javascript:addCurrent()"><img class="icon" src={{ url_for('static', filename='check.png') }} title="Accept" /></a></td>
-            <td class="icon"><a href="javascript:$('#current_form')[0].reset()"><img class="icon" src={{ url_for('static', filename='x.png') }} title="Cancel" /></a></td>
+            <td class="name">{{ current_form.name(autofocus=true, form="current_form", onkeydown="handleKeyDown(event);") }}</td>
+            <td class="value">{{ current_form.value(form="current_form", onkeydown="handleKeyDown(event);") }}</td>
+            <td class="date">{{ current_form.created(form="current_form", onkeydown="handleKeyDown(event);") }}</td>
+            <td class="note">{{ current_form.note(form="current_form", onkeydown="handleKeyDown(event);") }}</td>
+            <td class="icon"><a href="javascript:addCurrent();"><img class="icon" src={{ url_for('static', filename='check.png') }} title="Accept" /></a></td>
+            <td class="icon"><a href="javascript:$('#current_form')[0].reset();"><img class="icon" src={{ url_for('static', filename='x.png') }} title="Cancel" /></a></td>
         </tr>
     </tbody>
     <tfoot>
@@ -509,8 +476,8 @@
 
 <h1>Future</h1>
 
-<form id="future_form" action="#"></form>
-<form id="edit_future_form" action="#"></form>
+<form id="future_form" onsubmit="javascript:addFuture(); return false;"></form>
+<form id="edit_future_form" onsubmit="javascript:submitEditFuture(); return false;"></form>
 
 <table id="future" class="expense_table">
     <thead>
@@ -528,13 +495,13 @@
     <tbody>
         <tr id="add_future">
             <td class="icon"></td>
-            <td class="name">{{ future_form.name(form="future_form") }}</td>
-            <td class="value">{{ future_form.value(form="future_form") }}</td>
-            <td class="date">{{ future_form.due_date(form="future_form") }}</td>
-            <td class="recur">{{ future_form.recur_freq(min=0, hidden=true, form="future_form") }}{{ future_form.recur_type(form="future_form") }}</td>
-            <td class="note">{{ future_form.note(form="future_form") }}</td>
-            <td class="icon"><a href="javascript:addFuture()"><img class="icon" src={{ url_for('static', filename='check.png') }} title="Accept" /></a></td>
-            <td class="icon"><a href="javascript:$('#future_form')[0].reset()"><img class="icon" src={{ url_for('static', filename='x.png') }} title="Cancel" /></a></td>
+            <td class="name">{{ future_form.name(form="future_form", onkeydown="handleKeyDown(event);") }}</td>
+            <td class="value">{{ future_form.value(form="future_form", onkeydown="handleKeyDown(event);") }}</td>
+            <td class="date">{{ future_form.due_date(form="future_form", onkeydown="handleKeyDown(event);") }}</td>
+            <td class="recur">{{ future_form.recur_freq(min=0, hidden=true, form="future_form") }}{{ future_form.recur_type(form="future_form", onchange="handleSelectChange(event);") }}</td>
+            <td class="note">{{ future_form.note(form="future_form", onkeydown="handleKeyDown(event);") }}</td>
+            <td class="icon"><a href="javascript:addFuture();"><img class="icon" src={{ url_for('static', filename='check.png') }} title="Accept" /></a></td>
+            <td class="icon"><a href="javascript:$('#future_form')[0].reset();"><img class="icon" src={{ url_for('static', filename='x.png') }} title="Cancel" /></a></td>
         </tr>
     </tbody>
 </table>
