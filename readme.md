@@ -56,7 +56,7 @@ Known Bugs
 Special Thanks
 ==============
 
-Currency conversion provided by [exchangeratesapi.io](https://exchangeratesapi.io).
+Currency conversion provided by [ratesapi.io](https://ratesapi.io).
 
 License Information
 ===================
