@@ -4,7 +4,7 @@ import requests
 
 from expense import app
 
-CURRENCY_URL = 'http://api.ratesapi.io/api/'
+CURRENCY_URL = 'https://api.exchangerate.host/'
 RATE_URL = CURRENCY_URL + '{date:%Y-%m-%d}?base={src}&symbols={dst}'
 SYMBOLS_URL = CURRENCY_URL + 'latest'
 CENTS = app.config.get('FRACTIONS_PER_UNIT', 100)
