@@ -4,14 +4,26 @@ import requests
 
 from expense import app
 
-CURRENCY_URL = 'https://api.exchangerate.host/'
-RATE_URL = CURRENCY_URL + '{date:%Y-%m-%d}?base={src}&symbols={dst}'
-SYMBOLS_URL = CURRENCY_URL + 'latest'
+
+RATE_URL = app.config.get('RATE_URL')
+SYMBOLS_URL = app.config.get('SYMBOLS_URL')
 CENTS = app.config.get('FRACTIONS_PER_UNIT', 100)
 LOCAL = app.config.get('LOCAL_CURRENCY')
 
 rate_cache = {}
 symbols_cache = []
+errors = []
+
+
+def error(e):
+    print(e)
+    errors.append(str(e))
+
+
+def get_errors():
+    err = errors.copy()
+    errors.clear()
+    return err
 
 
 def to_fractional(value):
@@ -55,10 +67,14 @@ def format_raw(value, currency=LOCAL):
 
 def list_currencies():
     """
-    Lists all valid currencies (those supported by exchangeratesapi.io).
+    Lists all valid currencies (those supported by the exchange rate provider).
     """
-    if not symbols_cache:
-        r = requests.get(SYMBOLS_URL)
+    if SYMBOLS_URL and not symbols_cache:
+        try:
+            r = requests.get(SYMBOLS_URL)
+        except Exception as e:
+            error(e)
+            return symbols_cache
 
         if r.status_code == 200:
             symbols_cache.append(r.json().get('base'))
@@ -72,13 +88,10 @@ def list_currencies():
                 )
 
             if not symbols_cache:
-                print('No currency symbols found. Request returned: {}'.format(
-                    r.text
-                ))
+                error(f'No currency symbols found. Request returned: {r.text}')
+
         else:
-            print('No currency symbols found. Request returned a {}.'.format(
-                r.status_code
-            ))
+            error(f'No currency symbols found. Request returned: {r.text}')
 
     return symbols_cache
 
@@ -94,10 +107,14 @@ def conversion_rate(src, dst, d):
     """
     Returns the historical conversion rate between two currencies.
     """
-    request = RATE_URL.format(date=d, src=src, dst=dst)
+    request = RATE_URL.format(date=d, src=src, dst=dst) if RATE_URL else None
 
-    if request not in rate_cache:
-        r = requests.get(request)
+    if request and request not in rate_cache:
+        try:
+            r = requests.get(request)
+        except Exception as e:
+            error(e)
+            return 1
 
         if r.status_code == 200:
             rate = r.json().get('rates', {}).get(dst)
@@ -105,15 +122,12 @@ def conversion_rate(src, dst, d):
             if rate is not None:
                 rate_cache[request] = rate
             else:
-                print('No rate for {} found. Request returned: {}'.format(
-                    dst, r.text
-                ))
-        else:
-            print('No rate for {} found. Request returned a {}.'.format(
-                dst, r.status_code
-            ))
+                error(f'No rate for {dst} found. Request returned: {r.text}')
 
-    return rate_cache.get(request)
+        else:
+            error(f'No rate for {dst} found. Request returned: {r.text}')
+
+    return rate_cache.get(request, 1)
 
 
 def recur(x, operation, condition):

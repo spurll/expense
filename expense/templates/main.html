@@ -16,8 +16,8 @@
         {% endif %}
 
         $.post("{{ url_for('settle') }}", {id: id}, function(result) {
-            if (result.error) {
-                errorMessage(result.error);
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
             }
             else {
                 $('#current_' + id).remove();
@@ -32,9 +32,9 @@
         {% endif %}
 
         $.post("{{ url_for('advance') }}", {id: id}, function(result) {
-            if (result.error) {
+            if (result.errors && result.errors.length) {
                 $('#loading').fadeOut('slow');
-                errorMessage(result.error);
+                result.errors.forEach(e => errorMessage(e));
             }
             else {
                 // Have to reload the future table instead of simply removing the row because
@@ -57,8 +57,8 @@
         {% endif %}
 
         $.post("{{ url_for('delete') }}", {table: 'current', id: id}, function(result) {
-            if (result.error) {
-                errorMessage(result.error);
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
             }
             else {
                 $('#current_' + id).remove();
@@ -81,8 +81,8 @@
         {% endif %}
 
         $.post("{{ url_for('delete') }}", {table: 'future', id: id}, function(result) {
-            if (result.error) {
-                errorMessage(result.error);
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
             }
             else {
                 $('#future_' + id).remove();
@@ -97,8 +97,8 @@
     function addCurrent() {
         var payload = $('#current_form').serialize() + "&table=current";
         $.post("{{ url_for('add_expense') }}", payload, function(result) {
-            if (result.error) {
-                errorMessage(result.error);
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
             }
             else {
                 $('#current_form')[0].reset();
@@ -117,8 +117,8 @@
     function addFuture() {
         var payload = $('#future_form').serialize() + "&table=future";
         $.post("{{ url_for('add_expense') }}", payload, function(result) {
-            if (result.error) {
-                errorMessage(result.error);
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
             }
             else {
                 $('#future_form')[0].reset();
@@ -138,8 +138,8 @@
     function submitEditCurrent() {
         var payload = $('#edit_current_form').serialize().replace(/_field/g, "") + "&table=current";
         $.post("{{ url_for('add_expense') }}", payload, function(result) {
-            if (result.error) {
-                errorMessage(result.error);
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
             }
             else {
                 cancelEditCurrent();
@@ -159,8 +159,8 @@
     function submitEditFuture() {
         var payload = $('#edit_future_form').serialize().replace(/_field/g, "") + "&table=future";
         $.post("{{ url_for('add_expense') }}", payload, function(result) {
-            if (result.error) {
-                errorMessage(result.error);
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
             }
             else {
                 cancelEditFuture();
@@ -267,32 +267,32 @@
 
     function loadCurrent() {
         $.getJSON("{{ url_for('load_table') }}", {table: 'current'}, function(result) {
-            if (result.error) {
-                errorMessage(result.error, () => location.reload());
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
+                // result.errors.forEach(e => errorMessage(e, () => location.reload()));
             }
-            else {
-                // Remove existing content.
-                $('#current > tbody > tr').not('#add_current').remove();
 
-                // Load data into current table.
-                for (var i = 0; i < result.data.current.length; i++) {
-                    // Add a row to the table.
-                    var e = result.data.current[i];
-                    $('#current > tbody').append(
-                        '<tr id="current_' + e[0] + '">' +
-                        '<td class="icon"><a href="javascript:settle(' + e[0] + ');"><img class="icon" src="' + $IMG_CHECK + '" title="Settle" /></a></td>' +
-                        '<td class="name">' + e[1] + '</td>' +
-                        '<td class="value' + (e[2].charAt(0) === '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
-                        '<td class="date">' + e[4] + '</td>' +
-                        '<td class="note">' + e[5] + '</td>' +
-                        '<td class="icon"><a href="javascript:editCurrent(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-                        '<td class="icon"><a href="javascript:removeCurrent(' + e[0] + ', \'' + e[1].replace('\'', '\\\'') + '\');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
-                        '</tr>'
-                    );
-                }
+            // Remove existing content.
+            $('#current > tbody > tr').not('#add_current').remove();
 
-                setTotal(result.data.total);
+            // Load data into current table.
+            for (var i = 0; i < result.data.current.length; i++) {
+                // Add a row to the table.
+                var e = result.data.current[i];
+                $('#current > tbody').append(
+                    '<tr id="current_' + e[0] + '">' +
+                    '<td class="icon"><a href="javascript:settle(' + e[0] + ');"><img class="icon" src="' + $IMG_CHECK + '" title="Settle" /></a></td>' +
+                    '<td class="name">' + e[1] + '</td>' +
+                    '<td class="value' + (e[2].charAt(0) === '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
+                    '<td class="date">' + e[4] + '</td>' +
+                    '<td class="note">' + e[5] + '</td>' +
+                    '<td class="icon"><a href="javascript:editCurrent(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+                    '<td class="icon"><a href="javascript:removeCurrent(' + e[0] + ', \'' + e[1].replace('\'', '\\\'') + '\');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+                    '</tr>'
+                );
             }
+
+            setTotal(result.data.total);
 
             // When the data are loaded, reset the auto-refresh interval.
             if (refreshTimeout) { clearTimeout(refreshTimeout); }
@@ -314,8 +314,8 @@
 
     function loadTotal() {
         $.getJSON("{{ url_for('total') }}", {}, function(result) {
-            if (result.error) {
-                errorMessage(result.error);
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
             }
             else {
                 setTotal(result.data);
@@ -342,31 +342,32 @@
 
     function loadFuture() {
         $.getJSON("{{ url_for('load_table') }}", {table: 'future'}, function(result) {
-            if (result.error) {
-                errorMessage(result.error, () => location.reload());
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
+                // result.errors.forEach(e => errorMessage(e, () => location.reload()));
             }
-            else {
-                // Remove existing content.
-                $('#future > tbody > tr').not('#add_future').remove();
 
-                // Load data into future table.
-                for (var i = 0; i < result.data.future.length; i++) {
-                    // Add a row to the table.
-                    var e = result.data.future[i];
-                    $('#future > tbody').append(
-                        '<tr id="future_' + e[0] + '">' +
-                        '<td class="icon"><a href="javascript:advance(' + e[0] + ');"><img class="icon" src="' + $IMG_ADVANCE + '" title="Send to Current" /></a></td>' +
-                        '<td class="name">' + e[1] + '</td>' +
-                        '<td class="value' + (e[2].charAt(0) === '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
-                        '<td class="date">' + e[4] + '</td>' +
-                        '<td class="recur">' + e[5] + '</td>' +
-                        '<td class="note">' + e[6] + '</td>' +
-                        '<td class="icon"><a href="javascript:editFuture(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-                        '<td class="icon"><a href="javascript:removeFuture(' + e[0] + ', \'' + e[1] + '\');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
-                        '</tr>'
-                    );
-                }
+            // Remove existing content.
+            $('#future > tbody > tr').not('#add_future').remove();
+
+            // Load data into future table.
+            for (var i = 0; i < result.data.future.length; i++) {
+                // Add a row to the table.
+                var e = result.data.future[i];
+                $('#future > tbody').append(
+                    '<tr id="future_' + e[0] + '">' +
+                    '<td class="icon"><a href="javascript:advance(' + e[0] + ');"><img class="icon" src="' + $IMG_ADVANCE + '" title="Send to Current" /></a></td>' +
+                    '<td class="name">' + e[1] + '</td>' +
+                    '<td class="value' + (e[2].charAt(0) === '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
+                    '<td class="date">' + e[4] + '</td>' +
+                    '<td class="recur">' + e[5] + '</td>' +
+                    '<td class="note">' + e[6] + '</td>' +
+                    '<td class="icon"><a href="javascript:editFuture(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+                    '<td class="icon"><a href="javascript:removeFuture(' + e[0] + ', \'' + e[1] + '\');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+                    '</tr>'
+                );
             }
+
             {% if use_loading_gif %}
             $('#loading').fadeOut('slow');
             {% endif %}

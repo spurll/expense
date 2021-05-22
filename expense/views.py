@@ -8,7 +8,7 @@ from expense.forms import *
 from expense.models import User
 from expense.authenticate import authenticate
 from expense.controller import *
-from expense.utils import list_currencies
+from expense.utils import list_currencies, error, get_errors
 
 
 @app.route('/')
@@ -59,7 +59,7 @@ def login():
         user, message = authenticate(form.username.data, form.password.data)
 
         if not user:
-            flash('Login failed: {}.'.format(message))
+            flash(f'Login failed: {message}.')
             return render_template('login.html', title='Log In', form=form)
 
         if user and user.is_authenticated:
@@ -95,10 +95,9 @@ def load_table():
     Return all current expenses.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, error='User must be logged in.')
+        return jsonify(data={}, errors=['User must be logged in.'])
 
     data = {}
-    error = None
     fn = None
 
     table = request.args.get('table', None)
@@ -115,12 +114,11 @@ def load_table():
             data[table] = fn(current_user)
             data['total'] = table == 'current' and current_user.formatted_total
         except Exception as e:
-            print(e)
-            error = str(e)
+            error(e)
     else:
-        error = 'Attempted to load invalid table {}.'.format(table)
+        error(f'Attempted to load invalid table {table}.')
 
-    return jsonify(data=data, error=error)
+    return jsonify(data=data, errors=get_errors())
 
 
 @app.route('/_total')
@@ -129,18 +127,16 @@ def total():
     Return the total value (in local currency) of all current expenses.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, error='User must be logged in.')
+        return jsonify(data={}, errors=['User must be logged in.'])
 
     data = None
-    error = None
 
     try:
         data = current_user.formatted_total
     except Exception as e:
-        print(e)
-        error = str(e)
+        error(str(e))
 
-    return jsonify(data=data, error=error)
+    return jsonify(data=data, errors=get_errors())
 
 
 @app.route('/_add_expense', methods=['POST'])
@@ -149,13 +145,16 @@ def add_expense():
     Adds or edits an expense.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, error='User must be logged in.')
+        return jsonify(data={}, errors=['User must be logged in.'])
 
-    fn, error = None, None
+    fn = None
 
     # Make it mutable.
     args = {k: v for (k, v) in request.form.items() if v is not ''}
     table = args.pop('table', None)
+
+    if not args.get('name'):
+        return jsonify(data={}, errors=['Item name is required.'])
 
     if table == 'current':
         fn = add_current
@@ -164,17 +163,15 @@ def add_expense():
     elif table == 'history':
         fn = add_history
     else:
-        error = 'Attempted to edit an invalid table {}.'.format(table)
-        print(error)
+        error(f'Attempted to edit an invalid table {table}.')
 
     try:
-        print('Adding {} expense: {}'.format(table, args))
+        print(f'Adding {table} expense: {args}')
         fn(current_user, args)
     except Exception as e:
-        print(e)
-        error = str(e)
+        error(str(e))
 
-    return jsonify(error=error)
+    return jsonify(errors=get_errors())
 
 
 @app.route('/_settle', methods=['POST'])
@@ -183,18 +180,15 @@ def settle():
     Move an expense from Current to History.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, error='User must be logged in.')
-
-    error = None
+        return jsonify(data={}, errors=['User must be logged in.'])
 
     try:
-        print('Settling current expense: {}'.format(request.form.get('id')))
+        print(f'Settling current expense: {request.form.get("id")}')
         advance_current(current_user, request.form.get('id', None, type=int))
     except Exception as e:
-        print(e)
-        error = str(e)
+        error(str(e))
 
-    return jsonify(error=error)
+    return jsonify(errors=get_errors())
 
 
 @app.route('/_advance', methods=['POST'])
@@ -203,18 +197,15 @@ def advance():
     Move an expense from Future to Current.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, error='User must be logged in.')
-
-    error = None
+        return jsonify(data={}, errors=['User must be logged in.'])
 
     try:
-        print('Advancing future expense: {}'.format(request.form.get('id')))
+        print(f'Advancing future expense: {request.form.get("id")}')
         advance_future(current_user, request.form.get('id', None, type=int))
     except Exception as e:
-        print(e)
-        error = str(e)
+        error(str(e))
 
-    return jsonify(error=error)
+    return jsonify(errors=get_errors())
 
 
 @app.route('/_send_back', methods=['POST'])
@@ -223,18 +214,15 @@ def send_back():
     Move an expense from History back to Current.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, error='User must be logged in.')
-
-    error = None
+        return jsonify(data={}, errors=['User must be logged in.'])
 
     try:
-        print('Sending expense back to current: {}'.format(request.form))
+        print(f'Sending expense back to current: {request.form}')
         history_to_current(current_user,request.form.get('id', None, type=int))
     except Exception as e:
-        print(e)
-        error = str(e)
+        error(str(e))
 
-    return jsonify(error=error)
+    return jsonify(errors=get_errors())
 
 
 @app.route('/_delete', methods=['POST'])
@@ -243,9 +231,7 @@ def delete():
     Delete an expense.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, error='User must be logged in.')
-
-    error = None
+        return jsonify(data={}, error=['User must be logged in.'])
 
     table = request.form.get('table', None)
 
@@ -257,10 +243,9 @@ def delete():
         fn = delete_history
 
     try:
-        print('Deleting {} expense: {}'.format(table, request.form.get('id')))
+        print(f'Deleting {table} expense: {request.form.get("id")}')
         fn(current_user, request.form.get('id', None, type=int))
     except Exception as e:
-        print(e)
-        error = str(e)
+        error(str(e))
 
-    return jsonify(error=error)
+    return jsonify(errors=get_errors())

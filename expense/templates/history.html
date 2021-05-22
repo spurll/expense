@@ -15,8 +15,8 @@
         {% endif %}
 
         $.post("{{ url_for('send_back') }}", {id: id}, function(result) {
-            if (result.error) {
-                errorMessage(result.error);
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
             }
             else {
                 $('#history_' + id).remove();
@@ -31,8 +31,8 @@
     function submitEditHistory() {
         var payload = $('#edit_history_form').serialize().replace(/_field/g, "") + "&table=history";
         $.post("{{ url_for('add_expense') }}", payload, function(result) {
-            if (result.error) {
-                errorMessage(result.error);
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
             }
             else {
                 cancelEditHistory();
@@ -101,8 +101,8 @@
         {% endif %}
 
         $.post("{{ url_for('delete') }}", {table: 'history', id: id}, function(result) {
-            if (result.error) {
-                errorMessage(result.error);
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
             }
             else {
                 $('#history_' + id).remove();
@@ -116,30 +116,30 @@
 
     function loadHistory() {
         $.getJSON("{{ url_for('load_table') }}", {table: 'history', page: window.page}, function(result) {
-            if (result.error) {
-                errorMessage(result.error, () => location.reload());
+            if (result.errors && result.errors.length) {
+                result.errors.forEach(e => errorMessage(e));
+                // result.errors.forEach(e => errorMessage(e, () => location.reload()));
             }
-            else {
-                // Remove existing content.
-                $('#history > tbody > tr').remove();
 
-                // Load data into current table.
-                for (var i = 0; i < result.data.history.length; i++) {
-                    // Add a row to the table.
-                    var e = result.data.history[i];
-                    $('#history > tbody').append(
-                        '<tr id="history_' + e[0] + '">' +
-                        '<td class="icon"><a href="javascript:sendBack(' + e[0] + ');"><img class="icon" src="' + $IMG_BACK + '" title="Send to Current" /></a></td>' +
-                        '<td class="name">' + e[1] + '</td>' +
-                        '<td class="value' + (e[2].charAt(0) == '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
-                        '<td class="date">' + e[4] + '</td>' +
-                        '<td class="date">' + e[5] + '</td>' +
-                        '<td class="note">' + e[6] + '</td>' +
-                        '<td class="icon"><a href="javascript:editHistory(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
-                        '<td class="icon"><a href="javascript:removeHistory(' + e[0] + ', \'' + e[1].replace('\'', '\\\'') + '\');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
-                        '</tr>'
-                    );
-                }
+            // Remove existing content.
+            $('#history > tbody > tr').remove();
+
+            // Load data into current table.
+            for (var i = 0; i < result.data.history.length; i++) {
+                // Add a row to the table.
+                var e = result.data.history[i];
+                $('#history > tbody').append(
+                    '<tr id="history_' + e[0] + '">' +
+                    '<td class="icon"><a href="javascript:sendBack(' + e[0] + ');"><img class="icon" src="' + $IMG_BACK + '" title="Send to Current" /></a></td>' +
+                    '<td class="name">' + e[1] + '</td>' +
+                    '<td class="value' + (e[2].charAt(0) == '(' ? ' negative' : '') + '" title="' + e[3] + '">' + e[2] + '</td>' +
+                    '<td class="date">' + e[4] + '</td>' +
+                    '<td class="date">' + e[5] + '</td>' +
+                    '<td class="note">' + e[6] + '</td>' +
+                    '<td class="icon"><a href="javascript:editHistory(' + e[0] + ');"><img class="icon" src="' + $IMG_EDIT + '" title="Edit" /></a></td>' +
+                    '<td class="icon"><a href="javascript:removeHistory(' + e[0] + ', \'' + e[1].replace('\'', '\\\'') + '\');"><img class="icon" src="' + $IMG_DELETE + '" title="Delete" /></a></td>' +
+                    '</tr>'
+                );
             }
 
             if (window.page > 1)
