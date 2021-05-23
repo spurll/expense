@@ -117,8 +117,7 @@
     function loadHistory() {
         $.getJSON("{{ url_for('load_table') }}", {table: 'history', page: window.page}, function(result) {
             if (result.errors && result.errors.length) {
-                result.errors.forEach(e => errorMessage(e));
-                // result.errors.forEach(e => errorMessage(e, () => location.reload()));
+                result.errors.forEach(e => errorMessage(e, () => result.reload ? location.reload() : null));
             }
 
             // Remove existing content.

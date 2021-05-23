@@ -95,7 +95,7 @@ def load_table():
     Return all current expenses.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, errors=['User must be logged in.'])
+        return jsonify(data={}, errors=['User log in.'], reload=True)
 
     data = {}
     fn = None
@@ -127,7 +127,7 @@ def total():
     Return the total value (in local currency) of all current expenses.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, errors=['User must be logged in.'])
+        return jsonify(data={}, errors=['User log in.'], reload=True)
 
     data = None
 
@@ -145,7 +145,7 @@ def add_expense():
     Adds or edits an expense.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, errors=['User must be logged in.'])
+        return jsonify(data={}, errors=['User log in.'], reload=True)
 
     fn = None
 
@@ -180,7 +180,7 @@ def settle():
     Move an expense from Current to History.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, errors=['User must be logged in.'])
+        return jsonify(data={}, errors=['User log in.'], reload=True)
 
     try:
         print(f'Settling current expense: {request.form.get("id")}')
@@ -197,7 +197,7 @@ def advance():
     Move an expense from Future to Current.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, errors=['User must be logged in.'])
+        return jsonify(data={}, errors=['User log in.'], reload=True)
 
     try:
         print(f'Advancing future expense: {request.form.get("id")}')
@@ -214,7 +214,7 @@ def send_back():
     Move an expense from History back to Current.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, errors=['User must be logged in.'])
+        return jsonify(data={}, errors=['User log in.'], reload=True)
 
     try:
         print(f'Sending expense back to current: {request.form}')
@@ -231,7 +231,7 @@ def delete():
     Delete an expense.
     """
     if current_user is None or not current_user.is_authenticated:
-        return jsonify(data={}, error=['User must be logged in.'])
+        return jsonify(data={}, errors=['User log in.'], reload=True)
 
     table = request.form.get('table', None)
 

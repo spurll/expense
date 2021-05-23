@@ -268,8 +268,7 @@
     function loadCurrent() {
         $.getJSON("{{ url_for('load_table') }}", {table: 'current'}, function(result) {
             if (result.errors && result.errors.length) {
-                result.errors.forEach(e => errorMessage(e));
-                // result.errors.forEach(e => errorMessage(e, () => location.reload()));
+                result.errors.forEach(e => errorMessage(e, () => result.reload ? location.reload() : null));
             }
 
             // Remove existing content.
@@ -343,8 +342,7 @@
     function loadFuture() {
         $.getJSON("{{ url_for('load_table') }}", {table: 'future'}, function(result) {
             if (result.errors && result.errors.length) {
-                result.errors.forEach(e => errorMessage(e));
-                // result.errors.forEach(e => errorMessage(e, () => location.reload()));
+                result.errors.forEach(e => errorMessage(e, () => result.reload ? location.reload() : null));
             }
 
             // Remove existing content.
