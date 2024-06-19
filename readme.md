@@ -11,7 +11,6 @@ Usage
 Requirements
 ------------
 
-* flask
 * flask-login
 * flask-wtf
 * flask-sqlalchemy

@@ -150,7 +150,7 @@ def add_expense():
     fn = None
 
     # Make it mutable.
-    args = {k: v for (k, v) in request.form.items() if v is not ''}
+    args = {k: v for (k, v) in request.form.items() if v != ''}
     table = args.pop('table', None)
 
     if not args.get('name'):
