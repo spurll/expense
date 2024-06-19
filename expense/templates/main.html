@@ -205,9 +205,6 @@
         $('#edit_current_value').select();
         $('#edit_current_created').val($('#current_' + id + ' > td.date').text());
         $('#edit_current_note').val($('#current_' + id + ' > td.note').text());
-
-        // Enable JQuery UI's date picker.
-        $("#edit_current_created").datepicker({dateFormat: "yy-mm-dd"});
     }
 
     function editFuture(id) {
@@ -243,9 +240,6 @@
         $('#edit_future_recur_freq').val(recur_text.replace(re, '$1'));
         $('#edit_future_recur_type').val(recur_text.replace(re, '$2'));
         $('#edit_future_note').val($('#future_' + id + ' > td.note').text());
-
-        // Enable JQuery UI's date picker.
-        $("#edit_future_due_date").datepicker({dateFormat: "yy-mm-dd"});
 
         const v = $('#edit_future_recur_type').val();
         if (!v || v === "R") {
@@ -423,9 +417,6 @@
         {% if use_loading_gif %}
         $('#loading').fadeIn('slow');
         {% endif %}
-
-        // Enable JQuery UI's date picker.
-        $(".date input").datepicker({dateFormat: "yy-mm-dd"});
 
         // Load data.
         loadCurrent();

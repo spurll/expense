@@ -79,10 +79,6 @@
         $('#edit_history_created').val($('#history_' + id + ' > td.date:eq(0)').text());
         $('#edit_history_settled').val($('#history_' + id + ' > td.date:eq(1)').text());
         $('#edit_history_note').val($('#history_' + id + ' > td.note').text());
-
-        // Enable JQuery UI's date picker.
-        $("#edit_history_created").datepicker({dateFormat: "yy-mm-dd"});
-        $("#edit_history_settled").datepicker({dateFormat: "yy-mm-dd"});
     }
 
     function cancelEditHistory() {
