@@ -248,11 +248,17 @@ textarea {
     font-family: unset;
 }
 
-input[type="text"], input[type="password"], input[type="number"], input[type="search"], input[type="date"] {
+input[type="text"], input[type="password"], input[type="number"], input[type="search"] {
     width: 100%;
     font-size: 14px;
     font-family: inherit;
     border-radius: 0;
+}
+
+input[type="date"] {
+    width: 100%;
+    font-size: 12px;
+    font-family: inherit;
 }
 
 input[type="text"], input[type="search"], input[type="date"] {
