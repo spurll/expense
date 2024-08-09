@@ -77,14 +77,17 @@ def list_currencies():
             return symbols_cache
 
         if r.status_code == 200:
-            symbols_cache.append(r.json().get('base'))
-            symbols_cache.extend(r.json().get('rates', {}).keys())
-            symbols_cache.sort()
+            try:
+                symbols_cache.extend(r.json().keys())
+                symbols_cache.sort()
+            except Exception as e:
+                error(e)
+                return symbols_cache
 
             # Move local currency to the top of the list.
-            if LOCAL in symbols_cache:
+            if LOCAL.lower() in symbols_cache:
                 symbols_cache.insert(
-                    0, symbols_cache.pop(symbols_cache.index(LOCAL))
+                    0, symbols_cache.pop(symbols_cache.index(LOCAL.lower()))
                 )
 
             if not symbols_cache:
@@ -107,7 +110,7 @@ def conversion_rate(src, dst, d):
     """
     Returns the historical conversion rate between two currencies.
     """
-    request = RATE_URL.format(date=d, src=src, dst=dst) if RATE_URL else None
+    request = RATE_URL.format(date=d, src=src.lower()) if RATE_URL else None
 
     if request and request not in rate_cache:
         try:
@@ -117,7 +120,7 @@ def conversion_rate(src, dst, d):
             return 1
 
         if r.status_code == 200:
-            rate = r.json().get('rates', {}).get(dst)
+            rate = r.json().get(src.lower(), {}).get(dst.lower())
 
             if rate is not None:
                 rate_cache[request] = rate

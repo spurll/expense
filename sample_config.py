@@ -29,3 +29,9 @@ LOADING_GIF = True
 CONFIRM_DELETION = True
 DATE_FORMAT = '%Y-%m-%d'
 PAGE_SIZE = 100
+
+# Currency Conversion
+# Current: https://github.com/fawazahmed0/exchange-api
+# Can consider fallback to https://freecurrencyapi.com if necessary
+RATE_URL = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{date}/v1/currencies/{src}.json'
+SYMBOLS_URL = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies.json'

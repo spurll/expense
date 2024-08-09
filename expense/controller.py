@@ -201,12 +201,13 @@ def convert_fields(fields):
                 currency = 'USD'
 
             if currency:
-                if 'currency' in fields and fields['currency'] != currency:
+                if 'currency' in fields and \
+                        fields['currency'] != currency.lower():
                     print(
                         f'Replacing currency {fields["currency"]} with '
                         f'{currency} parsed from {fields["value"]}.'
                     )
-                elif currency not in list_currencies():
+                elif currency.lower() not in list_currencies():
                     print(
                         f'Unable to validate currency {currency}. Assuming '
                         'local currency.'
