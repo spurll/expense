@@ -55,7 +55,7 @@ Known Bugs
 Special Thanks
 ==============
 
-Currency conversion provided by [exchangerate.host](https://exchangerate.host).
+Currency conversion provided by [Free Currency Exchange Rates API](https://github.com/fawazahmed0/exchange-api).
 
 License Information
 ===================
