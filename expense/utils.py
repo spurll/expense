@@ -110,6 +110,10 @@ def conversion_rate(src, dst, d):
     """
     Returns the historical conversion rate between two currencies.
     """
+    # Ensure we're not requesting conversion rates for the future
+    today = date.today()
+    d = d if d <= today else today
+
     request = RATE_URL.format(date=d, src=src.lower()) if RATE_URL else None
 
     if request and request not in rate_cache:
