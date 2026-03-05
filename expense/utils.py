@@ -9,6 +9,7 @@ RATE_URL = app.config.get('RATE_URL')
 SYMBOLS_URL = app.config.get('SYMBOLS_URL')
 CENTS = app.config.get('FRACTIONS_PER_UNIT', 100)
 LOCAL = app.config.get('LOCAL_CURRENCY')
+FEE = app.config.get('FOREIGN_CONVERSION_FEE', 0.00)
 
 rate_cache = {}
 symbols_cache = []
@@ -103,7 +104,7 @@ def convert_currency(value, src, dst, d):
     """
     Converts value between two currencies using the conversion rate for date.
     """
-    return value * (conversion_rate(src, dst, d) if src != dst else 1)
+    return value * (FEE + conversion_rate(src, dst, d) if src != dst else 1)
 
 
 def conversion_rate(src, dst, d):

@@ -35,3 +35,4 @@ PAGE_SIZE = 100
 # Can consider fallback to https://freecurrencyapi.com if necessary
 RATE_URL = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{date}/v1/currencies/{src}.json'
 SYMBOLS_URL = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies.json'
+FOREIGN_CONVERSION_FEE = 0.00   # e.g., BMO's 2.5% would be 0.025
